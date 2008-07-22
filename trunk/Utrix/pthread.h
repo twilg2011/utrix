@@ -8,6 +8,8 @@
  */
 
 
+// Lorenzo e' un grandissimo stronzo
+
 typedef int pthread_t;
 
 extern tcb_n;
