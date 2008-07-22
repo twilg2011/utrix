@@ -8,7 +8,7 @@
  */
 
 
-// Lorenzo e' un grandissimo stronzo
+// matteo e' un grandissimo gay
 
 typedef int pthread_t;
 
