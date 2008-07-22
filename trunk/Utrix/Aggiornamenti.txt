@@ -2,3 +2,4 @@
 1. Gestione tid progressivo --> Creazione di una lista di tid eliminati in supporto all'assegnamento d un niovo tid
 
 2. Gestione dei segnali pendenti ---.> per ora trascurabile ma da inserire
+//adsddfadsd
