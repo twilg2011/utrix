@@ -6,7 +6,7 @@
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
-
+#include "pth_stack.s"
 #include "pth_context.h"
 #include "setjmp.h"
 #include <stdlib.h>

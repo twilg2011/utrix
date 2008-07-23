@@ -16,3 +16,7 @@ _setsp:  movl %eax,%esp
 .globl _setbp
 _setbp: movl %eax,%ebp
         ret
+
+.globl _getPrisp
+_getsp: movl %ebp,(%eax)
+        ret
