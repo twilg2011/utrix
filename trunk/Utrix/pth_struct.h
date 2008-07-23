@@ -6,21 +6,15 @@
  *  Copyright 2008 __MyCompanyName__. All rights reserved.
  *
  */
- 
+ #include <sys/jmp_buf.h>
  #include "pthread.h"
  
 /* Thread Context */
 struct context{
-    char* ip;       /* Instruction pointer*/
-	char* esp;		/* Stack pointer */
-	char* ebp;		/* Stack base pointer */
-	char* ss;		/* Segment stack */
-	/* General Porpuse Register */
-	char* eax;
-	char* ebx;
-	char* ecx;
-	char* edx;
-}
+  jmp_buf regs;
+  (void (*) (void *)) f;
+  void * arg;
+  }
 
 typedef (context *) context_t;
 
