@@ -8,12 +8,16 @@
  */
  #include <sys/jmp_buf.h>
  #include "pthread.h"
- 
+
 /* Thread Context */
+
+
 struct context{
   jmp_buf regs; //contesto del thread
   (void (*) (void *)) f;//funzione che il thread esegue 
   void * arg;//argomenti
+  char eseguito:1;//il thread è stato eseguito
+  char ctrlbit:1;//il thread è di ritorno da una yeld
   }
 
 typedef (context *) context_t;
