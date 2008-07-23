@@ -6,9 +6,14 @@
  *  Copyright 2008 __MyCompanyName__. All rights reserved.
  *
  */
+/* Thread Priority */
+#define DEFAULT_PRIOR 0
+#define HIGHT_PRIOR -1
+#define LOW_PRIOR 1
+#define PRIOR(p) (p+1)
 
-
-// matteo e' un grandissimo gay
+/* Defautl attribute */
+#define DEFAULT_ATTR NULL
 
 typedef int pthread_t;
 
@@ -21,11 +26,4 @@ extern void      pthread_exit(void *);
 extern int       pthread_join(pthread_t, void **);
 extern int       pthread_kill(pthread_t, int);
 
-/* Thread Priority */
-#defne DEFAULT_PRIOR 0
-#defne HIGHT_PRIOR -1
-#defne LOW_PRIOR 1
-#define PRIOR(p) (p+1)
 
-/* Defautl attribute */
-#define DEFAULT_ATTR NULL
