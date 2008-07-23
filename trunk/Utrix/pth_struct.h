@@ -3,7 +3,7 @@
  *  Utrix
  *
  *  Created by Matteo Casenove on 11/07/08.
- *  Copyright 2008 __MyCompanyName__. All rights reserved.
+ *  Copyright 2008 Utrix. All rights reserved.
  *
  */
  #include <sys/jmp_buf.h>
@@ -11,9 +11,9 @@
  
 /* Thread Context */
 struct context{
-  jmp_buf regs;
-  (void (*) (void *)) f;
-  void * arg;
+  jmp_buf regs; //contesto del thread
+  (void (*) (void *)) f;//funzione che il thread esegue 
+  void * arg;//argomenti
   }
 
 typedef (context *) context_t;
