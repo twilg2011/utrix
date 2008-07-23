@@ -18,5 +18,5 @@ _setbp: movl %eax,%ebp
         ret
 
 .globl _getPrisp
-_getsp: movl %ebp,(%eax)
+_getPrisp: movl %ebp,(%eax)
         ret
