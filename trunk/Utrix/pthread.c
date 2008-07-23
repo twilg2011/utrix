@@ -49,10 +49,14 @@ int init(){
 
 
 int pthread_create(pthread_t *pth, const pthread_attr_t * att, void *(*)(void *) fun, void * param){
-    //inizializzo lo sp globale
+    
+	/*MATTEO QUESTE DUE LE DEVI FAR ESEGUIRE SOLO SE VIENE ESEGUITA INIT()*/
+	//inizializzo lo sp globale 
 	globalSp=malloc(sizeof(char*));
 	//prendo lo sp del main
 	getPrisp(globalSp);
+	
+	
 	if( pth == NULL || att != NULL || fun == NULL || param == NULL )
 		return FALSE;
 	pth=++tcb_n;
