@@ -18,6 +18,7 @@ void setbp(char* bp);
 context_t* pth_init(void (*f) (void*),void* arg)
 {
   context_t* context=malloc(sizeof(context_t));
+  if (!context) return NULL;
   context->eseguito=0;
   context->f=(*f);
   context->arg=arg;
