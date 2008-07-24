@@ -10,7 +10,13 @@
 #include "pthread.h"
 #include "pth_struct.h"
 #include  "pth_stack.s"
-/* Modificare con il tid del processo in esecuzione */
+
+/* Modificare con il tid del ??????????????processo?????????? in esecuzione */
+
+/**********************************************/
+//ATTENZIONE AL CONTROLLO DEGLI ERRORI MALLOC
+//GUARDA MATTI CHE HO CAMBIATO IL TCB IL TEXT STAVA GIA DENTRO CONTEXT_T SAREBBE RIDONDANTRE//
+/*******************************************/
 #define CREATE_TID(tcb_n,pfun) tcb_t tcb=(tcb_t)malloc(sizeof(tcb_s)); \
 								tcb.tid_f=ESECUTION_TID; \ 
 								tcb.tid=tcb_n; \
