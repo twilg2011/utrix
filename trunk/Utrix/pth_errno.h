@@ -14,5 +14,6 @@
                  "pth: %s :ERROR: %s\n", func,str); \
 #endif
 		return(pth_errno);
-
-#define PTHREAD_CREATE 0
+#define NOERR 0
+#define PTHREAD_CREATE 1
+#define ERRARG 2
