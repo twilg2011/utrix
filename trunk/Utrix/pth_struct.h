@@ -10,6 +10,7 @@
  #include "pthread.h"
  
 typedef struct partition{
+char* bp;
 char* sp;
 char  present:1;
 partition_t next;
@@ -30,7 +31,7 @@ typedef (struct context) context_t;
 typedef struct tcb{
 	pthread_t tid_f;
 	pthread_t tid;
-	void* text;
+	partition_t part;
 	int prior;
 	context_t ctx; 
 }tcb_s;
@@ -55,4 +56,3 @@ typedef (tbl_field_s *) tbl_field_t;
 
 extern tbl_field_t pth_prior_table[];
 
-partition_t partizioni;
