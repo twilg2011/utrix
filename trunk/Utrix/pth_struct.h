@@ -8,24 +8,27 @@
  */
  #include <sys/jmp_buf.h>
  #include "pthread.h"
- 
+/*Stack struct*/
+//una partizione consente di identificare un blocco di memoria virtuale 
+//che rappesenta lo stack del thread
 typedef struct partition{
 char* bp;
 char* sp;
-char  present:1;
+char  present:1; //bit di presenza del thread sulla partizione
 partition_t next;
 }partition_s;
 typedef (partition_s*) partition_t;
 
 /* Thread Context */
-struct context{
+typedef struct context{
   jmp_buf regs; //contesto del thread
   void (*f) (void *) ;//funzione che il thread esegue 
   void * arg;//argomenti
   char eseguito:1;//il thread è stato eseguito
   char ctrlbit:1;//il thread è di ritorno da una yeld
-  }
-typedef (struct context) context_t;
+  }context_s;
+  
+typedef (struct context*) context_t;
 
 /* Thread Control Block */
 typedef struct tcb{
