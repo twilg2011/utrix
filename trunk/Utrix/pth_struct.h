@@ -8,10 +8,15 @@
  */
  #include <sys/jmp_buf.h>
  #include "pthread.h"
+ 
+typedef struct partition{
+char* sp;
+char  present:1;
+partition_t next;
+}partition_s;
+typedef (partition_s*) partition_t;
 
 /* Thread Context */
-
-
 struct context{
   jmp_buf regs; //contesto del thread
   void (*f) (void *) ;//funzione che il thread esegue 
@@ -19,8 +24,7 @@ struct context{
   char eseguito:1;//il thread è stato eseguito
   char ctrlbit:1;//il thread è di ritorno da una yeld
   }
-
-typedef (context *) context_t;
+typedef (struct context) context_t;
 
 /* Thread Control Block */
 typedef struct tcb{
@@ -51,3 +55,4 @@ typedef (tbl_field_s *) tbl_field_t;
 
 extern tbl_field_t pth_prior_table[];
 
+partition_t partizioni;
