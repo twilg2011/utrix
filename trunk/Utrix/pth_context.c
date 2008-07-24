@@ -16,9 +16,9 @@
 void setsp(char* sp);
 void setbp(char* bp);
 
-context_t* pth_init(void (*f) (void*),void* arg)
+context_t pth_init(void (*f) (void*),void* arg)
 {
-  context_t* context=malloc(sizeof(context_t));
+  context_t context=malloc(sizeof(context_s));
   if (!context) return NULL;
   context->eseguito=0;
   context->f=(*f);
@@ -56,8 +56,8 @@ int spclac(char** sp, char** bp)
      part=malloc(sizeof(partition_s));
 	 addpar(part);
    }
-   (*sp)=part.sp;
-   (*bp)=part.bp;
+   (*sp)=part->sp;
+   (*bp)=part->bp;
    return NOERR;
 }
 
@@ -75,11 +75,11 @@ int addpar(partition_t new)
 	                partizionicoda=new;
 	                partizionitesta=partizionicoda;
     }else partizionicoda.next=new;
-	new.next=NULL;
-	new.bp=globalSp;
-	new.sp=globalSp-STACKWIDTH;
-	new.present=1;
-	globalSp=new.sp;
+	new->next=NULL;
+	new->bp=globalSp;
+	new->sp=globalSp-STACKWIDTH;
+	new->present=1;
+	globalSp=new->sp;
 	return NOERR;
   }
   return ERRTOOTHR;
@@ -91,13 +91,13 @@ partition_t findfree()
   while (res)
   {
     if(!res.present) return res;
-	res=res.next;
+	res=res->next;
   }
   return NULL;
 }
 
 int relasepart(partition_t part)
 {
-  if (part) part.present=0;
+  if (part) part->present=0;
   else ERRARG;
 }
