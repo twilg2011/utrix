@@ -31,8 +31,7 @@ context_t* thread_init ( void (*f) (void*), void*  arg);
 
 thread_start(context_t*old , context_t* new);
 
-/*sp globale, permette di inizializzare i base pointer dei thread*/
-char** globalSp;
+
 
 int init(){
 	pthread_t tid = tcb_n;
@@ -54,7 +53,7 @@ int pthread_create(pthread_t *pth, const pthread_attr_t * att, void *(*)(void *)
 	//inizializzo lo sp globale 
 	globalSp=malloc(sizeof(char*));
 	//prendo lo sp del main
-	getPrisp(globalSp);
+	getPrisp(&globalSp);
 	
 	
 	if( pth == NULL || att != NULL || fun == NULL || param == NULL )
