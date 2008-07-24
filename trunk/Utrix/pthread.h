@@ -6,6 +6,7 @@
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
+#include "pth_struct.h"
 /* Thread Priority */
 #define DEFAULT_PRIOR 0
 #define HIGHT_PRIOR -1
@@ -26,4 +27,10 @@ extern void      pthread_exit(void *);
 extern int       pthread_join(pthread_t, void **);
 extern int       pthread_kill(pthread_t, int);
 
+/*sp globale, permette di inizializzare i base pointer dei thread*/
+char* globalSp;
+
+partition_t partizionitesta;
+partition_t partizionicoda;
+int  thread_n;
 
