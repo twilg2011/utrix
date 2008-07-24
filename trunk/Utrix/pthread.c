@@ -11,7 +11,7 @@
 #include "pth_struct.h"
 #include  "pth_stack.s"
 
-/* Modificare con il tid del ??????????????processo?????????? in esecuzione */
+/* Modificare con il tid del processo? in esecuzione */
 
 /**********************************************/
 //ATTENZIONE AL CONTROLLO DEGLI ERRORI MALLOC
