@@ -10,6 +10,7 @@
 #include "pth_context.h"
 #include "config.h"
 #include "setjmp.h"
+#include "pth_errno.h"
 #include <stdlib.h>
 
 

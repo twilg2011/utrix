@@ -16,3 +16,8 @@
 context_t* pth_init(void (*f) (void*),void* arg);
 
 int pth_start(context_t* old, context_t* next);
+
+
+int addpar(partition_t new);
+
+int relasepart(partition_t part);
