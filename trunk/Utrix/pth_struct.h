@@ -34,9 +34,11 @@ typedef (struct context*) context_t;
 typedef struct tcb{
 	pthread_t tid_f;
 	pthread_t tid;
+	void* result;
 	partition_t part;
 	int prior;
-	context_t ctx; 
+	context_t ctx;
+	char save:1; 
 }tcb_s;
 
 typedef (tcb_s *) tcb_t;
@@ -44,7 +46,7 @@ typedef (tcb_s *) tcb_t;
 /* Thread table field */
 typedef struct tbl_field{
     tcb_t tcb;
-	struct tbl_field_t next; 
+ tbl_field_t next; 
 }tbl_field_s;
 
 typedef (tbl_field_s *) tbl_field_t;
