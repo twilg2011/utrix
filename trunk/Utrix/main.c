@@ -25,13 +25,13 @@ void init()
 }
 
 
-void f(void*)
+void f(void* arg)
 {
   printf("f:\n");
   pth_start(tcf->ctx,tcw->ctx);
 }
 
-void w(void*)
+void w(void*arg)
 {
   printf("w:\n");
   pth_start(tcw->ctx,mctx);
