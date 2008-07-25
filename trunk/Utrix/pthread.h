@@ -16,7 +16,7 @@
 /* Defautl attribute */
 #define DEFAULT_ATTR NULL
 
-typedef int pthread_t;
+
 
 extern tcb_n;
 

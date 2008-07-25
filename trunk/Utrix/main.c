@@ -3,7 +3,7 @@
  *  
  *
  *  Created by lorenzo galeotti on 25/07/08.
- *  Copyright 2008 __MyCompanyName__. All rights reserved.
+ *  Copyright 2008 Utrix. All rights reserved.
  *
  */
 #include "pth_struct.h"

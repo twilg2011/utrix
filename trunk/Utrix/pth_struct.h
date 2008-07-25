@@ -7,7 +7,8 @@
  *
  */
  #include <sys/jmp_buf.h>
- #include "pthread.h"
+ 
+typedef int pthread_t;
 /*Stack struct*/
 //una partizione consente di identificare un blocco di memoria virtuale 
 //che rappesenta lo stack del thread
@@ -15,9 +16,9 @@ typedef struct partition{
 char* bp;
 char* sp;
 char  present:1; //bit di presenza del thread sulla partizione
-partition_t next;
+struct partition* next;
 }partition_s;
-typedef (partition_s*) partition_t;
+typedef partition_s* partition_t;
 
 /* Thread Context */
 typedef struct context{
@@ -28,7 +29,7 @@ typedef struct context{
   char ctrlbit:1;//il thread è di ritorno da una yeld
   }context_s;
   
-typedef (struct context*) context_t;
+typedef context_s* context_t;
 
 /* Thread Control Block */
 typedef struct tcb{
@@ -41,15 +42,15 @@ typedef struct tcb{
 	char save:1; 
 }tcb_s;
 
-typedef (tcb_s *) tcb_t;
+typedef tcb_s * tcb_t;
 
 /* Thread table field */
 typedef struct tbl_field{
     tcb_t tcb;
- tbl_field_t next; 
+ struct tbl_field next; 
 }tbl_field_s;
 
-typedef (tbl_field_s *) tbl_field_t;
+typedef tbl_field_s * tbl_field_t;
 
 /* Thread table */
 
@@ -58,6 +59,6 @@ typedef (tbl_field_s *) tbl_field_t;
 // tcb_table_t pth_table;
 
 /* Thread table with priority */
-
-extern tbl_field_t pth_prior_table[];
+//numero 5 fittizio
+extern tbl_field_t pth_prior_table[5];
 
