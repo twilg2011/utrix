@@ -26,7 +26,7 @@ context_t pth_init(void (*f) (void*),void* arg)
   return context;
 }
 
-int pth_start(context_t* old, context_t* next)
+int pth_start(context_t old, context_t next)
 {
   old->ctrlbit=0;
   setjmp(old->regs);
