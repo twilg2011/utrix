@@ -33,4 +33,6 @@ char* globalSp;
 partition_t partizionitesta;
 partition_t partizionicoda;
 int  thread_n;
+tcb_t thread_exec;/*Thread attualmente in esecuzione*/
+tcb_t* thread_zombie;
 
