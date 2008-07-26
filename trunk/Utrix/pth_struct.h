@@ -47,4 +47,5 @@ extern int  thread_n;
 extern tcb_t thread_exec;/*Thread attualmente in esecuzione*/
 extern tcb_t* thread_zombie;
 
+#define ESECUTION_TID thread_exec->tid
 
