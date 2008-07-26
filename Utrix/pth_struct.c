@@ -15,3 +15,4 @@ tcb_t thread_exec=NULL;
 tbl_field_t thread_zombie=NULL;
 list_field_t join_wait=NULL;
 tbl_field_t pth_prior_table[3];
+tbl_field_t pth_last_table_field[3];
