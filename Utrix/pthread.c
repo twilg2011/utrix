@@ -12,7 +12,18 @@
 #include  "pth_stack.s"
 
 
-int status=NULL;
+static int pthread_initialized = FALSE;
+
+#define pthread_initialize() \
+			do{ \
+				if (pthread_initialized == FALSE) { \
+					pthread_initialized = TRUE; \
+					pth_init(); \
+					atexit(pthread_shutdown); \
+				} \
+			}while(0)
+
+
 /* Modificare con il tid del processo in esecuzione */
 
 /* #define CREATE_TID(tcb_n,pfun) tcb_t tcb=(tcb_t)malloc(sizeof(tcb_s)); \
@@ -56,8 +67,7 @@ int init(){
 	}
 	tblx.tcb=tcb;
 	tblx.next=pth_prior_table[PRIOR(DEFAULT_PRIOR)]=NULL;
-	pth_prior_table[PRIOR(DEFAULT_PRIOR)]=tblx;
-	status=START;
+	pth_last_table_field[PRIOR(DEFAULT_PRIOR)]=pth_prior_table[PRIOR(DEFAULT_PRIOR)]=tblx;
 }
 
 
@@ -76,9 +86,12 @@ int pthread_create(pthread_t *pth, /*const pthread_attr_t * att,*/ void *(*fun)(
 		return FALSE;
 	
 	/* Controlla se la libreria e' stata inizializata */
-	if(status != START)
-		init();
-
+	pthread_initialize();
+	
+	/* Crea ed inizializza la struttuara del tcb */
+	
+	// CONTEXT CREATE  
+	
 	pth=++tcb_n;
 	tcb=(tcb_t)malloc(sizeof(tcb_s)); 
 	if(!tcb) 
@@ -94,12 +107,10 @@ int pthread_create(pthread_t *pth, /*const pthread_attr_t * att,*/ void *(*fun)(
 	tblx->tcb=tcb;
 	
 	/* Mette nella coda di schedulazione il thread caricato */
-	tblfind=pth_prior_table[PRIOR(DEFAULT_PRIOR)];
-	while(tblfind->next)
-		tblfind=tblfind->next;
-	tblx->next=NULL; 
-	tblfind->next=tblx;
 	
+	pth_last_table_field[PRIOR(DEFAULT_PRIOR)]->next=tblx;
+	tblx->next=NULL;
+	pth_last_table_field[PRIOR(DEFAULT_PRIOR)]=tblx;
 	
 }
 
