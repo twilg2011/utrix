@@ -6,16 +6,27 @@
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
-#include "pth_stack.s"
 #include "pth_context.h"
 #include "config.h"
-#include "setjmp.h"
+#include "pth_errno.h"
 #include "pth_errno.h"
 #include <stdlib.h>
 
 
+/* INFORMAZIONI PER LORENZO DA MATTY (TUTTI I DIRITTI SONO RISERVATI)
+ Ma le infomazioni della partizione che hai messo nel tcb e' giusto considerarle come una lista?
+ oppure sbaglio io a comprendere l'essere della partizione:
+ se la partizione identifica l'area dello stack riservata ad un thread a che serve creare una lista di queste cose?
+ vuoi per caso dare ad un thread piu' aree non contigue, se cosi' secondo me e' un casino, altrimenti dimmi tu.  
+ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+
 void setsp(char* sp);
 void setbp(char* bp);
+
+partition_t partizionitesta;
+partition_t partizionicoda;
+int thread_n;
+partition_t findfree();
 
 context_t pth_init(void (*f) (void*),void* arg)
 {
@@ -45,10 +56,10 @@ int pth_start(context_t old, context_t next)
 	return NOERR;
   }
   old->ctrlbit=1;
-  longjmp(next->regs);
+  longjmp(next->regs,1);
 }
 
-int spclac(char** sp, char** bp)
+int spcalc(char** sp, char** bp)
 {
    if(!sp || !bp) return ERRARG;
    partition_t part=NULL;
@@ -63,19 +74,19 @@ int spclac(char** sp, char** bp)
 }
 
 int isempty(){
-if(!partition) return 1;
+if(!partizionitesta) return 1;
 return 0;
 }
 
 int addpar(partition_t new)
 {
   if (!new) return ERRARG;
-  if (nthread<=MAXTHREAD)
+  if (thread_n<=MAXTHREAD)
   {
 	if (isempty()){
 	                partizionicoda=new;
 	                partizionitesta=partizionicoda;
-    }else partizionicoda.next=new;
+    }else partizionicoda->next=new;
 	new->next=NULL;
 	new->bp=globalSp;
 	new->sp=globalSp-STACKWIDTH;
@@ -91,8 +102,8 @@ partition_t findfree()
   partition_t res=partizionitesta;
   while (res)
   {
-    if(!res.present) return res;
-	res=res->next;
+    if(!res->present) return res;
+    res=res->next;
   }
   return NULL;
 }
