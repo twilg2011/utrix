@@ -11,10 +11,12 @@
 #include "pth_struct.h"
 #include  "pth_stack.s"
 
+
+int status=NULL;
 /* Modificare con il tid del processo in esecuzione */
 
-#define CREATE_TID(tcb_n,pfun) tcb_t tcb=(tcb_t)malloc(sizeof(tcb_s)); \
-								if(!tcb) return FALSE; \ /* Controllo che il thread nn puo' essere creato */
+/* #define CREATE_TID(tcb_n,pfun) tcb_t tcb=(tcb_t)malloc(sizeof(tcb_s)); \
+								if(!tcb) return FALSE; \ // Controllo che il thread nn puo' essere creato 
 								tcb.tid_f=ESECUTION_TID; \ 
 								tcb.tid=tcb_n; \
 								tcb.prior=DEFAULT_PRIOR; \
@@ -26,7 +28,8 @@
 								tblx.tcb=tcb; \	
 								tblx.next=pth_prior_table[PRIOR(DEFAULT_PRIOR)]; \
 								pth_prior_table[PRIOR(DEFAULT_PRIOR)]=tblx;
-								
+								******/
+
 /*funzione assembler che permette di individuare lo sp della funzione precedente*/
 void getPrisp(char** sp);
 
@@ -54,22 +57,48 @@ int init(){
 	tblx.tcb=tcb;
 	tblx.next=pth_prior_table[PRIOR(DEFAULT_PRIOR)]=NULL;
 	pth_prior_table[PRIOR(DEFAULT_PRIOR)]=tblx;
+	status=START;
 }
 
 
-int pthread_create(pthread_t *pth, const pthread_attr_t * att, void *(*fun)(void *) , void * param){
+int pthread_create(pthread_t *pth, /*const pthread_attr_t * att,*/ void *(*fun)(void *) , void * param){
     
+	tcb_t tcb;
+	tbl_field_t tblx;
+	tbl_field_t tblfind;
+	
 	/*MATTEO QUESTE DUE LE DEVI FAR ESEGUIRE SOLO SE VIENE ESEGUITA INIT()*/
 	//prendo lo sp del main
 	getPrisp(&globalSp);
 	
 	
-	if( pth == NULL || att != NULL || fun == NULL || param == NULL )
+	if( pth == NULL || /*att != NULL ||*/ fun == NULL || param == NULL )
 		return FALSE;
+	
+	/* Controlla se la libreria e' stata inizializata */
+	if(status != START)
+		init();
+
 	pth=++tcb_n;
-	CREATE_TID(pth,fun)
+	tcb=(tcb_t)malloc(sizeof(tcb_s)); 
+	if(!tcb) 
+		return FALSE;  /* Controllo che il thread nn puo' essere creato */
+	tcb->tid_f=ESECUTION_TID;  
+	tcb->tid=tcb_n; 
+	tcb->prior=DEFAULT_PRIOR; 
+	tblx=(tbl_filed_t)malloc(sizeof(tbl_field_s)); 
+	if(!tblx){ 
+		free(tcb); 
+		return FALSE; 
+	} 
+	tblx->tcb=tcb;
 	
-	
+	/* Mette nella coda di schedulazione il thread caricato */
+	tblfind=pth_prior_table[PRIOR(DEFAULT_PRIOR)];
+	while(tblfind->next)
+		tblfind=tblfind->next;
+	tblx->next=NULL; 
+	tblfind->next=tblx;
 	
 	
 }
