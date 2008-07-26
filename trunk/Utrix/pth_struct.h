@@ -9,7 +9,7 @@
 
 #include "pthread.h"
 #include "pth_context.h"
-
+#define ESECUTION_TID thread_exec->tid
 /*Qui ci saranno solo le dichiarazioni e strutture necessarie per lavorare con i thread*/
 
 /* Thread Control Block */
@@ -33,6 +33,16 @@ typedef struct tbl_field{
 
 typedef tbl_field_s* tbl_field_t;
 
+
+typedef struct list_field{
+    tcb_t tcb;/*Il tcb di chi chiama la join
+    tcb_t tcb_wait/*Il tcb del thread che aspetto*/
+    struct list_field* next; 
+} list_field_s;
+
+typedef list_field_s* list_field_t;
+
+
 /* Thread table */
 
 //typedef (tbl_field_t *) tcb_table_t;
@@ -45,7 +55,7 @@ extern tbl_field_t pth_prior_table[];
 extern int tcb_n;
 extern int  thread_n;
 extern tcb_t thread_exec;/*Thread attualmente in esecuzione*/
-extern tcb_t* thread_zombie;
+extern tbl_field_t thread_zombie;
+extern list_field_t join_wait;
 
-#define ESECUTION_TID thread_exec->tid
 
