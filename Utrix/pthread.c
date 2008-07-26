@@ -11,19 +11,19 @@
 #include "pth_struct.h"
 #include  "pth_stack.s"
 
-/* Modificare con il tid del processo? in esecuzione */
+/* Modificare con il tid del processo in esecuzione */
 
-/**********************************************/
-//ATTENZIONE AL CONTROLLO DEGLI ERRORI MALLOC
-//GUARDA MATTI CHE HO CAMBIATO IL TCB IL TEXT STAVA GIA DENTRO CONTEXT_T SAREBBE RIDONDANTRE//
-/*******************************************/
 #define CREATE_TID(tcb_n,pfun) tcb_t tcb=(tcb_t)malloc(sizeof(tcb_s)); \
+								if(!tcb) return FALSE; \ /* Controllo che il thread nn puo' essere creato */
 								tcb.tid_f=ESECUTION_TID; \ 
 								tcb.tid=tcb_n; \
-								tcb.text=pfun; \
 								tcb.prior=DEFAULT_PRIOR; \
 								tbl_field_t tblx=(tbl_filed_t)malloc(sizeof(tbl_field_s)); \
-								tblx.tcb=tcb; \
+								if(!tblx){ \
+									free(tcb); \
+									return FALSE; \
+								} \
+								tblx.tcb=tcb; \	
 								tblx.next=pth_prior_table[PRIOR(DEFAULT_PRIOR)]; \
 								pth_prior_table[PRIOR(DEFAULT_PRIOR)]=tblx;
 								
@@ -42,11 +42,15 @@ void getPrisp(char** sp);
 int init(){
 	pthread_t tid = tcb_n;
 	tcb_t tcb=(tcb_t)malloc(sizeof(tcb_s));
+	if(!tcb) return FALSE;
 	tcb.tid_f=NULL;
 	tcb.tid=tcb_n;
-	tcb.text=main;
 	tcb.prior=DEFAULT_PRIOR;
 	tbl_field_t tblx=(tbl_filed_t)malloc(sizeof(tbl_field_s));
+	if(!tblx){
+		free(tcb);
+		return FALSE;
+	}
 	tblx.tcb=tcb;
 	tblx.next=pth_prior_table[PRIOR(DEFAULT_PRIOR)]=NULL;
 	pth_prior_table[PRIOR(DEFAULT_PRIOR)]=tblx;
