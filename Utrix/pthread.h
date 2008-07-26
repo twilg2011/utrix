@@ -16,11 +16,6 @@
 /* Default attribute */
 #define DEFAULT_ATTR NULL
 
-/* Library status */
-
-#define START 1
-
-
 typedef unsigned int pthread_t;
 
 
