@@ -12,13 +12,14 @@
 
 void chgstackwdt(int wdt)
 {
-#undef STACKWIDTH
-#define STACKWIDTH wdt
+//#undef STACKWIDTH
+//#define STACKWIDTH wdt
 }
 
 
 void chgthreadmax(int max)
 {
-#undef MAXTHREAD
-#define MAXTREAD max
+//#undef MAXTHREAD
+//#define MAXTHREAD max
 }
+
