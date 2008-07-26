@@ -47,7 +47,7 @@ typedef tcb_s * tcb_t;
 /* Thread table field */
 typedef struct tbl_field{
     tcb_t tcb;
- struct tbl_field next; 
+ struct tbl_field* next; 
 }tbl_field_s;
 
 typedef tbl_field_s * tbl_field_t;
@@ -61,4 +61,7 @@ typedef tbl_field_s * tbl_field_t;
 /* Thread table with priority */
 //numero 5 fittizio
 extern tbl_field_t pth_prior_table[5];
-
+extern int tcb_n;
+extern int  thread_n;
+extern tcb_t thread_exec;/*Thread attualmente in esecuzione*/
+extern tbl_field_s* thread_zombie;
