@@ -17,6 +17,7 @@ typedef struct tcb{
 	pthread_t tid_f;
 	pthread_t tid;
 	void* result;
+	tcb_s* thread_join;/*Al massimo solo un thread può fare la join sullo stesso thread, mettendolo nel tcb semplifico di molto il codice*/
 	partition_t part;
 	int prior;
 	context_t ctx; 
@@ -34,15 +35,6 @@ typedef struct tbl_field{
 typedef tbl_field_s* tbl_field_t;
 
 
-typedef struct list_field{
-    tcb_t tcb;/*Il tcb di chi chiama la join
-    tcb_t tcb_wait/*Il tcb del thread che aspetto*/
-    struct list_field* next; 
-} list_field_s;
-
-typedef list_field_s* list_field_t;
-
-
 /* Thread table */
 
 //typedef (tbl_field_t *) tcb_table_t;
@@ -57,6 +49,6 @@ extern int tcb_n;
 extern int  thread_n;
 extern tcb_t thread_exec;/*Thread attualmente in esecuzione*/
 extern tbl_field_t thread_zombie;
-extern list_field_t join_wait;
+
 
 
