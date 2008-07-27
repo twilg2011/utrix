@@ -18,8 +18,7 @@ static int pthread_initialized = FALSE;
 			do{ \
 				if (pthread_initialized == FALSE) { \
 					pthread_initialized = TRUE; \
-					pth_init(); \
-					atexit(pthread_shutdown); \
+					init(); \
 				} \
 			}while(0)
 
@@ -110,7 +109,9 @@ int pthread_create(pthread_t *pth, /*const pthread_attr_t * att,*/ void *(*fun)(
 	
 	pth_last_table_field[PRIOR(DEFAULT_PRIOR)]->next=tblx;
 	tblx->next=NULL;
-	pth_last_table_field[PRIOR(DEFAULT_PRIOR)]=tblx;
+	pth_last_table_field[PRIOR(DEFAULT_PRIOR)]=tblx; 
+	
+	//-------->> Controllo dello scheduler
 	
 }
 
