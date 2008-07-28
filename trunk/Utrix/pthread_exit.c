@@ -4,6 +4,8 @@ a)join e sono morto, la join prenderà le informazioni necessarie e ripulirà il
 b)join e non sono morto, si mette in attesa(come fare questo ragionare) creo una lista di join in attesa e cerco dentro se ce ne è una che aspetta il mio tid nella exit(si puo fare)
 c)detach e sono morto, libero tutto e ignoro il contenuto
 d)detach e non sono morto devo avvisare di ripulire e ignorare il tutto*/
+/*Quasi finite da controllare il funzionamento*/
+
 #include<errno.h>
 
 #define SEARCH(base,next,ele_cmp,key) while(base) if(base->ele_cmp!=key)base=base->next;
@@ -26,7 +28,7 @@ return EDEADLK;
 	int i=0;
 	if(SEARCH(list,next,tcb->tid,thread))
 	{	/*Lo trovo mi salvo il risultato e lo cancello dal sistema e dalla lista zombie*/
-		*value_ptr=list->tcb->result/*Qui da verificare c'è qualcosa che non torna, potrei perderla con il delete*/
+		*value_ptr=*(list->tcb->result)/*Qui da verificare c'è qualcosa che non torna, potrei perderla con il delete*/
 		delete(list->tcb);
 		deleteZombie(lista->tcb);
 		return 0;
@@ -49,6 +51,7 @@ return EDEADLK;
 				return EINVAL;
 
 				list->tcb->thread_join=thread_exec;/*Salvo il puntatore del thread che mi aspetta*/
+				list->tcb->result=value_ptr;
 			/*Devo bloccare il thread.......*/			
 				return 0;
 			}
@@ -95,15 +98,27 @@ int  pthread_detach(pthread_t thread){
 
 /*Riguardare*/
 void pthread_exit(void* value_ptr){
+
 	if(thread_exec->save){
-		tbl_field_t new;
-		thread_exec->result=value_ptr;
-		thread_exec->part->present=0;/*Non è piu presente sulla partizione,x le specifiche dovrei lasciarlo a 1*/
-		new=malloc(sizeof(tbl_field_s));
-		new->next=thread_zombie;
-		new->tcb=thread_exec;
-		thread_zombie=new;
+		if(thread_join){/*Qualcuno aspetta*/
+			*(thread_exec->result)=value_ptr;/*Nell'indirizzo passato dalla join*/
+			 thread_exec->part->present=0;
+/*Risveglio thread che ha fatto join*/
+/*Cancello l'attuale thread*/
+			 delete(thread_exec);
+				
+
+			}
+		else{/*Nessuno aspetta*/
+			tbl_field_t new;
+			*(thread_exec->result)=value_ptr;
+			thread_exec->part->present=0;/*Non è piu presente sulla partizione,x le specifiche dovrei lasciarlo a 1*/
+			new=malloc(sizeof(tbl_field_s));
+			new->next=thread_zombie;
+			new->tcb=thread_exec;
+			thread_zombie=new;
 				}
+	}
 	else{ 
 		thread_exec->part->present=0;/*Non è piu presente sulla partizione*/
 		delete(thread_exec);
