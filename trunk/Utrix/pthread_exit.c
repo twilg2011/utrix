@@ -7,11 +7,11 @@ d)detach e non sono morto devo avvisare di ripulire e ignorare il tutto*/
 /*Quasi finite da controllare il funzionamento*/
 
 #include<errno.h>
-
+#include"pth_struct.h"
 #define SEARCH(base,next,ele_cmp,key) while(base) if(base->ele_cmp!=key)base=base->next;
 
 void delete(tcb_t thread);/*Ripulisce l'ambiente*/
-
+void deleteZombie(tcb_t thread);
 pthread_t pthread_self(void){
 
 	return ESECUTION_TID;
@@ -26,22 +26,23 @@ return EDEADLK;
 /*Controllo tra quelli morti*/
 	tbl_field_t list=thread_zombie;
 	int i=0;
-	if(SEARCH(list,next,tcb->tid,thread))
+	SEARCH(list,next,tcb->tid,thread)
+	if(list)
 	{	/*Lo trovo mi salvo il risultato e lo cancello dal sistema e dalla lista zombie*/
-		*value_ptr=*(list->tcb->result)/*Qui da verificare c'è qualcosa che non torna, potrei perderla con il delete*/
+		*value_ptr=*(list->tcb->result);/*Qui da verificare c'è qualcosa che non torna, potrei perderla con il delete*/
 		delete(list->tcb);
-		deleteZombie(lista->tcb);
+		deleteZombie(list->tcb);
 		return 0;
 	}
 	else{/*Se nn lo trovo controllo tra quelli vivi se lo trovo mi metto in coda sulla join*/
 
-		while(i<PRIOR && (list=pth_prior_table[i])){
+		while(i<NUM_PRIOR && (list=pth_prior_table[i])){
 			SEARCH(list,next,tcb->tid,thread)
 			if(!list)
 				i++;
 			
 		}
-		if(i==PRIOR)/*Non esiste*/
+		if(i==NUM_PRIOR)/*Non esiste*/
 			return ESRCH;/*Come da standard*/
 		else{
 			if(!list->tcb->save)/*E' detach*/
@@ -65,22 +66,23 @@ return EDEADLK;
 int  pthread_detach(pthread_t thread){
 /*Cerco sulla lista morti*/
 	tbl_field_t list=thread_zombie;
-	
-	if(SEARCH(list,next,tcb->tid,thread))
-	{       deleteZombie(lista->tcb);
+	int i=0;
+	SEARCH(list,next,tcb->tid,thread)
+	if(list)
+	{       deleteZombie(list->tcb);
 		delete(list->tcb);
 		return 0;
 	}
 	else{
 /*Cerco se esiste*/
 		list=pth_prior_table[0];
-		while(i<PRIOR && (list=pth_prior_table[i])){
+		while(i<NUM_PRIOR && (list=pth_prior_table[i])){
 			SEARCH(list,next,tcb->tid,thread)
 			if(!list)
 				i++;
 			
 		}
-		if(i==PRIOR)
+		if(i==NUM_PRIOR)
 			return ESRCH;/*Come da standard*/
 		else{
 			if(list->tcb->save)/*E join*/
@@ -100,7 +102,7 @@ int  pthread_detach(pthread_t thread){
 void pthread_exit(void* value_ptr){
 
 	if(thread_exec->save){
-		if(thread_join){/*Qualcuno aspetta*/
+		if(thread_exec->thread_join){/*Qualcuno aspetta*/
 			*(thread_exec->result)=value_ptr;/*Nell'indirizzo passato dalla join*/
 			 thread_exec->part->present=0;
 /*Risveglio thread che ha fatto join*/
@@ -129,18 +131,19 @@ void pthread_exit(void* value_ptr){
 
 void deleteZombie(tcb_t thread){
 	tbl_field_t list=thread_zombie;
-	tbl_field_t delete;	
+	tbl_field_t del_elem;	
 	if(list->tcb->tid==thread->tid)
 	{	thread_zombie=thread_zombie->next;
 		free(list);
 	}	
 	else{
-	while(list->next && list->next->tcb->tid!=thread->tid)
-		list=list->next;
-	if(list->next)
-	{	delete=list->next;
-		list->next=list->next->next;
-		free(delete);
+		while(list->next && list->next->tcb->tid!=thread->tid)
+			list=list->next;
+		if(list->next)
+		{	del_elem=list->next;
+			list->next=list->next->next;
+			free(del_elem);
+		}
 	}
 }
 
@@ -152,10 +155,10 @@ void delete(tcb_t thread){
 			pth_prior_table[PRIOR(prio)]=pth_prior_table[PRIOR(prio)]->next;
 		}
 		else{
-			tcb_table_t list=pth_prior_table[PRIOR(prio)];
+			tbl_field_t list=pth_prior_table[PRIOR(prio)];
 			while(list->next && list->next->tcb->tid!=thread->tid)
 			list=list->next;
-			if(lista->next)/*Sono uscito perchè ho lo stesso tid*/
+			if(list->next)/*Sono uscito perchè ho lo stesso tid*/
 				list->next=list->next->next;
 		}
 	free(thread);
