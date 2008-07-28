@@ -7,8 +7,12 @@
  *
  */
 
+/*Librerie necessarie*/
+#include<stddef.h>
+#include<stdlib.h>
+
 /* Thread Priority */
-#define PRIOR 3
+#define NUM_PRIOR 3
 #define DEFAULT_PRIOR 0
 #define HIGHT_PRIOR -1
 #define LOW_PRIOR 1
