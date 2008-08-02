@@ -8,7 +8,7 @@
  */
 
 #define MAXTHREAD 5
-#define STACKWIDTH  100
+#define STACKWIDTH 0x64
 
 void chgstackwdt(int wdt)
 {
