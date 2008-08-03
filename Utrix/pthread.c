@@ -46,11 +46,6 @@ void getPrisp(char** sp);
 //int main(void); /* Dichiaration of main */
 
 
-//context_t* thread_init ( void (*f) (void*), void*  arg);
-
-//thread_start(context_t*old , context_t* new);
-
-
 
 int init(){
 	pthread_t tid = tcb_n;
@@ -76,9 +71,6 @@ int pthread_create(pthread_t *pth, /*const pthread_attr_t * att,*/ void *(*fun)(
 	tbl_field_t tblx;
 	tbl_field_t tblfind;
 	
-	/*MATTEO QUESTE DUE LE DEVI FAR ESEGUIRE SOLO SE VIENE ESEGUITA INIT()*/
-	//prendo lo sp del main
-	getPrisp(&globalSp);
 	
 	
 	if( pth == NULL || /*att != NULL ||*/ fun == NULL || param == NULL )
