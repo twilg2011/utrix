@@ -15,7 +15,7 @@
 //che rappesenta lo stack del thread di dimensione STACKWIDTH
 typedef struct partition{
 char* bp;//base pointer 
-unsigned char  present:1; //bit di presenza del thread sulla partizione
+unsigned char  present; //bit di presenza del thread sulla partizione
 struct partition* next;
 } partition_s;
 
@@ -24,6 +24,7 @@ typedef partition_s* partition_t;
 /* Thread Context */
 typedef struct context{
   jmp_buf regs; //contesto del thread
+  partition_t part;//blocco dello stack
   void (*f) (void *) ;//funzione che il thread esegue 
   void * arg;//argomenti
   unsigned char eseguito:1;//il thread è stato eseguito
@@ -47,13 +48,13 @@ typedef context_s* context_t;
 		      ictx->arg=argo;\
                       if (_setjmp(ictx->regs)==1){ \
 		          ictx->eseguito=1;\
-		          __asm__("movl %0,%%esp"::"r"(spcalc()));\
+		          __asm__("movl %0,%%esp"::"r"(spcalc(ictx)));\
 		          func(argo);\
 			 }
 //inizializza globalSP allo stack pointer attuale			 
 #define pth_globalSp_init __asm__("movl %%ebp,%0":"=r"(globalSp))      
 /*spcalc:calcola uno stackpointer assegnando una partizione al thread utilizza globalSp che deve essere inizializzata*/		 
-char* spcalc();
+char* spcalc(context_t ctx);
 /*aggiunge una partizione e quelle esistenti*/
 int addpar(partition_t new);
 /*libera una partizione*/

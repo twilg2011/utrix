@@ -18,7 +18,7 @@ int thread_n;
 
 partition_t findfree();
 
-char* spcalc()
+char* spcalc(context_t ctx)
 {
    partition_t part=NULL;
    //cerco partizioni libere
@@ -28,6 +28,8 @@ char* spcalc()
      part=malloc(sizeof(partition_s));
      if (addpar(part)) return NULL;
    }
+   part->present=1;
+   ctx->part=part;
    //ritorno la partizione da usare
    return part->bp;
 }
