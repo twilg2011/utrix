@@ -35,20 +35,14 @@ typedef struct tbl_field{
 typedef tbl_field_s* tbl_field_t;
 
 
-/* Thread table */
-
-//typedef (tbl_field_t *) tcb_table_t;
-
-// tcb_table_t pth_table;
-
-/* Thread table with priority */
-
-
 extern int tcb_n;
+/*numero dei thread creati*/
 extern int  thread_n;
 extern tcb_t thread_exec;/*Thread attualmente in esecuzione*/
-
+/*liste di thread*/
+/*thread appena creati e non schedulati*/
 extern tbl_field_t thread_new;
+/*thread uccisi in attesa di gestione*/
 extern tbl_field_t thread_zombie;
 
 
