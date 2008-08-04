@@ -14,23 +14,23 @@
 partition_t partitionhead;
 partition_t partitiontail;
 int thread_n;
-
+char* globalsp;
 
 partition_t findfree();
 
-char* spcalc(context_t ctx)
+char* bpcalc(context_t ctx)
 {
    partition_t part=NULL;
-   //cerco partizioni libere
+   /*cerco partizioni libere*/
    if (!findfree()) 
    {
-     //se non le trovo ne creo una
+     /*se non le trovo ne creo una*/
      part=malloc(sizeof(partition_s));
      if (addpar(part)) return NULL;
    }
    part->present=1;
    ctx->part=part;
-   //ritorno la partizione da usare
+   /*ritorno la partizione da usare*/
    return part->bp;
 }
 
@@ -41,17 +41,17 @@ return !partitionhead;
 /*se è possibile aggiunge una partizione valida*/
 int addpar(partition_t new)
 {
-  //controla la correttezza dei dati
+  /*controla la correttezza dei dati*/
   if (!new || !globalsp) return ERRARG;
-  //verifica che sia possibile inserire un'altro thread
+  /*verifica che sia possibile inserire un'altro thread*/
   if (thread_n<=MAXTHREAD)
   {
-    //se sono presenti altre partizioni
+    /*se sono presenti altre partizioni*/
 	if (isempty()){
 	                partitiontail=new;
 	                partitionhead=partitiontail;
     }else partiztionhead->next=new;
-	//inizializza i dati delle partizioni
+	/*inizializza i dati delle partizioni*/
 	new->next=NULL;
 	new->bp=globalsp-STACKWIDTH;
 	new->present=1;
@@ -60,11 +60,11 @@ int addpar(partition_t new)
   }
   return ERRTOOTHR;
 }
-//cerca una partizione libera
+/*cerca una partizione libera*/
 partition_t findfree()
 {
   partition_t res=partitionhead;
-  //cicla fino a trovare una partizione libera
+  /*cicla fino a trovare una partizione libera*/
   while (res)
   {
     if(!res->present) return res;
@@ -72,7 +72,7 @@ partition_t findfree()
   }
   return NULL;
 }
-//libera la partizione passata come argomento
+/*libera la partizione passata come argomento*/
 int relasepart(partition_t part)
 {
   if (part) part->present=0;

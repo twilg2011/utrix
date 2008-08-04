@@ -23,7 +23,7 @@ typedef partition_s* partition_t;
 
 /* Thread Context */
 typedef struct context{
-  jmp_buf regs; /*contesto del thread*/
+  jmp_buf regs; /*registri del thread*/
   partition_t part;/*blocco dello stack*/
   void (*f) (void *) ;/*funzione che il thread esegue*/ 
   void * arg;/*argomenti*/
@@ -31,34 +31,45 @@ typedef struct context{
   } context_s;
   
 typedef context_s* context_t;
- /*queste macro permettono di effettuare i cambi di contesto
-pth_save:consente di salvare il contesto attuale 
-parametri:context_t ctx*/ 
+ /*queste macro permettono di effettuare i cambi di contesto*/
+
+/*pth_save:consente di salvare il contesto attuale 
+@param:context_t ctx
+*/ 
 #define pth_save(ctx) _setjmp(ctx->regs)
 
 /*pth_switch:salva il contesto attuale in old e passa il processore a next
-parametri:context_t old,context_t next*/
+@param:context_t old,context_t next*/
 #define pth_switch(old,next) if(_setjmp(old->regs)==0) _longjmp(next->regs,1)
 
 /* pth_init:inizializza un contesto che ha come funzione func con argomento argo il contesto inizializzato viene messo in ictx
-parametri: context_t ictx, void (*f)(void*),void* argo */
+@param: context_t ictx, void (*f)(void*),void* argo
+@error:ERRARG se uno func o ictx sono NULL*/
 #define pth_init(ictx,func,argo)\
         if(!ictx||!func) return ERRARG;\
 		      ictx->f=func;\
 		      ictx->arg=argo;\
                       if (_setjmp(ictx->regs)==1){ \
 		          ictx->eseguito=1;\
-		          __asm__("movl %0,%%esp"::"r"(spcalc(ictx)));\
+		          __asm__("movl %0,%%esp"::"r"(bpcalc(ictx)));\
 		          func(argo);\
 			 }
 /*inizializza globalSP allo stack pointer attuale*/
 #define pth_globalSp_init __asm__("movl %%ebp,%0":"=r"(globalsp))      
-/*spcalc:calcola uno stackpointer assegnando una partizione al thread utilizza globalSp che deve essere inizializzata*/		 
-char* spcalc(context_t ctx);
-/*libera una partizione*/
+/*bpcalc:calcola uno stackpointer assegnando una partizione al thread utilizza globalSp che deve essere inizializzata	
+@param:il contesto a cui assegnare la partizione
+@return:il bp della partizione assegnata
+*/
+char* bpcalc(context_t ctx);
+/*relasepart:libera una partizione
+  @param:la partizione da liberare
+  @return:ERRARG se la partizione è null
+*/
 int relasepart(partition_t part);
+
 /*sp globale, permette di inizializzare i base pointer dei thread*/
-char* globalsp;
+extern char* globalsp;
+
 /*coda di partizioni libere*/
 extern partition_t partitionhead;
 extern partition_t partiziontail;
