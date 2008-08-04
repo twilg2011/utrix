@@ -12,6 +12,7 @@ int errno;
 		fprintf(stderr, \
                  "pth: %s :ERROR: %s\n", func,str); \
 		return(pth_errno);
+#define SETERR(err) errno=err;
 #define NOERR 0
 #define PTHREAD_CREATE 1
 #define ERRARG 2
