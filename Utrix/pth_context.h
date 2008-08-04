@@ -55,8 +55,6 @@ typedef context_s* context_t;
 #define pth_globalSp_init __asm__("movl %%ebp,%0":"=r"(globalSp))      
 /*spcalc:calcola uno stackpointer assegnando una partizione al thread utilizza globalSp che deve essere inizializzata*/		 
 char* spcalc(context_t ctx);
-/*aggiunge una partizione e quelle esistenti*/
-int addpar(partition_t new);
 /*libera una partizione*/
 int relasepart(partition_t part);
 /*sp globale, permette di inizializzare i base pointer dei thread*/
