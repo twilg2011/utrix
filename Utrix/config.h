@@ -10,16 +10,3 @@
 #define MAXTHREAD 5
 #define STACKWIDTH 0x64
 
-void chgstackwdt(int wdt)
-{
-//#undef STACKWIDTH
-//#define STACKWIDTH wdt
-}
-
-
-void chgthreadmax(int max)
-{
-//#undef MAXTHREAD
-//#define MAXTHREAD max
-}
-

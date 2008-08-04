@@ -7,8 +7,8 @@
  *
  */
 #include "pth_context.h"
-#include "config.h"
 #include "pth_errno.h"
+#include "config.h"
 #include <stdlib.h>
 
 partition_t partitionhead;
@@ -38,6 +38,7 @@ char* bpcalc(context_t ctx)
 int isempty(){
 return !partitionhead;
 }
+
 /*se è possibile aggiunge una partizione valida*/
 int addpar(partition_t new)
 {
@@ -60,6 +61,7 @@ int addpar(partition_t new)
   }
   return ERRTOOTHR;
 }
+
 /*cerca una partizione libera*/
 partition_t findfree()
 {
@@ -72,6 +74,7 @@ partition_t findfree()
   }
   return NULL;
 }
+
 /*libera la partizione passata come argomento*/
 int relasepart(partition_t part)
 {
