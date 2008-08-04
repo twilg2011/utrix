@@ -6,7 +6,7 @@ c)detach e sono morto, libero tutto e ignoro il contenuto
 d)detach e non sono morto devo avvisare di ripulire e ignorare il tutto*/
 /*Quasi finite da controllare il funzionamento*/
 
-#include<errno.h>
+
 #include"pth_struct.h"
 #define SEARCH(base,next,ele_cmp,key) while(base) if(base->ele_cmp!=key)base=base->next;
 
