@@ -11,8 +11,8 @@
 #include "pth_errno.h"
 #include <stdlib.h>
 
-partition_t partizionitesta;
-partition_t partizionicoda;
+partition_t partitionhead;
+partition_t partitiontail;
 int thread_n;
 
 
@@ -36,26 +36,26 @@ char* spcalc(context_t ctx)
 
 /*torna 1 se non esistono partizioni*/ 
 int isempty(){
-return !partizionitesta;
+return !partitionhead;
 }
 /*se è possibile aggiunge una partizione valida*/
 int addpar(partition_t new)
 {
   //controla la correttezza dei dati
-  if (!new || !globalSp) return ERRARG;
+  if (!new || !globalsp) return ERRARG;
   //verifica che sia possibile inserire un'altro thread
   if (thread_n<=MAXTHREAD)
   {
     //se sono presenti altre partizioni
 	if (isempty()){
-	                partizionicoda=new;
-	                partizionitesta=partizionicoda;
-    }else partizionicoda->next=new;
+	                partitiontail=new;
+	                partitionhead=partitiontail;
+    }else partiztionhead->next=new;
 	//inizializza i dati delle partizioni
 	new->next=NULL;
-	new->bp=globalSp-STACKWIDTH;
+	new->bp=globalsp-STACKWIDTH;
 	new->present=1;
-	globalSp=new->bp;
+	globalsp=new->bp;
 	return NOERR;
   }
   return ERRTOOTHR;
@@ -63,7 +63,7 @@ int addpar(partition_t new)
 //cerca una partizione libera
 partition_t findfree()
 {
-  partition_t res=partizionitesta;
+  partition_t res=partitionhead;
   //cicla fino a trovare una partizione libera
   while (res)
   {
