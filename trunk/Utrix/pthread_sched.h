@@ -19,3 +19,5 @@
 extern context_t sched;
 
 void scheduler(void* arg);
+
+void schedthrkill(int tid);
