@@ -10,19 +10,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "pth_struct.h"
+#include "pth_errno.h"
 
 context_t cf;
 context_t cw;
 context_t mctx;
 
-
-void getPrisp(char** sp);
-
-void init()
-{
-  getPrisp(&globalSp);
-  printf("appena prelevato %p\n",globalSp);
-}
 
 
 void f(void* arg)

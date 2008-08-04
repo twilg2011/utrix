@@ -40,8 +40,7 @@ static int pthread_initialized = FALSE;
 								pth_prior_table[PRIOR(DEFAULT_PRIOR)]=tblx;
 								******/
 
-/*funzione assembler che permette di individuare lo sp della funzione precedente*/
-void getPrisp(char** sp);
+
 
 //int main(void); /* Dichiaration of main */
 
