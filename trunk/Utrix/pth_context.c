@@ -44,9 +44,6 @@ int addpar(partition_t new)
 {
   /*controla la correttezza dei dati*/
   if (!new || !globalsp) return ERRARG;
-  /*verifica che sia possibile inserire un'altro thread*/
-  if (thread_n<=MAXTHREAD)
-  {
     /*se sono presenti altre partizioni*/
 	if (isempty()){
 	                partitiontail=new;
@@ -58,8 +55,6 @@ int addpar(partition_t new)
 	new->present=1;
 	globalsp=new->bp;
 	return NOERR;
-  }
-  return ERRTOOTHR;
 }
 
 /*cerca una partizione libera*/
