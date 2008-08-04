@@ -43,11 +43,12 @@ typedef tbl_field_s* tbl_field_t;
 
 /* Thread table with priority */
 
-extern tbl_field_t pth_prior_table[];
-extern tbl_field_t pth_last_table_field[];	/* Puntatore all'ultimo elemento della lista (utile nell'inserimento) */
+
 extern int tcb_n;
 extern int  thread_n;
 extern tcb_t thread_exec;/*Thread attualmente in esecuzione*/
+
+extern tbl_field_t thread_new;
 extern tbl_field_t thread_zombie;
 
 

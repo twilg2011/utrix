@@ -8,3 +8,10 @@
  */
 
 
+/* Thread Priority */
+#define NUM_PRIOR 3
+#define DEFAULT_PRIOR 0
+#define HIGHT_PRIOR -1
+#define LOW_PRIOR 1
+#define PRIOR(p) (p+1)
+
