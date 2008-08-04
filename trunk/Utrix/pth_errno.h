@@ -6,14 +6,14 @@
  *  Copyright 2008 __MyCompanyName__. All rights reserved.
  *
  */
-
-int errno;
+#include<errno.h>
+int pth_errno;
 #define PTH_ERR(func,str,pth_errno) \
 		fprintf(stderr, \
                  "pth: %s :ERROR: %s\n", func,str); \
 		return(pth_errno);
+
 #define SETERR(err) errno=err;
 #define NOERR 0
 #define PTHREAD_CREATE 1
-#define ERRARG 2
-#define ERRTOOTHR 3
+#define ERRTOOTHR 2
