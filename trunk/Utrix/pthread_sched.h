@@ -1,12 +1,13 @@
 /*
  *  pthread_sched.h
- *  Utrix-0.1
+ *  
  *
- *  Created by Matteo Casenove on 26/07/08.
+ *  Created by lorenzo galeotti on 23/07/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
 
+#include "pth_struct.h"
 
 /* Thread Priority */
 #define NUM_PRIOR 3
@@ -15,3 +16,6 @@
 #define LOW_PRIOR 1
 #define PRIOR(p) (p+1)
 
+extern context_t sched;
+
+void scheduler(void* arg);

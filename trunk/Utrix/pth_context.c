@@ -48,7 +48,7 @@ int addpar(partition_t new)
 	if (isempty()){
 	                partitiontail=new;
 	                partitionhead=partitiontail;
-    }else partiztionhead->next=new;
+    }else partitionhead->next=new;
 	/*inizializza i dati delle partizioni*/
 	new->next=NULL;
 	new->bp=globalsp-STACKWIDTH;

@@ -37,7 +37,7 @@ void w(void* arg)
       
 int main(void)
 {
-   __asm__("movl %%ebp,%0":"=r"(globalSp));
+   __asm__("movl %%ebp,%0":"=r"(globalsp));
    printf("1\n");
    cw=malloc(sizeof(context_s));
    cf=malloc(sizeof (context_s));

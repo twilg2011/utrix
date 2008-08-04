@@ -55,7 +55,7 @@ typedef context_s* context_t;
 		          func(argo);\
 			 }
 /*inizializza globalSP allo stack pointer attuale*/
-#define pth_globalSp_init __asm__("movl %%ebp,%0":"=r"(globalsp))      
+#define pth_globalsp_init __asm__("movl %%ebp,%0":"=r"(globalsp))      
 /*bpcalc:calcola uno stackpointer assegnando una partizione al thread utilizza globalSp che deve essere inizializzata	
 @param:il contesto a cui assegnare la partizione
 @return:il bp della partizione assegnata
