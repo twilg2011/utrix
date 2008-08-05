@@ -28,3 +28,5 @@ void schedthrkill(int tid);
 void sleep(int tid,int why);
 
 void unsleep(int tid,int why);
+
+tcb_t gettcb(int tid);
