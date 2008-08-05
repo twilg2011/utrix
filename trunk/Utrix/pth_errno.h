@@ -19,12 +19,5 @@ int pth_errno;
 #define ERRARG 2
 #define ERRTOOTHR 3
 
-/* Errore that can be return in a pthread_create */
 
-#define EAGAIN 3406 /* The system lacked the necessary resources to create
-						another thread, or the system-imposed limit  on the
-						total number of threads in a process
-						[PTHREAD_THREADS_MAX] would be exceeded. */
-
-#define EINVAL 3021     /*  The value specified by attr is invalid. */
 
