@@ -30,7 +30,7 @@ void scheduler(void* arg)
   if(scheduledthr_n<thread_n)longtermsched();
   selectedthr=selectthr();
   time = clock();
-  starttime=time
+  starttime=time;
   pth_swap(sched,selectedthr->tcb->ctx);
   time = clock();
   returntime=time;
@@ -53,15 +53,26 @@ tbl_field_t selectthr()
 
 void longtermsched()
 {
+ tbl_field_t new;
  while(scheduledthr_n<thread_n)
  {
-   thread_new///////////////////////////////////////////////////////////////////////////////////
+   new=thread_new;
+   thread_new=-thread_new->next;
+   new->tcb->prior=DEFAULT_PRIOR;
+   thread_priortail[PRIOR(DEFAULT_PRIOR)]->next=new;
+   new->next=NULL;
+   scheduledthr_n++;
  }
 }
 
 void setprior(tbl_field_t thr,int prior)
 {
-
+  if(!thr) 
+  { 
+    SETERR(err);
+    return;
+  }
+  thr->tcb->prior=prior;
 }
 
 void recalcprior(tbl_field_t thr)
@@ -76,4 +87,7 @@ void recalcprior(tbl_field_t thr)
 
 void thrkill(int  tid)
 {
+ tbl_field_t kill;
+ SERCH(tid,thr);
+ 
 }
