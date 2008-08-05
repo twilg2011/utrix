@@ -16,7 +16,7 @@
 #define LOW_PRIOR 1
 #define PRIOR(p) (p+1)
 
-
+#define NUM_WHY 2
 #define MUTEX 0
 #define JOIN 1
 extern context_t sched;
