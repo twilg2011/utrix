@@ -12,11 +12,27 @@ d)detach e non sono morto devo avvisare di ripulire e ignorare il tutto*/
 
 void delete(tcb_t thread);/*Ripulisce l'ambiente*/
 void deleteZombie(tcb_t thread);
+
+/*pthread_self:Questa funzione restituisce il tid del thread in esecuzione(STANDARD)
+@return: un valore di tipo pthread_t uguale al tid*/
+
 pthread_t pthread_self(void){
 
 	return ESECUTION_TID;
 
 }
+
+/*pthread_join:Questa funzione aspetta la terminazione del thread e restituisce il valore di ritorno del thread in value_ptr(STANDARD)
+@param: thread è il tid del thread che devo attendere
+	value_ptr è la zona di memoria che contiene il valore di ritorno del thread che aspetto.
+@return: 0 in caso di successo altrimenti uno degli errori sottostanti
+
+@error:	EINVAL se il thread non è di tipo joinable
+	ESRCH se non esiste un thread con il tid uguale a quello passato per parametro
+	EDEADLK se il tid passato come parametro è uguale al tid del thread chiamante
+*/
+
+
 
 int pthread_join(pthread_t thread, void ** value_ptr){
 
@@ -63,6 +79,16 @@ return EDEADLK;
 
 }
 
+
+/*pthread_detach:Questa funzione rende un thread detach cioè quando terminerà potrà essere deallocato senza salvare nessun valore di ritorno.(STANDARD)
+@param: thread è il tid del thread che devo rendere detach
+	
+@return: 0 in caso di successo altrimenti uno degli errori sottostanti
+
+@error:	EINVAL se il thread non è di tipo joinable
+	ESRCH se non esiste un thread con il tid uguale a quello passato per parametro
+	
+*/
 int  pthread_detach(pthread_t thread){
 /*Cerco sulla lista morti*/
 	tbl_field_t list=thread_zombie;
@@ -98,6 +124,13 @@ int  pthread_detach(pthread_t thread){
 
 }
 
+
+/*pthread_exit:Questa funzione permette la terminazione del thread e value_ptr sarà il valore di ritorno(STANDARD)
+@param: value_ptr è il valore di ritorno del thread.
+Non dovrebbe mai ritornare
+*/
+
+
 /*Riguardare*/
 void pthread_exit(void* value_ptr){
 
@@ -128,7 +161,10 @@ void pthread_exit(void* value_ptr){
 /*chiamo scheduler*/
 }
 
-
+/*deleteZombie:Questa funzione cancella un thread dalla lista zombie.
+@param: thread che rappresenta il tcb da eliminare.
+Non ritorna nessun valore.
+*/
 void deleteZombie(tcb_t thread){
 	tbl_field_t list=thread_zombie;
 	tbl_field_t del_elem;	
@@ -147,6 +183,10 @@ void deleteZombie(tcb_t thread){
 	}
 }
 
+/*delete:Questa funzione cancella un thread da tutte le strutture di gestione presenti.
+@param: thread che rappresenta il tcb da eliminare.
+Non ritorna nessun valore.
+*/
 void delete(tcb_t thread){
 	int prio=thread->prior;
 	free(thread->part);
