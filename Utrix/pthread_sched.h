@@ -16,8 +16,15 @@
 #define LOW_PRIOR 1
 #define PRIOR(p) (p+1)
 
+
+#define MUTEX 0
+#define JOIN 1
 extern context_t sched;
 
 void scheduler(void* arg);
 
 void schedthrkill(int tid);
+
+void sleep(int tid,int why);
+
+void unsleep(int tid,int why);
