@@ -15,7 +15,7 @@
 tbl_field_t  thread_priortail[NUM_PRIOR];
 tbl_field_t  thread_priorhead[NUM_PRIOR];
 tbl_field_t  thread_blocked[NUM_WHY];
-
+int tic[NUM_PRIOR];
 context_t sched;
 
  
@@ -51,23 +51,24 @@ int serch(int tid, tcb_t* tcb,tcb_t* parent)
   return 0;
 }
 
-
-
 void scheduler(void* arg)
 {
  tbl_field_t  selectedthr;
  scheduledthr_n=0;
+ int i=0;
+ while(i<NUM_PRIOR){tic[i]=i; i++;}
  sched=malloc(sizeof(context_s));
  while(1)
  {
   if(scheduledthr_n<thread_n)longtermsched();
   selectedthr=selectthr();
-  time = clock();
-  starttime=time;
-  pth_swap(sched,selectedthr->tcb->ctx);
-  time = clock();
-  returntime=time;
-  selectedthr->tcb->time=returntime-starttime;  
+  selectedthr->tcb->tic=0;
+  while(selectedthr->tcb->tic<tic[PRIOR(selectedthr->tcb->prior)])
+  {
+    //set watchdog
+    pth_swap(sched,selectedthr->tcb->ctx);
+    selectedthr->tcb->tic++;
+  }
   recalcprior(selectedthr);
  }
 }
@@ -110,11 +111,10 @@ void setprior(tbl_field_t thr,int prior)
 
 void recalcprior(tbl_field_t thr)
 {
- if(thr->tcb->time<=BENEFITTIME){
+ if(thr->tcb->tic<=tic[PRIOR(thr->tcb->prior)]){
  if(thr->tcb->prior>-1) setprior(thr,thr->tcb->prior-1);
- }else {
- if(thr->prior<1) setprior(thr,thr->tcb->prior+1); 
  }
+ else if(thr->prior<1) setprior(thr,thr->tcb->prior+1); 
 }
 
 
