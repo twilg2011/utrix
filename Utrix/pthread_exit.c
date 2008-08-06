@@ -9,7 +9,7 @@ d)detach e non sono morto devo avvisare di ripulire e ignorare il tutto*/
 
 #include"pth_struct.h"
 #define SEARCH(base,next,ele_cmp,key) while(base) if(base->ele_cmp!=key)base=base->next;
-
+#define TID_MAIN 0
 void delete(tcb_t thread);/*Ripulisce l'ambiente*/
 void deleteZombie(tcb_t thread);
 
@@ -51,7 +51,7 @@ return EDEADLK;
 		return 0;
 	}
 	else{/*Se nn lo trovo controllo tra quelli vivi se lo trovo mi metto in coda sulla join*/
-
+/*Aspettare lorenzo*/
 		while(i<NUM_PRIOR && (list=pth_prior_table[i])){
 			SEARCH(list,next,tcb->tid,thread)
 			if(!list)
@@ -69,7 +69,7 @@ return EDEADLK;
 
 				list->tcb->thread_join=thread_exec;/*Salvo il puntatore del thread che mi aspetta*/
 				list->tcb->result=value_ptr;
-			/*Devo bloccare il thread.......*/			
+				sleep(	ESECUTION->TID,JOIN);		
 				return 0;
 			}
 				
@@ -133,11 +133,17 @@ Non dovrebbe mai ritornare
 
 /*Riguardare*/
 void pthread_exit(void* value_ptr){
-
+if(ESECUTION_TID==TID_MAIN)
+{
+/*Ripulisco la libreria*/
+/*Esco*/
+exit((int)((long)value_ptr));
+}
 	if(thread_exec->save){
 		if(thread_exec->thread_join){/*Qualcuno aspetta*/
 			*(thread_exec->result)=value_ptr;/*Nell'indirizzo passato dalla join*/
 			 thread_exec->part->present=0;
+		         unsleep(thread_join->tid,JOIN);
 /*Risveglio thread che ha fatto join*/
 /*Cancello l'attuale thread*/
 			 delete(thread_exec);
