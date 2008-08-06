@@ -46,29 +46,24 @@ return EDEADLK;
 	if(list)
 	{	/*Lo trovo mi salvo il risultato e lo cancello dal sistema e dalla lista zombie*/
 		*value_ptr=*(list->tcb->result);/*Qui da verificare c'è qualcosa che non torna, potrei perderla con il delete*/
-		delete(list->tcb);
+		schedthrkill(list->tcb->tid)
 		deleteZombie(list->tcb);
 		return 0;
 	}
 	else{/*Se nn lo trovo controllo tra quelli vivi se lo trovo mi metto in coda sulla join*/
-/*Aspettare lorenzo*/
-		while(i<NUM_PRIOR && (list=pth_prior_table[i])){
-			SEARCH(list,next,tcb->tid,thread)
-			if(!list)
-				i++;
-			
-		}
-		if(i==NUM_PRIOR)/*Non esiste*/
+
+		tcb_t thread_tcb=gettcb(thread)
+		if(!thread_tcb)
 			return ESRCH;/*Come da standard*/
 		else{
-			if(!list->tcb->save)/*E' detach*/
+			if(!thread_tcb->save)/*E' detach*/
 				return EINVAL;
 			else
-			{	if(list->tcb->thread_join)/*Qualcuno ha gia fatto la join*/
+			{	if(thread_tcb->thread_join)/*Qualcuno ha gia fatto la join*/
 				return EINVAL;
 
-				list->tcb->thread_join=thread_exec;/*Salvo il puntatore del thread che mi aspetta*/
-				list->tcb->result=value_ptr;
+				thread_tcb->thread_join=thread_exec;/*Salvo il puntatore del thread che mi aspetta*/
+				thread_tcb->result=value_ptr;
 				sleep(	ESECUTION->TID,JOIN);		
 				return 0;
 			}
@@ -96,25 +91,19 @@ int  pthread_detach(pthread_t thread){
 	SEARCH(list,next,tcb->tid,thread)
 	if(list)
 	{       deleteZombie(list->tcb);
-		delete(list->tcb);
+		schedthrkill(list->tcb->tid)
 		return 0;
 	}
 	else{
 /*Cerco se esiste*/
-		list=pth_prior_table[0];
-		while(i<NUM_PRIOR && (list=pth_prior_table[i])){
-			SEARCH(list,next,tcb->tid,thread)
-			if(!list)
-				i++;
-			
-		}
-		if(i==NUM_PRIOR)
+		tcb_t thread_tcb=gettcb(thread)
+		if(!thread_tcb)
 			return ESRCH;/*Come da standard*/
 		else{
-			if(list->tcb->save)/*E join*/
+			if(thread_tcb->save)/*E join*/
 				return EINVAL;
 			else
-				list->tcb->save=0;
+				thread_tcb->save=0;
 				return 0;
 		}
 }
@@ -146,7 +135,7 @@ exit((int)((long)value_ptr));
 		         unsleep(thread_join->tid,JOIN);
 /*Risveglio thread che ha fatto join*/
 /*Cancello l'attuale thread*/
-			 delete(thread_exec);
+			schedthrkill(ESECUTION_TID);
 				
 
 			}
@@ -158,11 +147,12 @@ exit((int)((long)value_ptr));
 			new->next=thread_zombie;
 			new->tcb=thread_exec;
 			thread_zombie=new;
+/*RICORDA QUI DEVO DIRE ALLO SCHEDULER CHE E' ZOMBIE*/
 				}
 	}
 	else{ 
-		thread_exec->part->present=0;/*Non è piu presente sulla partizione*/
-		delete(thread_exec);
+		schedthrkill(ESECUTION_TID);/*Non è piu presente*/
+		
 		}
 /*chiamo scheduler*/
 }
@@ -189,26 +179,6 @@ void deleteZombie(tcb_t thread){
 	}
 }
 
-/*delete:Questa funzione cancella un thread da tutte le strutture di gestione presenti.
-@param: thread che rappresenta il tcb da eliminare.
-Non ritorna nessun valore.
-*/
-void delete(tcb_t thread){
-	int prio=thread->prior;
-	free(thread->part);
-	free(thread->ctx);
-		if(pth_prior_table[PRIOR(prio)]->tcb->tid==thread->tid){
-			pth_prior_table[PRIOR(prio)]=pth_prior_table[PRIOR(prio)]->next;
-		}
-		else{
-			tbl_field_t list=pth_prior_table[PRIOR(prio)];
-			while(list->next && list->next->tcb->tid!=thread->tid)
-			list=list->next;
-			if(list->next)/*Sono uscito perchè ho lo stesso tid*/
-				list->next=list->next->next;
-		}
-	free(thread);
-}
 
 
 
