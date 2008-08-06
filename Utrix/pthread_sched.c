@@ -15,14 +15,25 @@
 tbl_field_t  thread_priortail[NUM_PRIOR];
 tbl_field_t  thread_priorhead[NUM_PRIOR];
 tbl_field_t  thread_blocked[NUM_WHY];
-int tic[NUM_PRIOR];
+//int tic[NUM_PRIOR];
+
 context_t sched;
 
- 
+#define ELIM(elem,parent) if (!parent) partent=elem->next;\
+						  else parent->next=elem->next;\
+                          elem.next=NULL;
+#define ADDELEM(elem,list) if (!list) list=elem;\
+						  else list->next=elem;\
+                          elem.next=NULL;
+#define ADDELEMHEAD(elem,list) if (!list) list=elem;\
+						  else{\
+						   elem->next=list;\
+						   list=elem;\
+						   }
 int scheduledthr_n;
 clock_t time;
 
-int serchonlist(int tid, tbl_field_t list,tcb_t* tcb,tcb_t* parent)
+intern int serchonlist(int tid, tbl_field_t list,tbl_field_t* tcb,tbl_field_t* parent)
 {
    (*parent)=NULL;
    (*tcb)=list;
@@ -34,12 +45,12 @@ int serchonlist(int tid, tbl_field_t list,tcb_t* tcb,tcb_t* parent)
    } 
 }
 
-
-int serch(int tid, tcb_t* tcb,tcb_t* parent)
-{ int i=0;
+intern int serchonall(int tid,tbl_field_t* tcb,tbl_field_t* parent)
+{
   while (i<NUM_PRIOR)
   {
     if (serchonlist(tid,thread_priortail[PRIOR(i)],tcb,parent)) return 1;
+	 
 	i++;
   }
   i=0;
@@ -51,6 +62,35 @@ int serch(int tid, tcb_t* tcb,tcb_t* parent)
   return 0;
 }
 
+int serch(int tid, tcb_t* tcb)
+{ int i=0;
+  tbl_field_t serc,par;
+  while (i<NUM_PRIOR)
+  {
+    if (serchonlist(tid,thread_priortail[PRIOR(i)],&serc,&par)){
+	(*tcb)=serc->tcb;
+	 return 1;
+	 }
+	i++;
+  }
+  i=0;
+  while (i<NUM_WHY)
+  {
+    if (serchonlist(tid,thread_blocked[i],&serc,&par)){
+	(*tcb)=serc->tcb;
+	 return 1;
+	 }
+	i++; 
+  }
+  return 0;
+}
+
+void rrschedulercaller(void* arg)
+{
+   context_t ctx=(context_t) arg;
+   pth_switch(ctx,sched);
+}
+
 void scheduler(void* arg)
 {
  tbl_field_t  selectedthr;
@@ -60,8 +100,9 @@ void scheduler(void* arg)
  sched=malloc(sizeof(context_s));
  while(1)
  {
-  if(scheduledthr_n<thread_n)longtermsched();
-  selectedthr=selectthr();
+ if(scheduledthr_n<thread_n)longtermsched();
+ /*RR/*
+  /*selectedthr=selectthr();
   selectedthr->tcb->tic=0;
   while(selectedthr->tcb->tic<tic[PRIOR(selectedthr->tcb->prior)])
   {
@@ -69,12 +110,19 @@ void scheduler(void* arg)
     pth_swap(sched,selectedthr->tcb->ctx);
     selectedthr->tcb->tic++;
   }
+  recalcprior(selectedthr);*/
+  /*liste*/
+  selectedthr=selectthr();
+  time=clock();
+  pth_swap(sched,selectedthr->tcb->ctx);
+  time=clock()-time;
+  selectedthr->tcb->time=time;
   recalcprior(selectedthr);
  }
 }
 
 
-tbl_field_t selectthr()
+intern tbl_field_t selectthr()
 {  
    int i=-1;
    while(i<NUM_PRIOR)
@@ -85,7 +133,7 @@ tbl_field_t selectthr()
    return NULL;
 }
 
-void longtermsched()
+intern void longtermsched()
 {
  tbl_field_t new;
  while(scheduledthr_n<thread_n)
@@ -93,51 +141,70 @@ void longtermsched()
    new=thread_new;
    thread_new=-thread_new->next;
    new->tcb->prior=DEFAULT_PRIOR;
-   thread_priortail[PRIOR(DEFAULT_PRIOR)]->next=new;
-   new->next=NULL;
+   ADDLIST(new,thread_priortail[PRIOR(DEFAULT_PRIOR)]);
    scheduledthr_n++;
  }
 }
 
-void setprior(tbl_field_t thr,int prior)
+intern void setprior(tbl_field_t thr,int prior)
 {
   if(!thr) 
   { 
     SETERR(err);
     return;
   }
+  tbl_field_t tcb,parent;
+  serchonlist(thr->tcb->tid,&tcb,&parent);
+  ELIM(tcb,parent);
   thr->tcb->prior=prior;
+  ADDLIST(tcb,thread_priortail[PRIOR(prior)]);
 }
 
-void recalcprior(tbl_field_t thr)
+intern void recalcprior(tbl_field_t thr)
 {
- if(thr->tcb->tic<=tic[PRIOR(thr->tcb->prior)]){
+ /*RR*/
+/* if(thr->tcb->tic<=tic[PRIOR(thr->tcb->prior)]){
  if(thr->tcb->prior>-1) setprior(thr,thr->tcb->prior-1);
  }
- else if(thr->prior<1) setprior(thr,thr->tcb->prior+1); 
+ else if(thr->prior<1) setprior(thr,thr->tcb->prior+1); */
+ if (thr->tcb->time<=BONUSTIME)if(thr->tcb->prior>-1) setprior(thr,thr->tcb->prior-1);
+ if (thr->tcb->time>=MALUSTIME) else if(thr->prior<1) setprior(thr,thr->tcb->prior+1); 
 }
 
 
 void schedthrkill(int tid)
 {
  tbl_field_t kill,parent;
- if (!serch(tid,&kill,&parent)) {
+ if (!serchonall(tid,&kill,&parent)) {
  SETERR(ERRTID);
  return;
  }
- parent->next=kill->next;
+ ELIM(kill,parent);
  scheduledthr_n--;
 }
 
 void sleep(int tid,int why){
+tcb_t tcb,parent;
+if (serchonall(tid,&tcb,&parent) && why<NUM_WHY && why>=0) 
+{
+   ELIM(tcb,parent);
+   ADDLISTHEAD(tcb,thread_blocked[why]);
+}
+SETERR(ERRARG);
 }
 
 void unsleep(int tid,int why){
+if (why<NUM_WHY && why>=0 && serchonlist(tid,thread_blocked[why],&tcb,&parent) ) 
+{
+   ELIM(tcb,parent);
+   ADDLIST(tcb,thread_priortail[PRIOR(tcb->tcb->prior)]);
+}
+SETERR(ERRARG);
 }
 
 
 tcb_t gettcb(int tid){
-tbl_field_t tcb,parent;
+tcb_t tcb,parent;
 if (!serch(tid,&tcb,&parent)){
 SETERR(ERRTID);
 return NULL;
