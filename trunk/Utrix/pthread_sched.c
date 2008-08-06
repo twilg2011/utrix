@@ -50,36 +50,12 @@ intern int serchonall(int tid,tbl_field_t* tcb,tbl_field_t* parent)
   while (i<NUM_PRIOR)
   {
     if (serchonlist(tid,thread_priortail[PRIOR(i)],tcb,parent)) return 1;
-	 
 	i++;
   }
   i=0;
   while (i<NUM_WHY)
   {
     if (serchonlist(tid,thread_blocked[i],tcb,parent)) return 1;
-	i++; 
-  }
-  return 0;
-}
-
-int serch(int tid, tcb_t* tcb)
-{ int i=0;
-  tbl_field_t serc,par;
-  while (i<NUM_PRIOR)
-  {
-    if (serchonlist(tid,thread_priortail[PRIOR(i)],&serc,&par)){
-	(*tcb)=serc->tcb;
-	 return 1;
-	 }
-	i++;
-  }
-  i=0;
-  while (i<NUM_WHY)
-  {
-    if (serchonlist(tid,thread_blocked[i],&serc,&par)){
-	(*tcb)=serc->tcb;
-	 return 1;
-	 }
 	i++; 
   }
   return 0;
@@ -97,7 +73,10 @@ void scheduler(void* arg)
  scheduledthr_n=0;
  int i=0;
  while(i<NUM_PRIOR){tic[i]=i; i++;}
- sched=malloc(sizeof(context_s));
+ if (!sched=malloc(sizeof(context_s))) {
+ SETERR(ENOMEM);
+ abort();
+ }
  while(1)
  {
  if(scheduledthr_n<thread_n)longtermsched();
@@ -205,11 +184,20 @@ SETERR(ERRARG);
 
 tcb_t gettcb(int tid){
 tcb_t tcb,parent;
-if (!serch(tid,&tcb,&parent)){
-SETERR(ERRTID);
-return NULL;
-}
-return tbc;
+int i=0;
+  tbl_field_t serc,par;
+  while (i<NUM_PRIOR)
+  {
+    if (serchonlist(tid,thread_priortail[PRIOR(i)],&serc,&par)) return serc->tcb;
+	i++;
+  }
+  i=0;
+  while (i<NUM_WHY)
+  {
+    if (serchonlist(tid,thread_blocked[i],&serc,&par))return serc->tcb;
+	i++; 
+  }
+  return NULL;
 }
 
 
