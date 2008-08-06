@@ -21,7 +21,8 @@ typedef struct tcb{
 	int prior;
 	context_t ctx;
 	int state; 
-	int tic;/*consente di gestire priorità dinamiche*/
+	/*RR int tic;/*consente di gestire priorità dinamiche*/
+	clock_t time;
 	char save;
 } tcb_s;
 
