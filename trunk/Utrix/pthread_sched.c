@@ -8,9 +8,9 @@
  */
 #include "config.h"
 #include "pthread_sched.h"
-#include <stdlib>
+#include <stdlib.h>
 #include <time.h>
-#include <clock.h>
+//#include <clock.h>
 
 tbl_field_t  thread_priortail[NUM_PRIOR];
 tbl_field_t  thread_priorhead[NUM_PRIOR];
@@ -18,6 +18,8 @@ tbl_field_t  thread_blocked[NUM_WHY];
 //int tic[NUM_PRIOR];
 
 context_t sched;
+int scheduledthr_n;
+clock_t time;
 
 #define ELIM(elem,parent) if (!parent) partent=elem->next;\
 						  else parent->next=elem->next;\
@@ -30,10 +32,8 @@ context_t sched;
 						   elem->next=list;\
 						   list=elem;\
 						   }
-int scheduledthr_n;
-clock_t time;
 
-intern int serchonlist(int tid, tbl_field_t list,tbl_field_t* tcb,tbl_field_t* parent)
+int serchonlist(int tid, tbl_field_t list, tbl_field_t* tcb , tbl_field_t* parent)
 {
    (*parent)=NULL;
    (*tcb)=list;
@@ -45,7 +45,7 @@ intern int serchonlist(int tid, tbl_field_t list,tbl_field_t* tcb,tbl_field_t* p
    } 
 }
 
-intern int serchonall(int tid,tbl_field_t* tcb,tbl_field_t* parent)
+int serchonall(int tid,tbl_field_t* tcb,tbl_field_t* parent)
 {
   while (i<NUM_PRIOR)
   {
@@ -112,7 +112,7 @@ intern tbl_field_t selectthr()
    return NULL;
 }
 
-intern void longtermsched()
+void longtermsched()
 {
  tbl_field_t new;
  while(scheduledthr_n<thread_n)
@@ -125,7 +125,7 @@ intern void longtermsched()
  }
 }
 
-intern void setprior(tbl_field_t thr,int prior)
+ void setprior(tbl_field_t thr,int prior)
 {
   if(!thr) 
   { 
@@ -139,7 +139,7 @@ intern void setprior(tbl_field_t thr,int prior)
   ADDLIST(tcb,thread_priortail[PRIOR(prior)]);
 }
 
-intern void recalcprior(tbl_field_t thr)
+void recalcprior(tbl_field_t thr)
 {
  /*RR*/
 /* if(thr->tcb->tic<=tic[PRIOR(thr->tcb->prior)]){

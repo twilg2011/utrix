@@ -39,7 +39,10 @@ int init;
 } pthread_cond_s;
 typedef pthread_cond_s pthread_cond_t ;
 
-
+extern int 	 pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t * attr);
+extern int 	 pthread_mutex_destroy(pthread_mutex_t* mutex);
+extern int	 pthread_mutex_lock(pthread_mutex_t *mutex);
+extern int 	 pthread_mutex_unlock(pthread_mutex_t *mutex);
 
 
 
