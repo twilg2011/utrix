@@ -18,8 +18,6 @@ context_t mctx;
 void f(void* arg);
 void w(void* arg);
 /*
-
-<<<<<<< .mine
 void init()
 {
   getPrisp(&globalSp);
@@ -27,12 +25,10 @@ void init()
 }
 
 */
-=======
->>>>>>> .r81
 void f(void* arg)
 {
   printf("f:\n");
-  pth_init(cw,w,NULL);
+ /* pth_init(cw,w,NULL);*/
   pth_switch(cf,cw);
   printf("fine f\n");
   pth_switch(cf,mctx);
@@ -50,14 +46,16 @@ void w(void* arg)
       
 int main(void)
 {
-   __asm__("movl %%ebp,%0":"=r"(globalsp));
+    __asm__("movl %%ebp,%0":"=r"(globalsp));
    printf("1\n");
    cw=malloc(sizeof(context_s));
    cf=malloc(sizeof (context_s));
    mctx=malloc(sizeof(context_s));
+   sched=malloc(sizeof(context_s));
    pth_init(cf,f,NULL);
-  // pth_init(cw,w,NULL);
-   printf("2\n");
+   pth_init(cw,w,NULL);
+   pth_init(sched,scheduler,NULL);
+  /* printf("2\n");
    pth_switch(mctx,cf);
    printf("Nel main\n");
    printf("switch\n");
@@ -65,5 +63,17 @@ int main(void)
    printf("3\n");
    pth_switch(mctx,cf);
    //pth_switch(mctx,cw);
-   printf("fine\n");
+   printf("fine\n");*/
+   tbl_field_t m,w,f;
+   m=malloc(sizeof(tbl_field_s));
+   w=malloc(sizeof(tbl_field_s));
+   f=malloc(sizeof(tbl_field_s));
+   m->next=w;
+   m-tcb->ctx=mctx;
+   w->next=f;
+   w-tcb->ctx=cw;
+   f->next=NULL;
+   f-tcb->ctx=cf;
+   thread_new=m;
+   pth_switch(mctx,sched);
 }
