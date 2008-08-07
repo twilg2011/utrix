@@ -25,7 +25,7 @@ pthread_t pthread_self(void){
 /*pthread_join:Questa funzione aspetta la terminazione del thread e restituisce il valore di ritorno del thread in value_ptr(STANDARD)
 @param: thread è il tid del thread che devo attendere
 	value_ptr è la zona di memoria che contiene il valore di ritorno del thread che aspetto.
-@return: 0 in caso di successo altrimenti uno degli errori sottostanti
+@return: OK in caso di successo altrimenti uno degli errori sottostanti
 
 @error:	EINVAL se il thread non è di tipo joinable
 	ESRCH se non esiste un thread con il tid uguale a quello passato per parametro
@@ -56,7 +56,7 @@ return EDEADLK;
 		if(!thread_tcb)
 			return ESRCH;/*Come da standard*/
 		else{
-			if(!thread_tcb->save)/*E' detach*/
+			if(thread_tcb->save==DETACH)/*E' detach*/
 				return EINVAL;
 			else
 			{	if(thread_tcb->thread_join)/*Qualcuno ha gia fatto la join*/
@@ -64,8 +64,8 @@ return EDEADLK;
 
 				thread_tcb->thread_join=thread_exec;/*Salvo il puntatore del thread che mi aspetta*/
 				thread_tcb->result=value_ptr;
-				sleep(	ESECUTION->TID,JOIN);		
-				return 0;
+				sleep(ESECUTION->TID,JOIN);		
+				return OK;
 			}
 				
 				
@@ -78,7 +78,7 @@ return EDEADLK;
 /*pthread_detach:Questa funzione rende un thread detach cioè quando terminerà potrà essere deallocato senza salvare nessun valore di ritorno.(STANDARD)
 @param: thread è il tid del thread che devo rendere detach
 	
-@return: 0 in caso di successo altrimenti uno degli errori sottostanti
+@return: OK in caso di successo altrimenti uno degli errori sottostanti
 
 @error:	EINVAL se il thread non è di tipo joinable
 	ESRCH se non esiste un thread con il tid uguale a quello passato per parametro
@@ -90,9 +90,8 @@ int  pthread_detach(pthread_t thread){
 	int i=0;
 	SEARCH(list,next,tcb->tid,thread)
 	if(list)
-	{       deleteZombie(list->tcb);
-		schedthrkill(list->tcb->tid)
-		return 0;
+	{     	schedthrkill(list->tcb->tid)
+		return OK;
 	}
 	else{
 /*Cerco se esiste*/
@@ -100,11 +99,11 @@ int  pthread_detach(pthread_t thread){
 		if(!thread_tcb)
 			return ESRCH;/*Come da standard*/
 		else{
-			if(thread_tcb->save)/*E join*/
+			if(thread_tcb->save==JOIN)/*E join*/
 				return EINVAL;
 			else
-				thread_tcb->save=0;
-				return 0;
+				thread_tcb->save=DETACH;
+				return OK;
 		}
 }
 /*Se aggiungiamo le opzioni devo fare un controllo in più vedi EINVAL sul manuale*/
@@ -128,7 +127,7 @@ if(ESECUTION_TID==TID_MAIN)
 /*Esco*/
 exit((int)((long)value_ptr));
 }
-	if(thread_exec->save){
+	if(thread_exec->save==JOIN){
 		if(thread_exec->thread_join){/*Qualcuno aspetta*/
 			*(thread_exec->result)=value_ptr;/*Nell'indirizzo passato dalla join*/
 			 thread_exec->part->present=0;
@@ -140,44 +139,19 @@ exit((int)((long)value_ptr));
 
 			}
 		else{/*Nessuno aspetta*/
-			tbl_field_t new;
 			*(thread_exec->result)=value_ptr;
 			thread_exec->part->present=0;/*Non è piu presente sulla partizione,x le specifiche dovrei lasciarlo a 1*/
-			new=malloc(sizeof(tbl_field_s));
-			new->next=thread_zombie;
-			new->tcb=thread_exec;
-			thread_zombie=new;
-/*RICORDA QUI DEVO DIRE ALLO SCHEDULER CHE E' ZOMBIE*/
+			sleep(ESECUTION_TID,ZOMBIE);
 				}
 	}
 	else{ 
 		schedthrkill(ESECUTION_TID);/*Non è piu presente*/
 		
 		}
-/*chiamo scheduler*/
+pth_switch(thread_exec->tcb,sched);
 }
 
-/*deleteZombie:Questa funzione cancella un thread dalla lista zombie.
-@param: thread che rappresenta il tcb da eliminare.
-Non ritorna nessun valore.
-*/
-void deleteZombie(tcb_t thread){
-	tbl_field_t list=thread_zombie;
-	tbl_field_t del_elem;	
-	if(list->tcb->tid==thread->tid)
-	{	thread_zombie=thread_zombie->next;
-		free(list);
-	}	
-	else{
-		while(list->next && list->next->tcb->tid!=thread->tid)
-			list=list->next;
-		if(list->next)
-		{	del_elem=list->next;
-			list->next=list->next->next;
-			free(del_elem);
-		}
-	}
-}
+
 
 
 

@@ -7,7 +7,7 @@ pth_mutex_t* list_mux=NULL;/*In realtà inizializzata alla creazione della libre
 /*pthread_mutex_init:Inizializza un mutex in base agli attributi(per ipotesi solo NULL ora)
 @param: mutex: il mutex da inizializzare
 	attr: gli attributi del mutex
-@return:0 se è andato tutto bene, altrimenti un errore
+@return:OK se è andato tutto bene, altrimenti un errore
 @error:EINVAL se il valore del mutex è sbagliato
        EAGAIN se non ho più spazio in memoria 
        EBUSY se il mutex è gia inizializzato*/
@@ -48,7 +48,7 @@ int pthread_mutex_int(pthread_mutex_t* mutex, const pthread_mutexattr_t * attr){
 
 /*pthread_mutex_destroy:Distrugge un mutex dalla lista.
 @param: mutex: il mutex da inizializzare
-@return:0 se è andato tutto bene, altrimenti un errore
+@return:OK se è andato tutto bene, altrimenti un errore
 @error:EINVAL se il valore del mutex è sbagliato
        EBUSY se il mutex è bloccato*/
 int pthread_mutex_destroy(pthread_mutex_t* mutex){
@@ -78,7 +78,7 @@ int pthread_mutex_destroy(pthread_mutex_t* mutex){
 
 /*pthread_mutex_lock:Eseguo una lock su un mutex 
 @param: mutex: il mutex da inizializzare
-@return:0 se è andato tutto bene, altrimenti un errore
+@return:OK se è andato tutto bene, altrimenti un errore
 @error:EINVAL se il valore del mutex è sbagliato
        EDEADLK se il proprietario del mutex esegue una lock su un mutex già bloccato da lui.*/
 int pthread_mutex_lock(pthread_mutex_t *mutex){
@@ -98,7 +98,7 @@ int pthread_mutex_lock(pthread_mutex_t *mutex){
 }
 /*pthread_mutex_unlock:Eseguo una unlock su un mutex 
 @param: mutex: il mutex da inizializzare
-@return:0 se è andato tutto bene, altrimenti un errore
+@return:OK se è andato tutto bene, altrimenti un errore
 @error:EINVAL se il valore del mutex è sbagliato
        EPERM se si richiede una unlock su un mutex che non appartiene al thread che esegue l'operazione.*/
 int pthread_mutex_unlock(pthread_mutex_t *mutex){
