@@ -12,8 +12,9 @@
 #include "pthread_sched.h"
 
 
-
+/*
 #define pthread_initialize() \
+
 			do{ \
 				if (pthread_initialized == FALSE) { \
 					pthread_initialized = TRUE; \
@@ -22,7 +23,7 @@
 				} \
 			}while(0)
 
-
+*/
 
 
 /* Modificare con il tid del processo in esecuzione */
