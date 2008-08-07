@@ -71,8 +71,8 @@ void scheduler(void* arg)
 {
  tbl_field_t  selectedthr;
  scheduledthr_n=0;
- int i=0;
- while(i<NUM_PRIOR){tic[i]=i; i++;}
+ //int i=0;
+ //while(i<NUM_PRIOR){tic[i]=i; i++;}
  if (!sched=malloc(sizeof(context_s))) {
  SETERR(ENOMEM);
  abort();
