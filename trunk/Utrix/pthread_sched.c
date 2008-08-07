@@ -21,7 +21,7 @@ tbl_field_t  thread_blocked[NUM_WHY];
 
 context_t sched;
 int scheduledthr_n;
-clock_t time;
+clock_t pth_time;
 
 #define ELIM(elem,parent) if (!parent) parent=elem->next;\
 						  else parent->next=elem->next;\
@@ -98,10 +98,10 @@ void scheduler(void* arg)
   recalcprior(selectedthr);*/
   /*liste*/
   selectedthr=selectthr();
-  time=clock();
+  pth_time=clock();
   pth_swap(sched,selectedthr->tcb->ctx);
-  time=clock()-time;
-  selectedthr->tcb->time=time;
+  pth_time=clock()-pth_time;
+  selectedthr->tcb->time=pth_time;
   recalcprior(selectedthr);
  }
 }
