@@ -12,6 +12,7 @@
 #include <time.h>
 //#include <clock.h>
 
+
 tbl_field_t  thread_priortail[NUM_PRIOR];
 tbl_field_t  thread_priorhead[NUM_PRIOR];
 tbl_field_t  thread_blocked[NUM_WHY];
@@ -46,7 +47,7 @@ int serchonlist(int tid, tbl_field_t list, tbl_field_t* tcb , tbl_field_t* paren
 }
 
 int serchonall(int tid,tbl_field_t* tcb,tbl_field_t* parent)
-{
+{ int i=0;
   while (i<NUM_PRIOR)
   {
     if (serchonlist(tid,thread_priortail[PRIOR(i)],tcb,parent)) return 1;
@@ -183,9 +184,11 @@ SETERR(ERRARG);
 
 
 tcb_t gettcb(int tid){
-tcb_t tcb,parent;
+tcb_t tcb;
+tcb_t parent;
 int i=0;
-  tbl_field_t serc,par;
+  tbl_field_t serc;
+  tbl_field_t par;
   while (i<NUM_PRIOR)
   {
     if (serchonlist(tid,thread_priortail[PRIOR(i)],&serc,&par)) return serc->tcb;
