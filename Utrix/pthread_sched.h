@@ -19,12 +19,12 @@
 #define NUM_WHY 3
 #define MUTEX 0
 #define JOIN 1
-#define ZOMBI 2
+#define ZOMBIE 2
 
 #define NUOVO 0
 #define PRONTO 1
 #define BLOCCATO 2
-#define ZOMBIE 3
+#define ZOMBIEST 3
 
 /*contesto dello scheduler*/
 extern context_t sched;
