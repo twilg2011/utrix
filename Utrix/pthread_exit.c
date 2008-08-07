@@ -17,7 +17,7 @@ void deleteZombie(tcb_t thread);
 @return: un valore di tipo pthread_t uguale al tid*/
 
 pthread_t pthread_self(void){
-
+pthread_initialize();
 	return ESECUTION_TID;
 
 }
@@ -35,7 +35,7 @@ pthread_t pthread_self(void){
 
 
 int pthread_join(pthread_t thread, void ** value_ptr){
-
+pthread_initialize();
 if(thread==ESECUTION_TID)
 return EDEADLK;
 
@@ -85,6 +85,7 @@ return EDEADLK;
 	
 */
 int  pthread_detach(pthread_t thread){
+pthread_initialize();
 /*Cerco sulla lista morti*/
 	tbl_field_t list=thread_zombie;
 	int i=0;
@@ -121,6 +122,7 @@ Non dovrebbe mai ritornare
 
 /*Riguardare*/
 void pthread_exit(void* value_ptr){
+pthread_initialize();
 if(ESECUTION_TID==TID_MAIN)
 {
 /*Ripulisco la libreria*/

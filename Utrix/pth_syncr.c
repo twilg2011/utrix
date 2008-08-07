@@ -12,6 +12,7 @@ pth_mutex_t* list_mux=NULL;/*In realtà inizializzata alla creazione della libre
        EAGAIN se non ho più spazio in memoria 
        EBUSY se il mutex è gia inizializzato*/
 int pthread_mutex_int(pthread_mutex_t* mutex, const pthread_mutexattr_t * attr){
+pthread_initialize();
 	if(!mutex)
 		return EINVAL;
 	/*Prevedo attr NULL,ipotesi restrittiva*/
@@ -52,6 +53,7 @@ int pthread_mutex_int(pthread_mutex_t* mutex, const pthread_mutexattr_t * attr){
 @error:EINVAL se il valore del mutex è sbagliato
        EBUSY se il mutex è bloccato*/
 int pthread_mutex_destroy(pthread_mutex_t* mutex){
+pthread_initialize();
 	if(!mutex)
 		return EINVAL;
 	if(!mutex->mux)
@@ -82,6 +84,7 @@ int pthread_mutex_destroy(pthread_mutex_t* mutex){
 @error:EINVAL se il valore del mutex è sbagliato
        EDEADLK se il proprietario del mutex esegue una lock su un mutex già bloccato da lui.*/
 int pthread_mutex_lock(pthread_mutex_t *mutex){
+pthread_initialize();
 /*Se introduco gli attributi qui qualcosa cambia*/
 	if(!mutex)
 		return EINVAL;
@@ -102,6 +105,7 @@ int pthread_mutex_lock(pthread_mutex_t *mutex){
 @error:EINVAL se il valore del mutex è sbagliato
        EPERM se si richiede una unlock su un mutex che non appartiene al thread che esegue l'operazione.*/
 int pthread_mutex_unlock(pthread_mutex_t *mutex){
+pthread_initialize();
 /*Se introduco gli attributi qui qualcosa cambia*/
 	if(!mutex)
 		return EINVAL;
