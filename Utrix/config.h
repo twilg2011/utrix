@@ -11,7 +11,7 @@
 #define STACKWIDTH 0x64
 
 
-#define BENEFITTIME ....
+
 
 
 #define BONUSTIME ....
