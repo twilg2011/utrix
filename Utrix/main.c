@@ -9,8 +9,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "pth_struct.h"
 #include "pth_errno.h"
+#include "pthread_sched.h"
+
 
 context_t cf;
 context_t cw;
@@ -69,11 +70,11 @@ int main(void)
    w=malloc(sizeof(tbl_field_s));
    f=malloc(sizeof(tbl_field_s));
    m->next=w;
-   m-tcb->ctx=mctx;
+   m->tcb->ctx=mctx;
    w->next=f;
-   w-tcb->ctx=cw;
+   w->tcb->ctx=cw;
    f->next=NULL;
-   f-tcb->ctx=cf;
+   f->tcb->ctx=cf;
    thread_new=m;
    pth_switch(mctx,sched);
 }
