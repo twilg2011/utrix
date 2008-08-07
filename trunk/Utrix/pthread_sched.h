@@ -24,7 +24,7 @@
 #define NUOVO 0
 #define PRONTO 1
 #define BLOCCATO 2
-#define ZOMBI 3
+#define ZOMBIE 3
 
 /*contesto dello scheduler*/
 extern context_t sched;
