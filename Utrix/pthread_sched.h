@@ -21,6 +21,7 @@
 #define JOIN 1
 #define ZOMBIE 2
 
+
 #define NUOVO 0
 #define PRONTO 1
 #define BLOCCATO 2
