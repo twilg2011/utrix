@@ -1,4 +1,4 @@
-#include "pth_syncr.h"
+#include "pth_struct.h"
 
 
 pth_mutex_t* list_mux=NULL;/*In realtà inizializzata alla creazione della libreria*/
@@ -11,7 +11,7 @@ pth_mutex_t* list_mux=NULL;/*In realtà inizializzata alla creazione della libre
 @error:EINVAL se il valore del mutex è sbagliato
        EAGAIN se non ho più spazio in memoria 
        EBUSY se il mutex è gia inizializzato*/
-int pthread_mutex_int(pthread_mutex_t* mutex, const pthread_mutexattr_t * attr){
+int pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t * attr){
 pthread_initialize();
 	if(!mutex)
 		return EINVAL;

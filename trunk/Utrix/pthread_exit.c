@@ -10,8 +10,6 @@ d)detach e non sono morto devo avvisare di ripulire e ignorare il tutto*/
 #include"pth_struct.h"
 #define SEARCH(base,next,ele_cmp,key) while(base) if(base->ele_cmp!=key)base=base->next;
 #define TID_MAIN 0
-void delete(tcb_t thread);/*Ripulisce l'ambiente*/
-void deleteZombie(tcb_t thread);
 
 /*pthread_self:Questa funzione restituisce il tid del thread in esecuzione(STANDARD)
 @return: un valore di tipo pthread_t uguale al tid*/

@@ -1,5 +1,4 @@
-#include<errno.h>
-#include "pth_struct.h"
+#include"pthread_lib.h"
 #define PTHREAD_MUTEX_INITIALIZER {NULL,1}
 #define NOT_INIT 0
 #define INIT 1
@@ -19,12 +18,12 @@ struct mutex* prev;
 
 
 /*Struttura più esterna del mutex, è un semplice contenitore*/
-typedef struct pthread_mutex_s{
+struct pthread_mutex_s{
 pth_mutex_t* mux;
 int init;
-} pthread_mutex_s;
+};
 
-typedef pthread_mutex_s pthread_mutex_t;
+
 
 
 typedef struct cond{
@@ -33,11 +32,10 @@ struct cond* next;
 struct cond* prev;
 } pth_cond_t;
 
-typedef struct pthread_cond_s{
+struct pthread_cond_s{
 pth_cond_t* mux;
 int init;
 } pthread_cond_s;
-typedef pthread_cond_s pthread_cond_t ;
 
 extern int 	 pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t * attr);
 extern int 	 pthread_mutex_destroy(pthread_mutex_t* mutex);
