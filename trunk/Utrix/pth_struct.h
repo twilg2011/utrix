@@ -10,6 +10,9 @@
 #include "pthread.h"
 #include "pth_context.h"
 #define ESECUTION_TID thread_exec->tid
+#define DETACH 0
+#define JOIN 1
+
 /*Qui ci saranno solo le dichiarazioni e strutture necessarie per lavorare con i thread*/
 
 /* Thread Control Block */
@@ -44,8 +47,7 @@ extern tcb_t thread_exec;/*Thread attualmente in esecuzione*/
 /*liste di thread*/
 /*thread appena creati e non schedulati*/
 extern tbl_field_t thread_new;
-/*thread uccisi in attesa di gestione*/
-extern tbl_field_t thread_zombie;
+
 
 
 

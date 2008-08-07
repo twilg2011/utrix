@@ -5,7 +5,7 @@
 #define INIT 1
 #define LOCK 2
 #define DESTROY 3
-#define OK 0
+
 
 
 /*Struttura del mutex*/
@@ -20,11 +20,29 @@ struct mutex* prev;
 
 /*Struttura più esterna del mutex, è un semplice contenitore*/
 typedef struct pthread_mutex_s{
-struct mutex* mux;
+pth_mutex_t* mux;
 int init;
 } pthread_mutex_s;
 
 typedef pthread_mutex_s pthread_mutex_t;
+
+
+typedef struct cond{
+
+struct cond* next;
+struct cond* prev;
+} pth_cond_t;
+
+typedef struct pthread_cond_s{
+pth_cond_t* mux;
+int init;
+} pthread_cond_s;
+typedef pthread_cond_s pthread_cond_t ;
+
+
+
+
+
 
 /*Lista dei mutex attivi*/
 extern pth_mutex_t* list_mux;
