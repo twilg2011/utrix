@@ -40,7 +40,7 @@ typedef context_s* context_t;
 
 /*pth_switch:salva il contesto attuale in old e passa il processore a next
 @param:context_t old,context_t next*/
-#define pth_switch(old,next) if(_setjmp(old->regs)==0) {thread_exec=next;_longjmp(next->regs,1);}
+#define pth_switch(old,next) if(_setjmp(old->regs)==0) {_longjmp(next->regs,1);}
 
 /* pth_init:inizializza un contesto che ha come funzione func con argomento argo il contesto inizializzato viene messo in ictx
 @param: context_t ictx contesto da inizializzare, void (*f)(void*) funzione del contesto,void* argo argomenti
