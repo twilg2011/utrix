@@ -7,7 +7,7 @@
  *
  */
 
-#include "pthread.h"
+#include "pthread_lib.h"
 #include "pth_context.h"
 #define ESECUTION_TID thread_exec->tid
 #define DETACH 0

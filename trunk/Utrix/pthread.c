@@ -7,20 +7,12 @@
  *
  */
 
-#include "pthread.h"
+
 #include "pth_struct.h"
 #include  "pth_stack.s"
 
 
-static int pthread_initialized = FALSE;
 
-#define pthread_initialize() \
-			do{ \
-				if (pthread_initialized == FALSE) { \
-					pthread_initialized = TRUE; \
-					init(); \
-				} \
-			}while(0)
 
 
 /* Modificare con il tid del processo in esecuzione */
