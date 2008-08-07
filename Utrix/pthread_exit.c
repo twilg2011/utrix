@@ -8,7 +8,6 @@ d)detach e non sono morto devo avvisare di ripulire e ignorare il tutto*/
 
 
 #include"pth_struct.h"
-#define SEARCH(base,next,ele_cmp,key) while(base) if(base->ele_cmp!=key)base=base->next;
 #define TID_MAIN 0
 
 /*pthread_self:Questa funzione restituisce il tid del thread in esecuzione(STANDARD)
@@ -36,38 +35,34 @@ int pthread_join(pthread_t thread, void ** value_ptr){
 pthread_initialize();
 if(thread==ESECUTION_TID)
 return EDEADLK;
-
+tcb_t thread_search;
 /*Controllo tra quelli morti*/
-	tbl_field_t list=thread_zombie;
-	int i=0;
-	SEARCH(list,next,tcb->tid,thread)
-	if(list)
-	{	/*Lo trovo mi salvo il risultato e lo cancello dal sistema e dalla lista zombie*/
-		*value_ptr=*(list->tcb->result);/*Qui da verificare c'è qualcosa che non torna, potrei perderla con il delete*/
-		schedthrkill(list->tcb->tid)
-		deleteZombie(list->tcb);
-		return 0;
-	}
-	else{/*Se nn lo trovo controllo tra quelli vivi se lo trovo mi metto in coda sulla join*/
-
-		tcb_t thread_tcb=gettcb(thread)
-		if(!thread_tcb)
+	thread_search=gettcb(thread);
+	if(!thread_search)
 			return ESRCH;/*Come da standard*/
-		else{
+
+	if(search->state==ZOMBIE)/*Se è in stato di zombie allora faccio le ultime modifiche e poi lo cancello*/
+	{	
+		*value_ptr=*(thread->result);/*Qui da verificare c'è qualcosa che non torna, potrei perderla con il delete*/
+		schedthrkill(thread->tid)
+		return OK;
+	}
+	else{/*Se non è zombie vedo se è joinable o no*/
+
+		
 			if(thread_tcb->save==DETACH)/*E' detach*/
 				return EINVAL;
 			else
-			{	if(thread_tcb->thread_join)/*Qualcuno ha gia fatto la join*/
+			{	if(thread_search->thread_join)/*Qualcuna ha gia fatto la join*/
 				return EINVAL;
 
-				thread_tcb->thread_join=thread_exec;/*Salvo il puntatore del thread che mi aspetta*/
-				thread_tcb->result=value_ptr;
-				sleep(ESECUTION->TID,JOIN);		
+				thread_search->thread_join=thread_exec;/*Salvo il puntatore del thread che mi aspetta*/
+				thread_search->result=value_ptr;
+				pth_sleep(ESECUTION->TID,JOIN);		
 				return OK;
 			}
 				
 				
-		}
 	}
 
 }
@@ -84,21 +79,20 @@ return EDEADLK;
 */
 int  pthread_detach(pthread_t thread){
 pthread_initialize();
+tcb_t thread_search;
+thread_search=gettcb(thread);
 /*Cerco sulla lista morti*/
-	tbl_field_t list=thread_zombie;
-	int i=0;
-	SEARCH(list,next,tcb->tid,thread)
-	if(list)
-	{     	schedthrkill(list->tcb->tid)
+	if(!thread_search)
+		return ESRCH;/*Come da standard*/
+	if(search->state==ZOMBIE)/*Se è in stato di zombie allora lo cancello*/
+	{	
+		schedthrkill(thread->tid)
 		return OK;
 	}
 	else{
-/*Cerco se esiste*/
-		tcb_t thread_tcb=gettcb(thread)
-		if(!thread_tcb)
-			return ESRCH;/*Come da standard*/
-		else{
-			if(thread_tcb->save==JOIN)/*E join*/
+/*Non è zombie quindi lo pongo di tipo detach*/
+		
+			if(thread_tcb->save!=JOIN)/*Non è join*/
 				return EINVAL;
 			else
 				thread_tcb->save=DETACH;
@@ -131,7 +125,7 @@ exit((int)((long)value_ptr));
 		if(thread_exec->thread_join){/*Qualcuno aspetta*/
 			*(thread_exec->result)=value_ptr;/*Nell'indirizzo passato dalla join*/
 			 thread_exec->part->present=0;
-		         unsleep(thread_join->tid,JOIN);
+		         pth_unsleep(thread_join->tid,JOIN);
 /*Risveglio thread che ha fatto join*/
 /*Cancello l'attuale thread*/
 			schedthrkill(ESECUTION_TID);
@@ -141,7 +135,7 @@ exit((int)((long)value_ptr));
 		else{/*Nessuno aspetta*/
 			*(thread_exec->result)=value_ptr;
 			thread_exec->part->present=0;/*Non è piu presente sulla partizione,x le specifiche dovrei lasciarlo a 1*/
-			sleep(ESECUTION_TID,ZOMBIE);
+			pth_sleep(ESECUTION_TID,ZOMBIE);
 				}
 	}
 	else{ 
