@@ -53,14 +53,14 @@ void schedthrkill(int tid);
 @param:il tid del thread da far addormentare e il motivo 
 @except:ERRARG
 */
-void sleep(int tid,int why);
+void pth_sleep(int tid,int why);
 
 /*unsleep:sveglia un threadf
 @param:thread da svegliare e il motivo
 @return:
 @except:ERRARG
 */
-void unsleep(int tid,int why);
+void pth_unsleep(int tid,int why);
 
 /*gettcb:funzione che cerca un tcb
 @param:il tid da cercare

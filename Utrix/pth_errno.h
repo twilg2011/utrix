@@ -18,6 +18,7 @@ int pth_errno;
 #define PTHREAD_CREATE 1
 #define ERRARG 2
 #define ERRTOOTHR 3
+#define ERRTID 4
 
 
 
