@@ -35,12 +35,7 @@ struct cond* prev;
 struct pthread_cond_s{
 pth_cond_t* mux;
 int init;
-} pthread_cond_s;
-
-extern int 	 pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t * attr);
-extern int 	 pthread_mutex_destroy(pthread_mutex_t* mutex);
-extern int	 pthread_mutex_lock(pthread_mutex_t *mutex);
-extern int 	 pthread_mutex_unlock(pthread_mutex_t *mutex);
+};
 
 
 
