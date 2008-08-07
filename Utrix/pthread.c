@@ -9,8 +9,8 @@
 
 
 #include "pth_struct.h"
-#include "pth_stack.s"
 #include "pthread_sched.h"
+
 
 
 #define pthread_initialize() \
@@ -21,6 +21,7 @@
 						return EAGAIN; \
 				} \
 			}while(0)
+
 
 
 
