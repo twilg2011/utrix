@@ -8,7 +8,7 @@
  */
 
 
-#include "pth_struct.h"
+
 #include "pthread_sched.h"
 
 
