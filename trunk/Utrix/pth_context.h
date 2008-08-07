@@ -43,7 +43,7 @@ typedef context_s* context_t;
 #define pth_switch(old,next) if(_setjmp(old->regs)==0) {thread_exec=next;_longjmp(next->regs,1)}
 
 /* pth_init:inizializza un contesto che ha come funzione func con argomento argo il contesto inizializzato viene messo in ictx
-@param: context_t ictx, void (*f)(void*),void* argo
+@param: context_t ictx contesto da inizializzare, void (*f)(void*) funzione del contesto,void* argo argomenti
 @error:ERRARG se uno func o ictx sono NULL*/
 #define pth_init(ictx,func,argo)\
         if(!ictx||!func) return ERRARG;\
