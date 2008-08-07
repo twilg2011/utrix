@@ -22,8 +22,6 @@ typedef struct pthread_cond_s pthread_cond_t ;
 
 
 
-
-
 extern int       pthread_create(pthread_t *,/* const pthread_attr_t*,*/ void* (*)(void *), void *);
 extern int       pthread_detach(pthread_t);
 extern int       pthread_yield(void);
