@@ -8,6 +8,7 @@
  */
 #include "config.h"
 #include "pthread_sched.h"
+#include "pth_errno.h"
 #include <stdlib.h>
 #include <time.h>
 //#include <clock.h>
@@ -22,41 +23,45 @@ context_t sched;
 int scheduledthr_n;
 clock_t time;
 
-#define ELIM(elem,parent) if (!parent) partent=elem->next;\
+#define ELIM(elem,parent) if (!parent) parent=elem->next;\
 						  else parent->next=elem->next;\
-                          elem.next=NULL;
+                          elem->next=NULL;
 #define ADDELEM(elem,list) if (!list) list=elem;\
 						  else list->next=elem;\
-                          elem.next=NULL;
-#define ADDELEMHEAD(elem,list) if (!list) list=elem;\
+                          elem->next=NULL;
+#define ADDELEMHEAD(elem,list) if (!list){ list=elem;}\
 						  else{\
 						   elem->next=list;\
 						   list=elem;\
 						   }
+tbl_field_t selectthr();
+void longtermsched();
+void recalcprior(tbl_field_t thr);
 
-int serchonlist(int tid, tbl_field_t list, tbl_field_t* tcb , tbl_field_t* parent)
+int searchonlist(int tid, tbl_field_t list, tbl_field_t* tcb , tbl_field_t* parent)
 {
    (*parent)=NULL;
    (*tcb)=list;
    while((*tcb))
    {
-	 if ((*tcb)->tid==tid) return 1;
+	 if ((*tcb)->tcb->tid==tid) return 1;
 	 (*parent)=(*tcb);
 	 (*tcb)=(*tcb)->next;
    } 
 }
 
-int serchonall(int tid,tbl_field_t* tcb,tbl_field_t* parent)
-{ int i=0;
-  while (i<NUM_PRIOR)
+int searchonall(int tid,tbl_field_t* tcb,tbl_field_t* parent)
+{
+  int i=-1;
+  while (i<NUM_PRIOR-1)
   {
-    if (serchonlist(tid,thread_priortail[PRIOR(i)],tcb,parent)) return 1;
+    if (searchonlist(tid,thread_priortail[PRIOR(i)],tcb,parent)) return 1;
 	i++;
   }
   i=0;
   while (i<NUM_WHY)
   {
-    if (serchonlist(tid,thread_blocked[i],tcb,parent)) return 1;
+    if (searchonlist(tid,thread_blocked[i],tcb,parent)) return 1;
 	i++; 
   }
   return 0;
@@ -74,7 +79,7 @@ void scheduler(void* arg)
  scheduledthr_n=0;
  //int i=0;
  //while(i<NUM_PRIOR){tic[i]=i; i++;}
- if (!sched=malloc(sizeof(context_s))) {
+ if (!(sched=malloc(sizeof(context_s)))) {
  SETERR(ENOMEM);
  abort();
  }
@@ -102,10 +107,10 @@ void scheduler(void* arg)
 }
 
 
-intern tbl_field_t selectthr()
+tbl_field_t selectthr()
 {  
    int i=-1;
-   while(i<NUM_PRIOR)
+   while(i<NUM_PRIOR-1)
    {
      if(thread_priorhead[PRIOR(i)]) return thread_priorhead[PRIOR(i)];
 	 i++;
@@ -119,7 +124,7 @@ void longtermsched()
  while(scheduledthr_n<thread_n)
  {
    new=thread_new;
-   thread_new=-thread_new->next;
+   thread_new=thread_new->next;
    new->tcb->prior=DEFAULT_PRIOR;
    ADDLIST(new,thread_priortail[PRIOR(DEFAULT_PRIOR)]);
    scheduledthr_n++;
@@ -130,12 +135,13 @@ void longtermsched()
 {
   if(!thr) 
   { 
-    SETERR(err);
+    SETERR(ERRARG);
     return;
   }
-  tbl_field_t tcb,parent;
-  serchonlist(thr->tcb->tid,&tcb,&parent);
-  ELIM(tcb,parent);
+  tbl_field_t tcb;
+  tbl_field_t  parent;
+  searchonlist(thr->tcb->tid,thread_priortail[PRIOR( thr->tcb->prior)],&tcb,&parent);
+  ELIM(tcb, parent);
   thr->tcb->prior=prior;
   ADDLIST(tcb,thread_priortail[PRIOR(prior)]);
 }
@@ -147,15 +153,15 @@ void recalcprior(tbl_field_t thr)
  if(thr->tcb->prior>-1) setprior(thr,thr->tcb->prior-1);
  }
  else if(thr->prior<1) setprior(thr,thr->tcb->prior+1); */
- if (thr->tcb->time<=BONUSTIME)if(thr->tcb->prior>-1) setprior(thr,thr->tcb->prior-1);
- if (thr->tcb->time>=MALUSTIME) else if(thr->prior<1) setprior(thr,thr->tcb->prior+1); 
+ if (thr->tcb->time<=BONUSTIME && thr->tcb->prior>-1) setprior(thr,thr->tcb->prior-1);
+ if (thr->tcb->time>=MALUSTIME && thr->tcb->prior<1) setprior(thr,thr->tcb->prior+1); 
 }
 
 
 void schedthrkill(int tid)
 {
  tbl_field_t kill,parent;
- if (!serchonall(tid,&kill,&parent)) {
+ if (!searchonall(tid,&kill,&parent)) {
  SETERR(ERRTID);
  return;
  }
@@ -163,9 +169,10 @@ void schedthrkill(int tid)
  scheduledthr_n--;
 }
 
-void sleep(int tid,int why){
-tcb_t tcb,parent;
-if (serchonall(tid,&tcb,&parent) && why<NUM_WHY && why>=0) 
+void pth_sleep(int tid,int why)
+{
+tbl_field_t tcb,parent;
+if (searchonall(tid,&tcb,&parent) && why<NUM_WHY && why>=0) 
 {
    ELIM(tcb,parent);
    ADDLISTHEAD(tcb,thread_blocked[why]);
@@ -173,7 +180,8 @@ if (serchonall(tid,&tcb,&parent) && why<NUM_WHY && why>=0)
 SETERR(ERRARG);
 }
 
-void unsleep(int tid,int why){
+void pth_unsleep(int tid,int why){
+tbl_field_t tcb,parent;
 if (why<NUM_WHY && why>=0 && serchonlist(tid,thread_blocked[why],&tcb,&parent) ) 
 {
    ELIM(tcb,parent);
@@ -183,21 +191,22 @@ SETERR(ERRARG);
 }
 
 
+ 
 tcb_t gettcb(int tid){
 tcb_t tcb;
 tcb_t parent;
-int i=0;
+int i=-1;
   tbl_field_t serc;
   tbl_field_t par;
-  while (i<NUM_PRIOR)
+  while (i<NUM_PRIOR-1)
   {
-    if (serchonlist(tid,thread_priortail[PRIOR(i)],&serc,&par)) return serc->tcb;
+    if (searchonlist(tid,thread_priortail[PRIOR(i)],&serc,&par)) return serc->tcb;
 	i++;
   }
   i=0;
   while (i<NUM_WHY)
   {
-    if (serchonlist(tid,thread_blocked[i],&serc,&par))return serc->tcb;
+    if (searchonlist(tid,thread_blocked[i],&serc,&par))return serc->tcb;
 	i++; 
   }
   return NULL;
