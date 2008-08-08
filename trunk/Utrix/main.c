@@ -76,5 +76,6 @@ int main(void)
    f->next=NULL;
    f->tcb->ctx=cf;
    thread_new=m;
+   printf("sdds")
    pth_switch(mctx,sched);
 }
