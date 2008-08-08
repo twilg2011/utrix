@@ -13,6 +13,5 @@ int thread_n;
 int tcb_n = 0; /* Progressive tcb number. 
 				* The tcb_n 0 is assigned to main */
 tcb_t thread_exec=NULL;
-tbl_field_t thread_zombie=NULL;
-tbl_field_t pth_prior_table[3];
-tbl_field_t pth_last_table_field[3];
+tbl_field_t thread_new=NULL;
+
