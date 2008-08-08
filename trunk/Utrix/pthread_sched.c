@@ -99,7 +99,7 @@ void scheduler(void* arg)
   /*liste*/
   selectedthr=selectthr();
   pth_time=clock();
-  pth_swap(sched,selectedthr->tcb->ctx);
+  pth_switch(sched,selectedthr->tcb->ctx);
   pth_time=clock()-pth_time;
   selectedthr->tcb->time=pth_time;
   recalcprior(selectedthr);
@@ -126,7 +126,7 @@ void longtermsched()
    new=thread_new;
    thread_new=thread_new->next;
    new->tcb->prior=DEFAULT_PRIOR;
-   ADDLIST(new,thread_priortail[PRIOR(DEFAULT_PRIOR)]);
+   ADDELEM(new,thread_priortail[PRIOR(DEFAULT_PRIOR)]);
    scheduledthr_n++;
  }
 }
@@ -143,7 +143,7 @@ void longtermsched()
   searchonlist(thr->tcb->tid,thread_priortail[PRIOR( thr->tcb->prior)],&tcb,&parent);
   ELIM(tcb, parent);
   thr->tcb->prior=prior;
-  ADDLIST(tcb,thread_priortail[PRIOR(prior)]);
+  ADDELEM(tcb,thread_priortail[PRIOR(prior)]);
 }
 
 void recalcprior(tbl_field_t thr)
@@ -175,17 +175,17 @@ tbl_field_t tcb,parent;
 if (searchonall(tid,&tcb,&parent) && why<NUM_WHY && why>=0) 
 {
    ELIM(tcb,parent);
-   ADDLISTHEAD(tcb,thread_blocked[why]);
+   ADDELEMHEAD(tcb,thread_blocked[why]);
 }
 SETERR(ERRARG);
 }
 
 void pth_unsleep(int tid,int why){
 tbl_field_t tcb,parent;
-if (why<NUM_WHY && why>=0 && serchonlist(tid,thread_blocked[why],&tcb,&parent) ) 
+if (why<NUM_WHY && why>=0 && searchonlist(tid,thread_blocked[why],&tcb,&parent) ) 
 {
    ELIM(tcb,parent);
-   ADDLIST(tcb,thread_priortail[PRIOR(tcb->tcb->prior)]);
+   ADDELEM(tcb,thread_priortail[PRIOR(tcb->tcb->prior)]);
 }
 SETERR(ERRARG);
 }
