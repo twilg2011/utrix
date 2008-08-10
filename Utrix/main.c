@@ -30,18 +30,22 @@ void f(void* arg)
 {
   printf("f:\n");
  /* pth_init(cw,w,NULL);*/
-  pth_switch(cf,cw);
+  pth_switch(cf,sched);
   printf("fine f\n");
-  pth_switch(cf,mctx);
+  thread_n--;
+  pth_sleep(1,2);
+  pth_switch(cf,sched);
 }
 
 void w(void* arg)
 {
-  printf("w:\n");
-  pth_switch(cw,mctx);
+  printf("w:%p\n",sched);
+  pth_switch(cw,sched);
   printf("fine w\n");
-  pth_switch(cw,mctx);
-
+  thread_n--;
+  pth_sleep(2,2);
+  pth_switch(cw,sched);
+  
 }
 
       
@@ -65,17 +69,26 @@ int main(void)
    pth_switch(mctx,cf);
    //pth_switch(mctx,cw);
    printf("fine\n");*/
-   tbl_field_t m,w,f;
-   m=malloc(sizeof(tbl_field_s));
-   w=malloc(sizeof(tbl_field_s));
-   f=malloc(sizeof(tbl_field_s));
-   m->next=w;
-   m->tcb->ctx=mctx;
-   w->next=f;
-   w->tcb->ctx=cw;
-   f->next=NULL;
-   f->tcb->ctx=cf;
-   thread_new=m;
+   tbl_field_t tm,tw,tf;
+   thread_new=malloc(sizeof(tbl_field_s));
+   thread_new->next=malloc(sizeof(tbl_field_s));
+   thread_new->next->next=malloc(sizeof(tbl_field_s));
+   
+   thread_new->tcb=malloc(sizeof(tcb_s));
+   thread_new->next->tcb=malloc(sizeof(tcb_s));
+   thread_new->next->next->tcb=malloc(sizeof(tcb_s));
+
+   
+   thread_new->tcb->ctx=cf;
+   thread_new->next->tcb->ctx=cw;
+   thread_new->next->next->tcb->ctx=mctx;
+
+   thread_new->tcb->tid=1;
+   thread_new->next->tcb->tid=2;
+   thread_new->next->next->tcb->tid=3;
+
+   thread_n=2;
    printf("sdds")
    pth_switch(mctx,sched);
+   printf("fine\n");
 }

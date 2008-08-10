@@ -17,4 +17,4 @@
 
 
 
-int pthread_initialized = FALSE;
+//int pthread_initialized = FALSE;

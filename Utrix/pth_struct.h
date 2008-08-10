@@ -23,7 +23,8 @@ typedef struct tcb{
 	struct tcb* thread_join;/*Al massimo solo un thread può fare la join sullo stesso thread, mettendolo nel tcb semplifico di molto il codice*/
 	int prior;
 	context_t ctx;
-	int state; 
+	int state;
+        int bloccato;	
 	/*RR int tic;/*consente di gestire priorità dinamiche*/
 	clock_t time;
 	char save;

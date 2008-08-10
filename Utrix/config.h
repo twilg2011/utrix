@@ -8,11 +8,11 @@
  */
 
 #define MAXTHREAD 5
-#define STACKWIDTH 0x64
+#define STACKWIDTH 20//0x64
 
 
 
 
 
-#define BONUSTIME 2
-#define MALUSTIME 4
+#define BONUSTIME 0
+#define MALUSTIME 0
