@@ -19,7 +19,7 @@ tbl_field_t  thread_priorhead[NUM_PRIOR];
 tbl_field_t  thread_blocked[NUM_WHY];
 //int tic[NUM_PRIOR];
 
-context_t sched,pth_empty;
+context_t sched;
 int scheduledthr_n;
 clock_t pth_time;
 
@@ -58,6 +58,7 @@ tbl_field_t ap=thread_priorhead[i];
 tbl_field_t selectthr();
 void longtermsched();
 void recalcprior(tbl_field_t thr);
+
 void empty(void* arg){
 while(1)
 {
@@ -65,74 +66,70 @@ while(1)
 }
 }
 
-int searchonlist(int tid, tbl_field_t list, tbl_field_t* tcb , tbl_field_t* parent)
+int searchonlist(int tid, tbl_field_t list, tbl_field_t* serc , tbl_field_t* parent)
 {
    (*parent)=NULL;
-   (*tcb)=list;
-   while((*tcb))
+   (*serc)=list;
+   while((*serc))
    {
-	 if ((*tcb)->tcb->tid==tid) return 1;
+	 if ((*serc)->tcb->tid==tid) return 1;
 	 (*parent)=(*tcb);
-	 (*tcb)=(*tcb)->next;
+	 (*serc)=(*serc)->next;
    } 
 }
 
-int searchonall(int tid,tbl_field_t* tcb,tbl_field_t* parent)
+int searchonall(int tid,tbl_field_t* serc,tbl_field_t* parent)
 {
   int i=0;
   while (i<NUM_PRIOR)
   {
-    if (searchonlist(tid,thread_priorhead[i],tcb,parent)) return 1;
+    if (searchonlist(tid,thread_priorhead[i],serc,parent)) return 1;
 	i++;
   }
   i=0;
   while (i<NUM_WHY)
   {
-    if (searchonlist(tid,thread_blocked[i],tcb,parent)) return 1;
+    if (searchonlist(tid,thread_blocked[i],serc,parent)) return 1;
 	i++; 
   }
   return 0;
 }
 
-void rrschedulercaller(void* arg)
-{
-   context_t ctx=(context_t) arg;
-   pth_switch(ctx,sched);
-}
 
 void scheduler(void* arg)
 {
  #ifdef DEBUG
  printf("scheduler\n");
  #endif
- pth_empty=malloc(sizeof(context_s));
- pth_init(pth_empty,empty,NULL);
  tbl_field_t  selectedthr;
  scheduledthr_n=0;
  while(1)
  {
  if(scheduledthr_n<thread_n)longtermsched();
   if (!(selectedthr=selectthr())){
-	  pth_switch(sched,pth_empty);
+	  empty(NULL);
   }else{
+  
   #ifdef DEBUG
   printf("selected:%i\n",selectedthr->tcb->tid);
   #endif
   
   pth_time=clock();
-  
+  selectedthr->tcb->state=EXEC;
   #ifdef DEBUG
   printf("parto%p\n",sched);
   #endif
   
   pth_switch(sched,selectedthr->tcb->ctx);
   
+  
+  
   #ifdef DEBUG
   printf("ritorno %i\n",selectedthr->tcb->tid);
   #endif
   pth_time=clock()-pth_time;
-  selectedthr->tcb->time=pth_time;
-  recalcprior(selectedthr);
+  selectedthr->tcb->time=+pth_time;
+  if (selectedthr->tcb->state==EXEC) recalcprior(selectedthr);
   #ifdef DEBUG
   printf("altro giro\n");
   #endif
@@ -176,6 +173,8 @@ void longtermsched()
  {
    ELIM(new,null,thread_new);
    new->tcb->prior=DEFAULT_PRIOR;
+   new->tcb->state=PRONTO;
+   new->tcb->time=0;
    ADDELEM(new,thread_priortail[PRIOR(DEFAULT_PRIOR)],thread_priorhead[PRIOR(DEFAULT_PRIOR)]);
    scheduledthr_n++;
    
@@ -212,8 +211,10 @@ void longtermsched()
 
 void recalcprior(tbl_field_t thr)
 {
+ if(!thr) SETERR(ERRARG);
  if (thr->tcb->time<=BONUSTIME && thr->tcb->prior>-1) setprior(thr,thr->tcb->prior-1);
  if (thr->tcb->time>=MALUSTIME && thr->tcb->prior<1) setprior(thr,thr->tcb->prior+1); 
+  thr->tcb->state=PRONTO;
 }
 
 
@@ -230,29 +231,30 @@ void schedthrkill(int tid)
 
 void pth_sleep(int tid,int why)
 {
-tbl_field_t tcb,parent;
+tbl_field_t select_tcb,parent;
 #ifdef DEBUG
 stampalista(PRIOR(1));
 #endif
-if (searchonall(tid,&tcb,&parent) && why<NUM_WHY && why>=0) 
+if (searchonall(tid,&select_tcb,&parent) && why<NUM_WHY && why>=0) 
 {
    #ifdef DEBUG
-   printf("sleep:%i\n",tcb->tcb->tid);
+   printf("sleep:%i\n",select_tcb->tcb->tid);
    #endif
-   ELIM(tcb,parent,thread_priorhead[PRIOR(tcb->tcb->prior)]);
-   ADDELEMHEAD(tcb,thread_blocked[why]);
+   ELIM(select_tcb,parent,thread_priorhead[PRIOR(select_tcb->tcb->prior)]);
+   ADDELEMHEAD(select_tcb,thread_blocked[why]);
+   select_tcb->tcb->state=BLOCCATO;
    return;
 }
 SETERR(ERRARG);
 }
 
 void pth_unsleep(int tid,int why){
-tbl_field_t tcb,parent;
-if (why<NUM_WHY && why>=0 && searchonlist(tid,thread_blocked[why],&tcb,&parent) ) 
+tbl_field_t selected_tcb,parent;
+if (why<NUM_WHY && why>=0 && searchonlist(tid,thread_blocked[why],&selected_tcb,&parent) ) 
 {
-   ELIM(tcb,parent,thread_blocked[why]);
-   ADDELEM(tcb,thread_priortail[PRIOR(tcb->tcb->prior)],thread_priorhead[PRIOR(tcb->tcb->prior)]);
-   tcb->tcb->bloccato=0;
+   ELIM(selected_tcb,parent,thread_blocked[why]);
+   ADDELEM(selected_tcb,thread_priortail[PRIOR(selected_tcb->tcb->prior)],thread_priorhead[PRIOR(selected_tcb->tcb->prior)]);
+   selected_tcb->tcb->state=PRONTO;
 }
 SETERR(ERRARG);
 }
