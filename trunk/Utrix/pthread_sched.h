@@ -68,3 +68,9 @@ void pth_unsleep(int tid,int why);
 @return:NULL in caso di errore il tcb altrimenti
 */
 tcb_t gettcb(int tid);
+
+/*jiumanji:dealloca tutte le strutture necessarie allo scheduler e lo scheduler stesso
+@param:
+@return:
+*/
+void jiumanji();
