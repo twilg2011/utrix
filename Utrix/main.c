@@ -89,5 +89,6 @@ int main(void)
 
    thread_n=3;
    pth_switch(mctx,sched);
+   pth_switch(mctx,sched);
    printf("fine\n");
 }
