@@ -25,10 +25,17 @@
 #define NUOVO 0
 #define PRONTO 1
 #define BLOCCATO 2
-#define ZOMBIEST 3
+#define EXEC 3
 
 /*contesto dello scheduler*/
 extern context_t sched;
+
+
+/*empty:funzione vuota
+@param:NULL
+@return:la funzione non ritorna al chiamante
+*/
+void empty(void* arg);
 
 /*scheduler:funzione di scheduling in 
 @param:NULL
@@ -36,12 +43,6 @@ extern context_t sched;
 */
 void scheduler(void* arg);
 
-/*rrschedulercaller:solo in caso di rr handler dello scheduler 	
-@param:
-@return:
-@except:
-*/
-void rrschedulercaller(void* arg);
 
 /*schedulerkill:elimina il tcb tid dallo scheduler 
 @param:tid da eliminare
@@ -69,8 +70,8 @@ void pth_unsleep(int tid,int why);
 */
 tcb_t gettcb(int tid);
 
-/*jiumanji:dealloca tutte le strutture necessarie allo scheduler e lo scheduler stesso
+/*jumanji:dealloca tutte le strutture necessarie allo scheduler e lo scheduler stesso
 @param:
 @return:
 */
-void jiumanji();
+void jumanji();
