@@ -23,22 +23,38 @@ context_t sched,pth_empty;
 int scheduledthr_n;
 clock_t pth_time;
 
-#define ELIM(elem,parent,list) if (!parent){stampalista(PRIOR(0));list=list->next;stampalista(PRIOR(0));}\
+#define ELIM(elem,parent,list) if (!parent)list=list->next;\
 				       else parent->next=elem->next;\
 					   elem->next=NULL;\
                                          
 
 #define ADDELEM(elem,list,head) if (!list){ list=elem;\
 	                                     head=list;\
-	                                     printf("oooo\n");          \
                                           }	\
-				         else{ printf("sasas\n");list->next=elem;list=list->next;}\
-                                         elem->next=NULL;
+				         else{list->next=elem;\
+						 list=list->next;\
+						 }\
+						 elem->next=NULL;
+						 
 #define ADDELEMHEAD(elem,list) if (!list) list=elem;\
 						  else{\
 						   elem->next=list;\
 						   list=elem;\
 						   }
+						   
+#ifdefine DEBUG 
+void stampalista(int i)
+{ 	
+tbl_field_t ap=thread_priorhead[i];
+ while (ap) 
+ {
+	 printf("elemento:%i-",ap->tcb->tid);
+	 ap=ap->next;
+ }
+ printf("*\n");
+}
+#endif
+
 tbl_field_t selectthr();
 void longtermsched();
 void recalcprior(tbl_field_t thr);
@@ -86,7 +102,9 @@ void rrschedulercaller(void* arg)
 
 void scheduler(void* arg)
 {
- //printf("scheduler\n");
+ #ifdef DEBUG
+ printf("scheduler\n");
+ #endif
  pth_empty=malloc(sizeof(context_s));
  pth_init(pth_empty,empty,NULL);
  tbl_field_t  selectedthr;
@@ -94,60 +112,64 @@ void scheduler(void* arg)
  while(1)
  {
  if(scheduledthr_n<thread_n)longtermsched();
- /*RR/*
-  /*selectedthr=selectthr();
-  selectedthr->tcb->tic=0;
-  while(selectedthr->tcb->tic<tic[PRIOR(selectedthr->tcb->prior)])
-  {
-    //set watchdog
-    pth_swap(sched,selectedthr->tcb->ctx);
-    selectedthr->tcb->tic++;
-  }
-  recalcprior(selectedthr);*/
-  /*liste*/
   if (!(selectedthr=selectthr())){
 	  pth_switch(sched,pth_empty);
   }else{
+  #ifdef DEBUG
   printf("selected:%i\n",selectedthr->tcb->tid);
+  #endif
+  
   pth_time=clock();
+  
+  #ifdef DEBUG
   printf("parto%p\n",sched);
+  #endif
+  
   pth_switch(sched,selectedthr->tcb->ctx);
+  
+  #ifdef DEBUG
   printf("ritorno %i\n",selectedthr->tcb->tid);
+  #endif
   pth_time=clock()-pth_time;
   selectedthr->tcb->time=pth_time;
   recalcprior(selectedthr);
+  #ifdef DEBUG
   printf("altro giro\n");
+  #endif
   }
  }
 }
-void stampalista(int i)
-{ 	
-tbl_field_t ap=thread_priorhead[i];
- while (ap) 
- {
-	 printf("elemento:%i-",ap->tcb->tid);
-	 ap=ap->next;
- }
- printf("*\n");
-}
+
+
 
 tbl_field_t selectthr()
 {  
    int i=-1;
-   //printf("selector\n");
+   
+   #ifdef DEBUG
+   printf("selector\n");
+   #endif
+   
    while(i<NUM_PRIOR-1)
    {
+	 
+	 #ifdef DEBUG
      printf("lista:%i\n",i);
-     stampalista(PRIOR(i));
-     if(thread_priorhead[PRIOR(i)]) return thread_priorhead[PRIOR(i)];
+	 stampalista(PRIOR(i));
+	 #endif
+     
+	 if(thread_priorhead[PRIOR(i)]) return thread_priorhead[PRIOR(i)];
      i++;
    }
    return NULL;
 }
 
 void longtermsched()
-{
- //printf("longterm\n");
+{ 
+ #ifdef DEBUG
+ printf("longterm\n");
+ #endif
+ 
  tbl_field_t null=NULL;
  tbl_field_t  new=thread_new;
  while(new && scheduledthr_n<thread_n)
@@ -156,15 +178,22 @@ void longtermsched()
    new->tcb->prior=DEFAULT_PRIOR;
    ADDELEM(new,thread_priortail[PRIOR(DEFAULT_PRIOR)],thread_priorhead[PRIOR(DEFAULT_PRIOR)]);
    scheduledthr_n++;
+   
+   #ifdef DEBUG
    printf("%i charged tid:%i\n",scheduledthr_n,new->tcb->tid);
    stampalista(PRIOR(DEFAULT_PRIOR));
+   #endif
+
    new=thread_new;
  }
 }
 
  void setprior(tbl_field_t thr,int prior)
 {
+  #ifdef DEBUG
   printf("setprior:");
+  #endif
+  
   if(!thr) 
   { 
     SETERR(ERRARG);
@@ -172,22 +201,18 @@ void longtermsched()
   }
   tbl_field_t tcb;
   tbl_field_t  parent;
-  searchonlist(thr->tcb->tid,thread_priorhead[PRIOR(thr->tcb->prior)],&tcb,&parent);
+ if ( searchonlist(thr->tcb->tid,thread_priorhead[PRIOR(thr->tcb->prior)],&tcb,&parent))
+ {
   ELIM(tcb, parent,thread_priorhead[PRIOR( thr->tcb->prior)]);
   thr->tcb->prior=prior;
-  printf("dddddddddddd%i\n",PRIOR(prior));
   ADDELEM(tcb,thread_priortail[PRIOR(prior)],thread_priorhead[PRIOR(prior)]);
+  } else thr->tcb->prior=prior;
+  
 }
 
 void recalcprior(tbl_field_t thr)
 {
- /*RR*/
-/* if(thr->tcb->tic<=tic[PRIOR(thr->tcb->prior)]){
- if(thr->tcb->prior>-1) setprior(thr,thr->tcb->prior-1);
- }
- else if(thr->prior<1) setprior(thr,thr->tcb->prior+1); */
- //printf("recalc\n");
- //if (thr->tcb->time<=BONUSTIME && thr->tcb->prior>-1) setprior(thr,thr->tcb->prior-1);
+ if (thr->tcb->time<=BONUSTIME && thr->tcb->prior>-1) setprior(thr,thr->tcb->prior-1);
  if (thr->tcb->time>=MALUSTIME && thr->tcb->prior<1) setprior(thr,thr->tcb->prior+1); 
 }
 
@@ -209,13 +234,13 @@ tbl_field_t tcb,parent;
 stampalista(PRIOR(1));
 if (searchonall(tid,&tcb,&parent) && why<NUM_WHY && why>=0) 
 {
+   #ifdef DEBUG
    printf("sleep:%i\n",tcb->tcb->tid);
+   #endif
    ELIM(tcb,parent,thread_priorhead[PRIOR(tcb->tcb->prior)]);
-   //printf("elim:%i\n",thread_priorhead[PRIOR(0)]->tcb->tid);
    ADDELEMHEAD(tcb,thread_blocked[why]);
    return;
 }
-printf("ciullo\n");
 SETERR(ERRARG);
 }
 
