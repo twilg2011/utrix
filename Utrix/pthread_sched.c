@@ -42,7 +42,7 @@ clock_t pth_time;
 						   list=elem;\
 						   }
 						   
-#ifdefine DEBUG 
+#ifdef DEBUG 
 void stampalista(int i)
 { 	
 tbl_field_t ap=thread_priorhead[i];
@@ -231,7 +231,9 @@ void schedthrkill(int tid)
 void pth_sleep(int tid,int why)
 {
 tbl_field_t tcb,parent;
+#ifdef DEBUG
 stampalista(PRIOR(1));
+#endif
 if (searchonall(tid,&tcb,&parent) && why<NUM_WHY && why>=0) 
 {
    #ifdef DEBUG
