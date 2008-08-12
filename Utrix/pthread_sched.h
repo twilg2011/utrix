@@ -58,7 +58,7 @@ void schedthrkill(int tid);
 */
 void pth_sleep(int tid,int why);
 
-/*unsleep:sveglia un threadf
+/*unsleep:sveglia un thread
 @param:thread da svegliare e il motivo
 @except:EINVAL se il why non è tra quelle possibili
         ESRCH se non esiste un thread con il tid uguale a quello passato per parametro

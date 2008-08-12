@@ -16,4 +16,4 @@
 
 
 
-//int pthread_initialized = FALSE;
+extern int pthread_initialized;
