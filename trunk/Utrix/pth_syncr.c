@@ -1,7 +1,25 @@
 #include "pth_struct.h"
+#include "pth_syncr.h"
+
+#define SEARCH(list,elem) if(elem->prev==NULL)/*E' in cima*/\
+			{	elem->next->prev=NULL;\
+				list=elem->next;\
+			}	\
+			else \
+				if(elem->next==NULL)/*E' in fondo*/\
+					elem->prev->next=NULL;\
+				else/*E' in mezzo*/\
+				{\
+					elem->next->prev=elem->prev;\
+					elem->prev->next=elem->next;\
+				}
 
 
-pth_mutex_t* list_mux=NULL;/*In realtà inizializzata alla creazione della libreria*/
+
+void lock(int* val);
+void unlock(int* val);
+pth_mutex_t* list_mux=NULL; /*In realtà inizializzata alla creazione della libreria*/
+pth_cond_t* list_cond=NULL;
 
 
 /*pthread_mutex_init:Inizializza un mutex in base agli attributi(per ipotesi solo NULL ora)
@@ -14,29 +32,24 @@ pth_mutex_t* list_mux=NULL;/*In realtà inizializzata alla creazione della libre
 int pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t * attr){
 pthread_initialize();
 	if(!mutex)
-		return EINVAL;
+		return SETERR(EINVAL);
 	/*Prevedo attr NULL,ipotesi restrittiva*/
 	if(attr)
-		return EINVAL;
-	if(mutex->init && !mutex->mux)/*Inizializzata globalmente*/
-	{
-		errno=0;
+		return SETERR(EINVAL);
+	if(!mutex->mux){
+		if(mutex->init==NOT_INIT)/*Non inizializzata*/
+			mutex->init=INIT;
+		SETERR(0);
 		mutex->mux=(pth_mutex_t*)malloc(sizeof(pth_mutex_t));
 		if(!mutex->mux)
-			return errno;
-	}
-
-	else if(!mutex->init && !mutex->mux)/*da inizializzare*/
-	{
-		mutex->mux=(pth_mutex_t*)malloc(sizeof(pth_mutex_t));
-		if(!mutex->mux)
-			return errno;
+			return SETERR(ENOMEM);
+		mutex->mux->state=NO_ACTIVE;	
 	}
 /*Già inizializzata*/
-	if(mutex->mux->state!=NO_INIT)
-		return EBUSY;
+	if(mutex->mux->state!=NO_ACTIVE)
+		return SETERR(EBUSY);
 /*Inizializzo*/
-	mutex->mux->state=INIT;
+	mutex->mux->state=ACTIVE;
 	mutex->mux->val=0;
 	mutex->mux->prev=NULL;
 	mutex->mux->next=list_mux;
@@ -44,7 +57,7 @@ pthread_initialize();
 	list_mux=mutex->mux;
 	
 
-	return OK;
+	return SETERR(OK);
 }
 
 /*pthread_mutex_destroy:Distrugge un mutex dalla lista.
@@ -53,29 +66,17 @@ pthread_initialize();
 @error:EINVAL se il valore del mutex è sbagliato
        EBUSY se il mutex è bloccato*/
 int pthread_mutex_destroy(pthread_mutex_t* mutex){
-pthread_initialize();
-	if(!mutex)
-		return EINVAL;
-	if(!mutex->mux)
-		return EINVAL;
+        pthread_initialize();
+	if(mutex==NULL)/*Non esiste l'elemento passato*/
+		return SETERR(EINVAL);
+	if(mutex->mux==NULL)/*Il mutex non è stato inizializzato o è gia stato distrutto*/
+		return SETERR(EINVAL);
 	if(mutex->mux->state==LOCK)
-		return EBUSY;
-	if(mutex->mux->prev==NULL)/*E' in cima*/
-	{	mutex->mux->next->prev=NULL;
-		list_mux=mutex->mux->next;
-	}	
-	else 
-		if(mutex->mux->next==NULL)/*E' in fondo*/
-			mutex->mux->prev->next=NULL;
-		else/*E' in mezzo*/
-		{
-			mutex->mux->next->prev=mutex->mux->prev;
-			mutex->mux->prev->next=mutex->mux->next;
-		}
+		return SETERR(EBUSY);
+	SEARCH(list_mux,mutex->mux)
 	free(mutex->mux);
 	mutex->mux=NULL;
-	mutex->mux->state=DESTROY;
-	return OK;
+	return SETERR(OK);
 }
 
 /*pthread_mutex_lock:Eseguo una lock su un mutex 
@@ -87,16 +88,16 @@ int pthread_mutex_lock(pthread_mutex_t *mutex){
 pthread_initialize();
 /*Se introduco gli attributi qui qualcosa cambia*/
 	if(!mutex)
-		return EINVAL;
+		return SETERR(EINVAL);
 	if(!mutex->mux)
-		return EINVAL;
+		return SETERR(EINVAL);
 	if((mutex->mux->own==ESECUTION_TID)&&(mutex->mux->state==LOCK))
-		return EDEADLK;
+		return SETERR(EDEADLK);
 	lock(mutex->mux->val);
 	mutex->mux->state=LOCK;
 
 	mutex->mux->own= ESECUTION_TID;
-	return OK;
+	return SETERR(OK);
 
 }
 /*pthread_mutex_unlock:Eseguo una unlock su un mutex 
@@ -108,21 +109,129 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex){
 pthread_initialize();
 /*Se introduco gli attributi qui qualcosa cambia*/
 	if(!mutex)
-		return EINVAL;
+		return SETERR(EINVAL);
 	if(!mutex->mux)
-		return EINVAL;
+		return SETERR(EINVAL);
 	if(mutex->mux->own!=ESECUTION_TID)
-		return EPERM;
+		return SETERR(EPERM);
 	unlock(mutex->mux->val);
 	mutex->mux->state=INIT;
-	return OK;
+	return SETERR(OK);
 
 }
 
 
 
+int pthread_cond_init(pthread_cond_t *cond /*,const pthread_condattr_t *attr*/){
+	pthread_initialize();
+	if(!cond)
+		return SETERR(EINVAL);
+/*Ipotesi restrittiva
+if(attr)
+		return EINVAL;
+*/
+	if(!cond->condition){
+		if(cond->init==NOT_INIT)/*Inizializzato da una macro*/
+			cond->init=INIT;
+			SETERR(0);
+			cond->condition=(pth_cond_t*)malloc(sizeof(pth_cond_t));	
+			if(!cond->condition)
+				return SETERR(ENOMEM);
+			cond->condition->state=NO_ACTIVE_COND;
+
+		}
+	if(cond->condition->state==ACTIVE_COND)
+		 return SETERR(EBUSY);
+	cond->condition->state=ACTIVE_COND;
+	cond->condition->list=NULL;
+	cond->condition->next=list_cond;	
+	list_cond->prev=cond->condition;
+	cond->condition->prev=NULL;
+	list_cond=cond->condition;
+	return SETERR(OK);
+}
+
+int pthread_cond_destroy(pthread_cond_t * cond){
+	pthread_initialize();
+	if(cond==NULL)/*Non esiste l'elemento passato*/
+		return SETERR(EINVAL);
+	if(cond->condition==NULL)/*Non è inizializzato oppure è già stato distrutto*/
+		return SETERR(EINVAL);
+	
+	if(cond->condition->list!=NULL)/*Qualcuno è in attesa sulla wait*/
+		return SETERR(EBUSY);
+	SEARCH(list_cond,cond->condition)
+	free(cond->condition);
+	cond->condition=NULL;
+	return SETERR(OK);
+}
+
+int pthread_cond_wait(pthread_cond_t * cond , pthread_mutex_t * mutex){
+/*Faccio controlli sull'integrità dei dati*/
+	if((!cond)||(!mutex))
+		return SETERR(EINVAL);
+
+	if((!cond->condition)||(!mutex->mux))
+		return SETERR(EINVAL);
+
+	if(mutex->mux->state!=LOCK)/*Non è bloccato il mutex*/
+		return SETERR(EINVAL);
+
+	if(mutex->mux->own!=ESECUTION_TID)
+		return SETERR(EPERM);
 
 
+	el_cond_t* new=(el_cond_t*)malloc(sizeof(el_cond_t);
+	if(!new)
+		return SETERR(ENOMEM);
 
+	new->next=NULL;
+	new->own=ESECUTION_TID;
+	new->mux=mutex;
+	pthread_mutex_unlock(mutex);/*Sblocco il mutex*/
+	if(!list_head)
+		list_head=new;
+	else{
+		list_tail->next=new;
+		list_tail=new;
+	}
 
+	pth_sleep(ESECUTION_TID,WAIT);
+	pthread_mutex_lock(mutex);
+	return SETERR(OK);	
+}
+
+int pthread_cond_signal(pthread_cond_t * cond){
+
+	if(!cond)
+		return SETERR(EINVAL);
+	if(!cond->condition)
+		return SETERR(EINVAL);
+
+	if(cond->condition->list_head)
+	{ el_cond_t* sleeping=list_head;
+	  list_head=list_head->next;
+	  pth_unsleep(list_head->own,WAIT);
+          free(sleeping);
+
+	}
+	return SETERR(OK);
+}
+
+int pthread_cond_broadcast(pthread_cond_t* cond){
+
+	if(!cond)
+		return SETERR(EINVAL);
+	if(!cond->condition)
+		return SETERR(EINVAL);
+	while(cond->condition->list_head)
+	{ el_cond_t* sleeping=list_head;
+	  list_head=list_head->next;
+	  pth_unsleep(list_head->own,WAIT);
+          free(sleeping);
+
+	}
+	return SETERR(OK);
+
+}
 

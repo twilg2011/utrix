@@ -32,10 +32,10 @@ pthread_initialize();
 
 
 int pthread_join(pthread_t thread, void ** value_ptr){
-pthread_initialize();
-if(thread==ESECUTION_TID)
-return SETERR(EDEADLK);
-tcb_t thread_search;
+	pthread_initialize();
+	if(thread==ESECUTION_TID)
+		return SETERR(EDEADLK);
+	tcb_t thread_search;
 /*Controllo tra quelli morti*/
 	thread_search=gettcb(thread);
 	if(!thread_search)
@@ -79,9 +79,9 @@ tcb_t thread_search;
 	
 */
 int  pthread_detach(pthread_t thread){
-pthread_initialize();
-tcb_t thread_search;
-thread_search=gettcb(thread);
+	pthread_initialize();
+	tcb_t thread_search;
+	thread_search=gettcb(thread);
 /*Cerco sulla lista morti*/
 	if(!thread_search)
 		return SETERR(ESRCH);/*Come da standard*/
@@ -116,13 +116,13 @@ Non dovrebbe mai ritornare
 
 /*Riguardare*/
 void pthread_exit(void* value_ptr){
-pthread_initialize();
-if(ESECUTION_TID==TID_MAIN)
-{
-/*Ripulisco la libreria*/
-/*Esco*/
-exit((int)((long)value_ptr));
-}
+	pthread_initialize();
+	if(ESECUTION_TID==TID_MAIN)
+	{
+	/*Ripulisco la libreria*/
+	/*Esco*/
+	exit((int)((long)value_ptr));
+	}
 	if(thread_exec->save==JOIN){
 		if(thread_exec->thread_join){/*Qualcuno aspetta*/
 			*(thread_exec->result)=value_ptr;/*Nell'indirizzo passato dalla join*/
@@ -144,7 +144,7 @@ exit((int)((long)value_ptr));
 		schedthrkill(ESECUTION_TID);/*Non è piu presente*/
 		pthread_n--;
 		}
-pth_switch(thread_exec->tcb,sched);
+	pth_switch(thread_exec->tcb,sched);
 }
 
 
