@@ -25,7 +25,7 @@ typedef partition_s* partition_t;
 typedef struct context{
   jmp_buf regs; /*registri del thread*/
   partition_t part;/*blocco dello stack*/
-  void (*f) (void *) ;/*funzione che il thread esegue*/ 
+  void* (*f) (void *) ;/*funzione che il thread esegue*/ 
   void * arg;/*argomenti*/
   unsigned char eseguito:1;/*il thread è stato eseguito*/
   } context_s;
@@ -46,7 +46,7 @@ typedef context_s* context_t;
 @param: context_t ictx contesto da inizializzare, void (*f)(void*) funzione del contesto,void* argo argomenti
 @error:ERRARG se uno func o ictx sono NULL*/
 #define pth_init(ictx,func,argo)\
-        if(!ictx||!func) return ERRARG;\
+        if((!ictx) || (func==NULL)) return ERRARG;\
 		      ictx->f=func;\
 		      ictx->arg=argo;\
                       if (_setjmp(ictx->regs)==1){ \

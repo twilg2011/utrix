@@ -10,7 +10,7 @@
 
 
 #include "pthread_sched.h"
-
+#include "pth_errno.h"
 
 /*
 #define pthread_initialize() \
@@ -45,7 +45,7 @@
 
 
 
-//int main(void); /* Dichiaration of main */
+/*int main(void); Dichiaration of main */
 
 int pthread_initialized=FALSE;
 
@@ -56,11 +56,11 @@ int pthread_initialized=FALSE;
  * @return TRUE se' la funzione ha avuto successo
  */
 int init(){
-	pthread_t tid = tcb_n;
+	pthread_t tid = tcb_n;/*Non utilizzata*/
 	
 	tcb_t tcb=(tcb_t)malloc(sizeof(tcb_s));
 	if(!tcb) return FALSE;
-	tcb->tid_f=NULL;
+	tcb->tid_f=-1;/*Matte qui nn ce va NULL ma un valore*/
 	tcb->tid=tcb_n;
 	tcb->result=NULL;
 	tcb->thread_join=NULL;
@@ -82,7 +82,7 @@ int init(){
 	thread_new=tblx;
 	
 	/* Inizializzo lo scheduler come un thread */
-	pth_init(sched,scheduler,NULL)
+	pth_init(sched,(void*(*)(void*))scheduler,NULL)
 	
 	return TRUE;
 }
@@ -100,12 +100,13 @@ int init(){
  * @return EINVAL se e' stato specificato un attributo non valido
  * @return OK se' la creazione ha avuto successo
  */
+
 int pthread_create(pthread_t *pth,/* const pthread_attr_t * att,*/ void *(*fun)(void *) , void * param){
     
 	tcb_t tcb;
 	tbl_field_t tblx;
 	tbl_field_t tblfind;
-	
+	int* att;/*Aggiunta x far passare il compilatore*/
 	if( pth == NULL ||/* att != NULL ||*/ fun == NULL || param == NULL )
 		return EAGAIN;
 	
@@ -142,6 +143,7 @@ int pthread_create(pthread_t *pth,/* const pthread_attr_t * att,*/ void *(*fun)(
 	thread_n++;
 	/* Chiamo lo scheduler */
 	scheduler(NULL);
+	return SETERR(OK);
 	
 }
 
