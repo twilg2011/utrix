@@ -1,7 +1,7 @@
 
 CC = gcc
 CFLAGS = -Wall -pedantic -c
-objects = pthread.o context.o struct.o sched.o
+objects = pthread.o context.o struct.o sched.o syncr.o
 exe=lib_thread
 
 $(exe): $(objects)
@@ -18,6 +18,9 @@ struct.o: pthread_lib.h pthread.h  pth_struct.h pth_struct.c
 
 sched.o: pthread_sched.h pthread_sched.c
 	$(CC) $(CFLAGS) pthread_sched.c
+
+syncr.o: syncr.c syncr.h
+	$(CC) $(CFLAGS) pthread_syncr.c
 
 clean: 
 	rm $(exe) $(objects) *~ core

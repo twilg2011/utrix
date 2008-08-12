@@ -47,7 +47,7 @@ typedef context_s* context_t;
 @error:ERRARG se uno func o ictx sono NULL*/
 #define pth_init(ictx,func,argo)\
         if((!ictx) || (func==NULL)) return ERRARG;\
-		      ictx->f=func;\
+		      ictx->f=(void*(*)(void*))func;\
 		      ictx->arg=argo;\
                       if (_setjmp(ictx->regs)==1){ \
 		          ictx->eseguito=1;\

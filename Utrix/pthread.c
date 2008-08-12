@@ -59,10 +59,10 @@ int init(){
 	//pthread_t tid = tcb_n;/*Non utilizzata*/
 	tbl_field_t tblx;
 	tcb_t tcb;
-	
+	tbl_field_t tblx;
 	tcb=(tcb_t)malloc(sizeof(tcb_s));
 	if(!tcb) return FALSE;
-	tcb->tid_f=-1;/*Matte qui nn ce va NULL ma un valore*/
+	tcb->tid_f=-1;
 	tcb->tid=tcb_n;
 	tcb->result=NULL;
 	tcb->thread_join=NULL;
@@ -84,7 +84,7 @@ int init(){
 	thread_new=tblx;
 	
 	/* Inizializzo lo scheduler come un thread */
-	pth_init(sched,(void*(*)(void*))scheduler,NULL)
+	pth_init(sched,scheduler,NULL)
 	
 	return TRUE;
 }
@@ -108,7 +108,7 @@ int pthread_create(pthread_t *pth,/* const pthread_attr_t * att,*/ void *(*fun)(
 	tcb_t tcb;
 	tbl_field_t tblx;
 	tbl_field_t tblfind;
-	//int* att;/*Aggiunta x far passare il compilatore*/
+
 	if( pth == NULL ||/* att != NULL ||*/ fun == NULL || param == NULL )
 		return EAGAIN;
 	
