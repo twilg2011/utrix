@@ -14,5 +14,5 @@
 
 
 
-#define BONUSTIME 0
-#define MALUSTIME 0
+#define BONUSTIME 1
+#define MALUSTIME 2
