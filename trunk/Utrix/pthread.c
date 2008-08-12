@@ -140,14 +140,8 @@ int pthread_create(pthread_t *pth, const pthread_attr_t * att, void *(*fun)(void
 	tblfind->next=tblx;
 	tblx->next=NULL;
 	thread_n++;
-	
-	//-------->> Controllo dello scheduler
+	/* Chiamo lo scheduler */
+	scheduler(NULL);
 	
 }
-
-
-
-
-
-
 
