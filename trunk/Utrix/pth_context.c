@@ -43,7 +43,7 @@ return !partitionhead;
 int addpar(partition_t new)
 {
   /*controla la correttezza dei dati*/
-  if (!new || !globalsp) return ERRARG;
+  if (!new || !globalsp) return EINVAL;
     /*se sono presenti altre partizioni*/
 	if (isempty()){
 	                partitiontail=new;
@@ -54,7 +54,7 @@ int addpar(partition_t new)
 	new->bp=globalsp-STACKWIDTH;
 	new->present=1;
 	globalsp=new->bp;
-	return NOERR;
+	return OK;
 }
 
 /*cerca una partizione libera*/
@@ -74,5 +74,5 @@ partition_t findfree()
 int releasepart(partition_t part)
 {
   if (part) part->present=0;
-  else ERRARG;
+  else EINVAL;
 }
