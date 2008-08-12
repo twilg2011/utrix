@@ -34,32 +34,33 @@ pthread_initialize();
 int pthread_join(pthread_t thread, void ** value_ptr){
 pthread_initialize();
 if(thread==ESECUTION_TID)
-return EDEADLK;
+return SETERR(EDEADLK);
 tcb_t thread_search;
 /*Controllo tra quelli morti*/
 	thread_search=gettcb(thread);
 	if(!thread_search)
-			return ESRCH;/*Come da standard*/
+			return SETERR(ESRCH);/*Come da standard*/
 
-	if(search->state==ZOMBIE)/*Se è in stato di zombie allora faccio le ultime modifiche e poi lo cancello*/
+	if(search->state==ZOMBIEST)/*Se è in stato di zombie allora faccio le ultime modifiche e poi lo cancello*/
 	{	
 		*value_ptr=*(thread->result);/*Qui da verificare c'è qualcosa che non torna, potrei perderla con il delete*/
-		schedthrkill(thread->tid)
-		return OK;
+		schedthrkill(thread->tid);
+		thread_n--;
+		return SETERR(OK);
 	}
 	else{/*Se non è zombie vedo se è joinable o no*/
 
 		
 			if(thread_tcb->save==DETACH)/*E' detach*/
-				return EINVAL;
+				return SETERR(EINVAL);
 			else
 			{	if(thread_search->thread_join)/*Qualcuna ha gia fatto la join*/
-				return EINVAL;
+				return SETERR(EINVAL);
 
 				thread_search->thread_join=thread_exec;/*Salvo il puntatore del thread che mi aspetta*/
 				thread_search->result=value_ptr;
 				pth_sleep(ESECUTION->TID,JOIN);		
-				return OK;
+				return SETERR(OK);
 			}
 				
 				
@@ -83,20 +84,21 @@ tcb_t thread_search;
 thread_search=gettcb(thread);
 /*Cerco sulla lista morti*/
 	if(!thread_search)
-		return ESRCH;/*Come da standard*/
-	if(search->state==ZOMBIE)/*Se è in stato di zombie allora lo cancello*/
+		return SETERR(ESRCH);/*Come da standard*/
+	if(search->state==ZOMBIEST)/*Se è in stato di zombie allora lo cancello*/
 	{	
-		schedthrkill(thread->tid)
-		return OK;
+		schedthrkill(thread->tid);
+		pthread_n--;
+		return SETERR(OK);
 	}
 	else{
 /*Non è zombie quindi lo pongo di tipo detach*/
 		
 			if(thread_tcb->save!=JOIN)/*Non è join*/
-				return EINVAL;
+				return SETERR(EINVAL);
 			else
 				thread_tcb->save=DETACH;
-				return OK;
+				return SETERR(OK);
 		}
 }
 /*Se aggiungiamo le opzioni devo fare un controllo in più vedi EINVAL sul manuale*/
@@ -129,7 +131,7 @@ exit((int)((long)value_ptr));
 /*Risveglio thread che ha fatto join*/
 /*Cancello l'attuale thread*/
 			schedthrkill(ESECUTION_TID);
-				
+			pthread_n--;	
 
 			}
 		else{/*Nessuno aspetta*/
@@ -140,7 +142,7 @@ exit((int)((long)value_ptr));
 	}
 	else{ 
 		schedthrkill(ESECUTION_TID);/*Non è piu presente*/
-		
+		pthread_n--;
 		}
 pth_switch(thread_exec->tcb,sched);
 }
