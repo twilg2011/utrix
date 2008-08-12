@@ -43,13 +43,10 @@ typedef context_s* context_t;
 #define pth_switch(old,next) if(_setjmp(old->regs)==0) {_longjmp(next->regs,1);}
 
 /* pth_init:inizializza un contesto che ha come funzione func con argomento argo il contesto inizializzato viene messo in ictx
- * @param: context_t ictx contesto da inizializzare
- * @param:void (*f)(void*) funzione del contesto
- * @param:void* argo argomenti
- * @error:EINVAL se uno func o ictx sono NULL
-*/
+@param: context_t ictx contesto da inizializzare, void (*f)(void*) funzione del contesto,void* argo argomenti
+@error:ERRARG se uno func o ictx sono NULL*/
 #define pth_init(ictx,func,argo)\
-        if(!ictx||!func) return EINVAL;\
+        if(!ictx||!func) return ERRARG;\
 		      ictx->f=func;\
 		      ictx->arg=argo;\
                       if (_setjmp(ictx->regs)==1){ \
@@ -59,16 +56,16 @@ typedef context_s* context_t;
 			 }
 /*inizializza globalSP allo stack pointer attuale*/
 #define pth_globalsp_init __asm__("movl %%ebp,%0":"=r"(globalsp))      
-/* bpcalc:calcola uno stackpointer assegnando una partizione al thread utilizza globalSp che deve essere inizializzata	
- * @param:il contesto a cui assegnare la partizione
- * @return:il bp della partizione assegnata
+/*bpcalc:calcola uno stackpointer assegnando una partizione al thread utilizza globalSp che deve essere inizializzata	
+@param:il contesto a cui assegnare la partizione
+@return:il bp della partizione assegnata
 */
 char* bpcalc(context_t ctx);
 /*relasepart:libera una partizione
- *@param:la partizione da liberare
- *@return:EINVAL se la partizione è null
+  @param:la partizione da liberare
+  @return:ERRARG se la partizione è null
 */
-int relasepart(partition_t part);
+extern int releasepart(partition_t part);
 
 /*sp globale, permette di inizializzare i base pointer dei thread*/
 extern char* globalsp;
