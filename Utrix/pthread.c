@@ -100,13 +100,13 @@ int init(){
  * @return EINVAL se e' stato specificato un attributo non valido
  * @return OK se' la creazione ha avuto successo
  */
-int pthread_create(pthread_t *pth, const pthread_attr_t * att, void *(*fun)(void *) , void * param){
+int pthread_create(pthread_t *pth,/* const pthread_attr_t * att,*/ void *(*fun)(void *) , void * param){
     
 	tcb_t tcb;
 	tbl_field_t tblx;
 	tbl_field_t tblfind;
 	
-	if( pth == NULL || att != NULL || fun == NULL || param == NULL )
+	if( pth == NULL ||/* att != NULL ||*/ fun == NULL || param == NULL )
 		return EAGAIN;
 	
 	/* Controlla se la libreria e' stata inizializata */
@@ -126,7 +126,7 @@ int pthread_create(pthread_t *pth, const pthread_attr_t * att, void *(*fun)(void
 	pth_init(tcb->ctx,fun,param)
 	
 	tcb->state=NUOVO;
-	tblx=(tbl_filed_t)malloc(sizeof(tbl_field_s)); 
+	tblx=(tbl_field_t)malloc(sizeof(tbl_field_s)); 
 	if(!tblx){ 
 		free(tcb); 
 		return EAGAIN; 
