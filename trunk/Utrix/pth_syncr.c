@@ -197,6 +197,7 @@ int pthread_cond_wait(pthread_cond_t * cond , pthread_mutex_t * mutex){
 	}
 
 	pth_sleep(ESECUTION_TID,WAIT);
+	pth_switch(thread_exec,sched);
 	pthread_mutex_lock(mutex);
 	return SETERR(OK);	
 }

@@ -58,7 +58,8 @@ tcb_t thread_search;
 
 				thread_search->thread_join=thread_exec;/*Salvo il puntatore del thread che mi aspetta*/
 				thread_search->result=value_ptr;
-				pth_sleep(ESECUTION->TID,JOIN);		
+				pth_sleep(ESECUTION->TID,JOIN);
+				pth_switch(thread_exec,sched);		
 				return OK;
 			}
 				
