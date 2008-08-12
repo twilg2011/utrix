@@ -59,7 +59,7 @@ int init(){
 	//pthread_t tid = tcb_n;/*Non utilizzata*/
 	tbl_field_t tblx;
 	tcb_t tcb;
-	tbl_field_t tblx;
+	
 	tcb=(tcb_t)malloc(sizeof(tcb_s));
 	if(!tcb) return FALSE;
 	tcb->tid_f=-1;
