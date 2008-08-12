@@ -46,27 +46,29 @@ void scheduler(void* arg);
 
 /*schedulerkill:elimina il tcb tid dallo scheduler 
  *@param:tid da eliminare
- *@return:
- *@except:ERRTID se il tid non esiste
+ *@except:ESRC se il tid non esiste
 */
 void schedthrkill(int tid);
 
 /*sleep:consente di far addormentare un thread
- *@param:il tid del thread da far addormentare e il motivo 
- *@except:ERRARG se il tid non esiste o why non è tra quelle possibili
+ *@param:tid del thread da far addormentare 
+         why il motivo per cui si blocca
+ *@except:EINVAL se il why non è tra quelle possibili
+        ESRCH se non esiste un thread con il tid uguale a quello passato per parametro
 */
 void pth_sleep(int tid,int why);
 
 /*unsleep:sveglia un threadf
 @param:thread da svegliare e il motivo
-@return:
-@except:ERRARG se il tid non esiste o why non è tra quelle possibili
+@except:EINVAL se il why non è tra quelle possibili
+        ESRCH se non esiste un thread con il tid uguale a quello passato per parametro
 */
 void pth_unsleep(int tid,int why);
 
 /*gettcb:funzione che cerca un tcb
-@param:il tid da cercare
+@param:tid il tid da cercare
 @return:NULL in caso di errore il tcb altrimenti
+@except:ESRCH se non esiste un thread con il tid uguale a quello passato per parametro
 */
 tcb_t gettcb(int tid);
 
