@@ -56,9 +56,11 @@ int pthread_initialized=FALSE;
  * @return TRUE se' la funzione ha avuto successo
  */
 int init(){
-	pthread_t tid = tcb_n;/*Non utilizzata*/
+	//pthread_t tid = tcb_n;/*Non utilizzata*/
+	tbl_field_t tblx;
+	tcb_t tcb;
 	
-	tcb_t tcb=(tcb_t)malloc(sizeof(tcb_s));
+	tcb=(tcb_t)malloc(sizeof(tcb_s));
 	if(!tcb) return FALSE;
 	tcb->tid_f=-1;/*Matte qui nn ce va NULL ma un valore*/
 	tcb->tid=tcb_n;
@@ -70,7 +72,7 @@ int init(){
 	
 	tcb->state=NUOVO;
 	
-	tbl_field_t tblx=(tbl_field_t)malloc(sizeof(tbl_field_s));
+	tblx=(tbl_field_t)malloc(sizeof(tbl_field_s));
 	if(!tblx){
 		free(tcb);
 		return FALSE;
@@ -106,7 +108,7 @@ int pthread_create(pthread_t *pth,/* const pthread_attr_t * att,*/ void *(*fun)(
 	tcb_t tcb;
 	tbl_field_t tblx;
 	tbl_field_t tblfind;
-	int* att;/*Aggiunta x far passare il compilatore*/
+	//int* att;/*Aggiunta x far passare il compilatore*/
 	if( pth == NULL ||/* att != NULL ||*/ fun == NULL || param == NULL )
 		return EAGAIN;
 	
