@@ -54,7 +54,7 @@ int addpar(partition_t new)
 	new->bp=globalsp-STACKWIDTH;
 	new->present=1;
 	globalsp=new->bp;
-	return NOERR;
+	return OK;
 }
 
 /*cerca una partizione libera*/

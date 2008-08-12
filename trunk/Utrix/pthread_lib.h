@@ -4,7 +4,6 @@
 /* Default attribute */
 #define DEFAULT_ATTR NULL
 
-#define OK 0
 #define FALSE 0
 #define TRUE !FALSE
 #define pthread_initialize() \

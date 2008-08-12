@@ -14,11 +14,9 @@ int pth_errno;
 		return(pth_errno);
 
 #define SETERR(err) errno=err;
-#define NOERR 0
+#define OK 0
 #define PTHREAD_CREATE 1
-#define ERRARG 2
-#define ERRTOOTHR 3
-#define ERRTID 4
+#define ERRTOOTHR 2
 
 
 
