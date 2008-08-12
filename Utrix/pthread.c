@@ -66,11 +66,11 @@ int init(){
 	tcb->thread_join=NULL;
 	
 	/* Creo il contesto del main salvandolo */
-	pth_save(tcb->ctx)
+	pth_save(tcb->ctx);
 	
 	tcb->state=NUOVO;
 	
-	tbl_field_t tblx=(tbl_filed_t)malloc(sizeof(tbl_field_s));
+	tbl_field_t tblx=(tbl_field_t)malloc(sizeof(tbl_field_s));
 	if(!tblx){
 		free(tcb);
 		return FALSE;
