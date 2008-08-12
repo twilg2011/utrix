@@ -32,35 +32,35 @@ extern context_t sched;
 
 
 /*empty:funzione vuota
-@param:NULL
-@return:la funzione non ritorna al chiamante
+ *@param:NULL
+ *@return:la funzione non ritorna al chiamante
 */
 void empty(void* arg);
 
 /*scheduler:funzione di scheduling in 
-@param:NULL
-@return:la funzione non ritorna al chiamante
+ *@param:NULL
+ *@return:la funzione non ritorna al chiamante
 */
 void scheduler(void* arg);
 
 
 /*schedulerkill:elimina il tcb tid dallo scheduler 
-@param:tid da eliminare
-@return:
-@except:ERRTID
+ *@param:tid da eliminare
+ *@return:
+ *@except:ERRTID se il tid non esiste
 */
 void schedthrkill(int tid);
 
 /*sleep:consente di far addormentare un thread
-@param:il tid del thread da far addormentare e il motivo 
-@except:ERRARG
+ *@param:il tid del thread da far addormentare e il motivo 
+ *@except:ERRARG se il tid non esiste o why non è tra quelle possibili
 */
 void pth_sleep(int tid,int why);
 
 /*unsleep:sveglia un threadf
 @param:thread da svegliare e il motivo
 @return:
-@except:ERRARG
+@except:ERRARG se il tid non esiste o why non è tra quelle possibili
 */
 void pth_unsleep(int tid,int why);
 
@@ -71,7 +71,5 @@ void pth_unsleep(int tid,int why);
 tcb_t gettcb(int tid);
 
 /*jumanji:dealloca tutte le strutture necessarie allo scheduler e lo scheduler stesso
-@param:
-@return:
 */
 void jumanji();

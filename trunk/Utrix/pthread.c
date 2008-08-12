@@ -3,7 +3,7 @@
  *  Utrix
  *
  *  Created by Matteo Casenove on 10/07/08.
- *  Copyright 2008 __MyCompanyName__. All rights reserved.
+ *  Copyright 2008 Utrix. All rights reserved.
  *
  */
 
@@ -52,7 +52,7 @@
 /*
  * init: Crea il thread che gestira' il main e inizializza lo scheduler come un thread.
  *
- * @return FALSE se e' accorso un errore duranete la creazione del processo
+ * @return FALSE se e' accorso un errore duranete la creazione del thread
  * @return TRUE se' la funzione ha avuto successo
  */
 int init(){
@@ -96,7 +96,7 @@ int init(){
  * @param	fun rappresenta la procedura di esecuzione del thread
  * @param	param rappresenta i parametri della procedura passata
  *
- * @return EAGAIN se e' accorso un errore duranete la creazione del processo
+ * @return EAGAIN se e' accorso un errore duranete la creazione del thread
  * @return EINVAL se e' stato specificato un attributo non valido
  * @return OK se' la creazione ha avuto successo
  */
