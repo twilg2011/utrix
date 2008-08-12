@@ -43,7 +43,8 @@ tcb_t thread_search;
 
 	if(search->state==ZOMBIE)/*Se è in stato di zombie allora faccio le ultime modifiche e poi lo cancello*/
 	{	
-		*value_ptr=*(thread->result);/*Qui da verificare c'è qualcosa che non torna, potrei perderla con il delete*/
+		if(value_ptr)/*Se non è NULL il valore dove salvare il risultato*/
+			*value_ptr=*(thread->result);/*Qui da verificare c'è qualcosa che non torna, potrei perderla con il delete*/
 		schedthrkill(thread->tid)
 		return OK;
 	}
@@ -125,7 +126,8 @@ exit((int)((long)value_ptr));
 	releasepart(thread_exec->part);/*Cancello la partizione*/
 	if(thread_exec->save==JOIN){
 		if(thread_exec->thread_join){/*Qualcuno aspetta*/
-			*(thread_exec->result)=value_ptr;/*Nell'indirizzo passato dalla join*/
+			if(thread_exec->result)/*E non è NULL il posto dove salvare il valore di ritorno*/
+				*(thread_exec->result)=value_ptr;/*Nell'indirizzo passato dalla join*/
 		         pth_unsleep(thread_join->tid,JOIN);
 /*Risveglio thread che ha fatto join*/
 /*Cancello l'attuale thread*/
