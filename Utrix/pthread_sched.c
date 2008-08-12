@@ -129,6 +129,8 @@ void scheduler(void* arg)
   #ifdef DEBUG
   printf("parto%p\n",sched);
   #endif
+   
+  thread_exec=selectedthr->tcb;
   
   /*passo al thread che ho selezionarto*/
   pth_switch(sched,selectedthr->tcb->ctx);
@@ -216,7 +218,7 @@ void setprior(tbl_field_t thr,int prior)
   /*funzione interna evitabile*/
   if(!thr) 
   { 
-    SETERR(ERRARG);
+    SETERR(EINVAL);
     return;
   }
   tbl_field_t tcb;
@@ -234,7 +236,7 @@ void setprior(tbl_field_t thr,int prior)
 /*ricalcola la priorità del thread*/
 void recalcprior(tbl_field_t thr)
 {
- if(!thr) SETERR(ERRARG);
+ if(!thr) SETERR(EINVAL);
  if (thr->tcb->time<=BONUSTIME && thr->tcb->prior>-1) setprior(thr,thr->tcb->prior-1);
  if (thr->tcb->time>=MALUSTIME && thr->tcb->prior<1) setprior(thr,thr->tcb->prior+1); 
   thr->tcb->state=PRONTO;
@@ -246,7 +248,7 @@ void schedthrkill(int tid)
  tbl_field_t kill,parent;
  /*cerco il thread da uccidere*/
  if (!searchonall(tid,&kill,&parent)) {
- SETERR(ERRTID);
+ SETERR(ESRC);
  return;
  }
  /*lo elimino dallo scheduler*/
@@ -262,8 +264,10 @@ tbl_field_t select_tcb,parent;
 stampalista(PRIOR(1));
 #endif
 /*controllo i dati*/
-if (searchonall(tid,&select_tcb,&parent) && why<NUM_WHY && why>=0) 
+if (why<NUM_WHY && why>=0) 
 {
+  if (searchonall(tid,&select_tcb,&parent) )
+  {
    #ifdef DEBUG
    printf("sleep:%i\n",select_tcb->tcb->tid);
    #endif
@@ -273,21 +277,27 @@ if (searchonall(tid,&select_tcb,&parent) && why<NUM_WHY && why>=0)
    /*imposto lo stato*/
    select_tcb->tcb->state=BLOCCATO;
    return;
+  }
+  SETERR(ESRCH);
 }
-SETERR(ERRARG);
+SETERR(EINVAL);
 }
 
 void pth_unsleep(int tid,int why){
 tbl_field_t selected_tcb,parent;
 /*controllo i dati*/
-if (why<NUM_WHY && why>=0 && searchonlist(tid,thread_blocked[why],&selected_tcb,&parent) ) 
+if (why<NUM_WHY && why>=0) 
 {
+ if ( searchonlist(tid,thread_blocked[why],&selected_tcb,&parent))
+ { 
    /*rimetto il thread nella lista corrispondente alla sua priorità*/
    ELIM(selected_tcb,parent,thread_blocked[why]);
    ADDELEM(selected_tcb,thread_priortail[PRIOR(selected_tcb->tcb->prior)],thread_priorhead[PRIOR(selected_tcb->tcb->prior)]);
    selected_tcb->tcb->state=PRONTO;
+ }
+ SETERR(ESRCH);
 }
-SETERR(ERRARG);
+SETERR(EINVAL);
 }
 
 
@@ -311,6 +321,7 @@ tcb_t gettcb(int tid){
     if (searchonlist(tid,thread_blocked[i],&serc,&par))return serc->tcb;
 	i++; 
   }
+  SETERR(ESRCH);
   return NULL;
 }
 

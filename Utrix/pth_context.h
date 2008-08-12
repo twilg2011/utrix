@@ -46,10 +46,10 @@ typedef context_s* context_t;
  * @param: context_t ictx contesto da inizializzare
  * @param:void (*f)(void*) funzione del contesto
  * @param:void* argo argomenti
- * @error:ERRARG se uno func o ictx sono NULL
+ * @error:EINVAL se uno func o ictx sono NULL
 */
 #define pth_init(ictx,func,argo)\
-        if(!ictx||!func) return ERRARG;\
+        if(!ictx||!func) return EINVAL;\
 		      ictx->f=func;\
 		      ictx->arg=argo;\
                       if (_setjmp(ictx->regs)==1){ \
@@ -66,7 +66,7 @@ typedef context_s* context_t;
 char* bpcalc(context_t ctx);
 /*relasepart:libera una partizione
  *@param:la partizione da liberare
- *@return:ERRARG se la partizione è null
+ *@return:EINVAL se la partizione è null
 */
 int relasepart(partition_t part);
 
