@@ -60,10 +60,7 @@ void longtermsched();
 void recalcprior(tbl_field_t thr);
 
 void empty(void* arg){
-while(TRUE)
-{
- pth_switch(pth_empty,sched);
-}
+return;
 }
 /*cerca nella lista list il thread con il tid passato torna il thread ed il predecessore*/
 int searchonlist(int tid, tbl_field_t list, tbl_field_t* serc , tbl_field_t* parent)
@@ -76,7 +73,7 @@ int searchonlist(int tid, tbl_field_t list, tbl_field_t* serc , tbl_field_t* par
    {
      /*se lo trovo esco e torno TRUE*/
 	 if ((*serc)->tcb->tid==tid) return TRUE;
-	 (*parent)=(*tcb);
+	 (*parent)=(*serc);
 	 (*serc)=(*serc)->next;
    } 
    /*non ho trovato il tid cercato*/
@@ -103,11 +100,13 @@ int searchonall(int tid,tbl_field_t* serc,tbl_field_t* parent)
 
 void scheduler(void* arg)
 {
+  /*thread schedulato*/
+ tbl_field_t  selectedthr;
+ 
  #ifdef DEBUG
  printf("scheduler\n");
  #endif
- /*thread schedulato*/
- tbl_field_t  selectedthr;
+
  /*inizializzo a 0 il nomero dei thread schedulabili*/
  scheduledthr_n=0;
  while(TRUE)
@@ -179,13 +178,17 @@ tbl_field_t selectthr()
 /*consente di caricare tutti i thread nuovi nello scheduler*/
 void longtermsched()
 { 
+  tbl_field_t null;
+  tbl_field_t  new;
+  
  #ifdef DEBUG
  printf("longterm\n");
  #endif
+ 
  /*campo della tabella fittizio*/
- tbl_field_t null=NULL;
+ null=NULL;
  /*imposto la variabile di scorrimento della lista nuovi*/
- tbl_field_t  new=thread_new;
+ new=thread_new;
  /*scorro la lista e carico i thread*/
  while(new && scheduledthr_n<thread_n)
  {
@@ -212,6 +215,8 @@ void longtermsched()
 /*setta la priorità di thr a prior*/
 void setprior(tbl_field_t thr,int prior)
 {
+  tbl_field_t tcb;
+  tbl_field_t  parent;
   #ifdef DEBUG
   printf("setprior:");
   #endif
@@ -221,8 +226,6 @@ void setprior(tbl_field_t thr,int prior)
     SETERR(EINVAL);
     return;
   }
-  tbl_field_t tcb;
-  tbl_field_t  parent;
   /*cerco l'elemento*/
  if ( searchonlist(thr->tcb->tid,thread_priorhead[PRIOR(thr->tcb->prior)],&tcb,&parent))
  {
@@ -248,7 +251,7 @@ void schedthrkill(int tid)
  tbl_field_t kill,parent;
  /*cerco il thread da uccidere*/
  if (!searchonall(tid,&kill,&parent)) {
- SETERR(ESRC);
+ SETERR(ESRCH);
  return;
  }
  /*lo elimino dallo scheduler*/
@@ -303,8 +306,6 @@ SETERR(EINVAL);
 
  
 tcb_t gettcb(int tid){
-  tcb_t tcb;
-  tcb_t parent;
   int i=0;
   tbl_field_t serc;
   tbl_field_t par;

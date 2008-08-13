@@ -27,7 +27,7 @@ typedef struct context{
   partition_t part;/*blocco dello stack*/
   void* (*f) (void *) ;/*funzione che il thread esegue*/ 
   void * arg;/*argomenti*/
-  unsigned char eseguito:1;/*il thread è stato eseguito*/
+  unsigned char eseguito;/*il thread è stato eseguito*/
   } context_s;
   
 typedef context_s* context_t;

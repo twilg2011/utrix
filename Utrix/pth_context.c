@@ -17,6 +17,7 @@ int thread_n;
 char* globalsp;
 
 partition_t findfree();
+int addpar(partition_t new);
 
 char* bpcalc(context_t ctx)
 {
@@ -74,5 +75,6 @@ partition_t findfree()
 int releasepart(partition_t part)
 {
   if (part) part->present=0;
-  else EINVAL;
+  else return SETERR(EINVAL);
+  return OK;
 }
