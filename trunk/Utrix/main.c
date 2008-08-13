@@ -69,7 +69,6 @@ int main(void)
    pth_switch(mctx,cf);
    //pth_switch(mctx,cw);
    printf("fine\n");*/
-   tbl_field_t tm,tw,tf;
    thread_new=malloc(sizeof(tbl_field_s));
    thread_new->next=malloc(sizeof(tbl_field_s));
    thread_new->next->next=malloc(sizeof(tbl_field_s));

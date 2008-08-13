@@ -29,7 +29,8 @@ pthread_initialize();
 	EDEADLK se il tid passato come parametro è uguale al tid del thread chiamante
 */
 
-
+/***********ERRORE************/
+/*non c'è modifica al thread_n dopo le kill*/
 
 int pthread_join(pthread_t thread, void ** value_ptr){
 pthread_initialize();
