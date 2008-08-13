@@ -32,12 +32,14 @@ pthread_initialize();
 
 
 int pthread_join(pthread_t thread, void ** value_ptr){
-pthread_initialize();
-if(thread==ESECUTION_TID)
-return EDEADLK;
 tcb_t thread_search;
+
+	pthread_initialize();
+	if(thread==ESECUTION_TID)
+		return EDEADLK;
 /*Controllo tra quelli morti*/
 	thread_search=gettcb(thread);
+
 	if(!thread_search)
 			return ESRCH;/*Come da standard*/
 
@@ -81,9 +83,10 @@ tcb_t thread_search;
 	
 */
 int  pthread_detach(pthread_t thread){
-pthread_initialize();
+
 tcb_t thread_search;
-thread_search=gettcb(thread);
+	pthread_initialize();
+	thread_search=gettcb(thread);
 /*Cerco sulla lista morti*/
 	if(!thread_search)
 		return ESRCH;/*Come da standard*/
@@ -118,13 +121,13 @@ Non dovrebbe mai ritornare
 
 /*Riguardare*/
 void pthread_exit(void* value_ptr){
-pthread_initialize();
-if(ESECUTION_TID==TID_MAIN)
-{
-/*Ripulisco la libreria*/
-/*Esco*/
-exit((int)((long)value_ptr));
-}
+	pthread_initialize();
+	if(ESECUTION_TID==TID_MAIN)
+	{
+	/*Ripulisco la libreria*/
+	/*Esco*/
+		exit((int)((long)value_ptr));
+	}
 	releasepart(thread_exec->part);/*Cancello la partizione*/
 	if(thread_exec->save==JOIN){
 		if(thread_exec->thread_join){/*Qualcuno aspetta*/
