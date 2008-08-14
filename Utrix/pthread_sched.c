@@ -41,6 +41,7 @@ clock_t pth_time;
 						   list=elem;\
 						   }
 						   
+#define DEBUG
 #ifdef DEBUG 
 /*stampa la lista i-esima trà quelle delle priorità*/
 void stampalista(int i)
@@ -60,6 +61,7 @@ void longtermsched();
 void recalcprior(tbl_field_t thr);
 
 void empty(void* arg){
+abort();
 return;
 }
 /*cerca nella lista list il thread con il tid passato torna il thread ed il predecessore*/
@@ -126,7 +128,7 @@ void scheduler(void* arg)
   pth_time=clock();
  
   #ifdef DEBUG
-  printf("parto%p\n",sched);
+  printf("parto%p\n",selectedthr);
   #endif
    
   thread_exec=selectedthr->tcb;
@@ -135,14 +137,14 @@ void scheduler(void* arg)
   pth_switch(sched,selectedthr->tcb->ctx);
   
   #ifdef DEBUG
-  printf("ritorno %i\n",selectedthr->tcb->tid);
+  printf("ritorno %p\n",selectedthr);
   #endif
   /*calcolo il tempo che ha utilizzato*/
   pth_time=clock()-pth_time;
   /*aggiorno il suo tempo di cpu globale*/
   selectedthr->tcb->time=+pth_time;
   /*se non è stato bloccato ricalcolo la sua priorità*/
-  if (selectedthr->tcb->state==EXEC) recalcprior(selectedthr);
+  recalcprior(selectedthr);
   
   #ifdef DEBUG
   printf("altro giro\n");
@@ -218,7 +220,7 @@ void setprior(tbl_field_t thr,int prior)
   tbl_field_t tcb;
   tbl_field_t  parent;
   #ifdef DEBUG
-  printf("setprior:");
+  printf("setprior:%i\n",prior);
   #endif
   /*funzione interna evitabile*/
   if(!thr) 
@@ -232,14 +234,17 @@ void setprior(tbl_field_t thr,int prior)
   /*se lo trovo lo sposto*/
   ELIM(tcb, parent,thread_priorhead[PRIOR( thr->tcb->prior)]);
   thr->tcb->prior=prior;
-  ADDELEM(tcb,thread_priortail[PRIOR(prior)],thread_priorhead[PRIOR(prior)]);
+  ADDELEM(thr,thread_priortail[PRIOR(prior)],thread_priorhead[PRIOR(prior)]);
   } else thr->tcb->prior=prior;/*è bloccato calcolo la priorità ma lo lascio stare*/
-  
+  #ifdef DEBUG
+  stampalista(thread_priortail[0]);
+  #endif 
 }
 /*ricalcola la priorità del thread*/
 void recalcprior(tbl_field_t thr)
 {
  if(!thr) SETERR(EINVAL);
+ if (thr->tcb->state!=EXEC) return;
  if (thr->tcb->time<=BONUSTIME && thr->tcb->prior>-1) setprior(thr,thr->tcb->prior-1);
  if (thr->tcb->time>=MALUSTIME && thr->tcb->prior<1) setprior(thr,thr->tcb->prior+1); 
   thr->tcb->state=PRONTO;
