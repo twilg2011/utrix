@@ -1,6 +1,6 @@
-#include "pth_struct.h"
-#include "pth_syncr.h"
 
+#include "pth_syncr.h"
+#include "pth_errno.h"
 #define SEARCH(list,elem) if(elem->prev==NULL)/*E' in cima*/\
 			{	elem->next->prev=NULL;\
 				list=elem->next;\
@@ -13,6 +13,7 @@
 					elem->next->prev=elem->prev;\
 					elem->prev->next=elem->next;\
 				}
+
 
 
 
@@ -93,7 +94,7 @@ pthread_initialize();
 		return SETERR(EINVAL);
 	if((mutex->mux->own==ESECUTION_TID)&&(mutex->mux->state==LOCK))
 		return SETERR(EDEADLK);
-	lock(mutex->mux->val);
+	lock(mutex->mux->val);/*<---------------------cosa faccio rimango inattivo o passo il controllo allo scheduler?*/
 	mutex->mux->state=LOCK;
 
 	mutex->mux->own= ESECUTION_TID;
@@ -143,7 +144,8 @@ if(attr)
 	if(cond->condition->state==ACTIVE_COND)
 		 return SETERR(EBUSY);
 	cond->condition->state=ACTIVE_COND;
-	cond->condition->list=NULL;
+	cond->condition->list_head=NULL;
+        cond->condition->list_tail=NULL;
 	cond->condition->next=list_cond;	
 	list_cond->prev=cond->condition;
 	cond->condition->prev=NULL;
@@ -158,7 +160,7 @@ int pthread_cond_destroy(pthread_cond_t * cond){
 	if(cond->condition==NULL)/*Non è inizializzato oppure è già stato distrutto*/
 		return SETERR(EINVAL);
 	
-	if(cond->condition->list!=NULL)/*Qualcuno è in attesa sulla wait*/
+	if(cond->condition->list_head!=NULL)/*Qualcuno è in attesa sulla wait*/
 		return SETERR(EBUSY);
 	SEARCH(list_cond,cond->condition)
 	free(cond->condition);
@@ -181,7 +183,7 @@ int pthread_cond_wait(pthread_cond_t * cond , pthread_mutex_t * mutex){
 		return SETERR(EPERM);
 
 
-	el_cond_t* new=(el_cond_t*)malloc(sizeof(el_cond_t);
+	el_cond_t* new=(el_cond_t*)malloc(sizeof(el_cond_t));
 	if(!new)
 		return SETERR(ENOMEM);
 
@@ -189,15 +191,15 @@ int pthread_cond_wait(pthread_cond_t * cond , pthread_mutex_t * mutex){
 	new->own=ESECUTION_TID;
 	new->mux=mutex;
 	pthread_mutex_unlock(mutex);/*Sblocco il mutex*/
-	if(!list_head)
-		list_head=new;
+	if(!cond->condition->list_head)
+		cond->condition->list_head=new;
 	else{
-		list_tail->next=new;
-		list_tail=new;
+		cond->condition->list_tail->next=new;
+		cond->condition->list_tail=new;
 	}
 
 	pth_sleep(ESECUTION_TID,WAIT);
-	pth_switch(thread_exec,sched);
+	pth_switch(thread_exec->ctx,sched);
 	pthread_mutex_lock(mutex);
 	return SETERR(OK);	
 }
@@ -210,9 +212,9 @@ int pthread_cond_signal(pthread_cond_t * cond){
 		return SETERR(EINVAL);
 
 	if(cond->condition->list_head)
-	{ el_cond_t* sleeping=list_head;
-	  list_head=list_head->next;
-	  pth_unsleep(list_head->own,WAIT);
+	{ el_cond_t* sleeping=cond->condition->list_head;
+	  cond->condition->list_head=cond->condition->list_head->next;
+	  pth_unsleep(sleeping,WAIT);
           free(sleeping);
 
 	}
@@ -226,9 +228,9 @@ int pthread_cond_broadcast(pthread_cond_t* cond){
 	if(!cond->condition)
 		return SETERR(EINVAL);
 	while(cond->condition->list_head)
-	{ el_cond_t* sleeping=list_head;
-	  list_head=list_head->next;
-	  pth_unsleep(list_head->own,WAIT);
+	{ el_cond_t* sleeping=cond->condition->list_head;
+	  cond->condition->list_head=cond->condition->list_head->next;
+	  pth_unsleep(sleeping,WAIT);
           free(sleeping);
 
 	}

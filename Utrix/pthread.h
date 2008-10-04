@@ -13,7 +13,6 @@
 #include<time.h>
 #include<unistd.h>
 #include<errno.h>
-
 struct pthread_mutex_s;
 struct pthread_cond_s;
 typedef unsigned int pthread_t;

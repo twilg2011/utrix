@@ -16,11 +16,11 @@
 #define LOW_PRIOR 1
 #define PRIOR(p) (p+1)
 
-#define NUM_WHY 3
+#define NUM_WHY 4
 #define MUTEX 0
 #define JOIN 1
 #define ZOMBIE 2
-
+#define WAIT 3
 
 #define NUOVO 0
 #define PRONTO 1
