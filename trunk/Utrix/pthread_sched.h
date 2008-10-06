@@ -73,5 +73,5 @@ void pth_unsleep(int tid,int why);
 tcb_t gettcb(int tid);
 
 /*jumanji:dealloca tutte le strutture necessarie allo scheduler e lo scheduler stesso
-*/
+	*/
 void jumanji();

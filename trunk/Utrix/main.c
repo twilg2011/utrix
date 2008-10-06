@@ -88,6 +88,14 @@ int main(void)
 
    thread_n=3;
    pth_switch(mctx,sched);
+   //int i;
+   /*int v;
+   char j;
+   char w;
+   char u;
+   char k;
+   printf("%i",sizeof(int));
+   for(i=0;i<1000;i++) printf("%i-",i);*/
    pth_switch(mctx,sched);
    printf("fine\n");
 }

@@ -47,7 +47,7 @@
 
 /*int main(void); Dichiaration of main */
 
-int pthread_initialized=FALSE;
+	int pthread_initialized=FALSE;
 
 /*
  * init: Crea il thread che gestira' il main e inizializza lo scheduler come un thread.
