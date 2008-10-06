@@ -39,13 +39,13 @@ typedef struct tbl_field{
 typedef tbl_field_s* tbl_field_t;
 
 
-extern int tcb_n;
+int tcb_n;
 /*numero dei thread creati*/
-extern int  thread_n;
-extern tcb_t thread_exec;/*Thread attualmente in esecuzione*/
+int  thread_n;
+tcb_t thread_exec;/*Thread attualmente in esecuzione*/
 /*liste di thread*/
 /*thread appena creati e non schedulati*/
-extern tbl_field_t thread_new;
+tbl_field_t thread_new;
 
 
 
