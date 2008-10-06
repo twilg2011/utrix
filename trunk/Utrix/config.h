@@ -8,7 +8,8 @@
  */
 
 #define MAXTHREAD 5
-#define STACKWIDTH 100/*0x64*/
+
+#define STACKWIDTH 500/*0x64*/
 
 
 
