@@ -54,7 +54,7 @@ void schedthrkill(int tid);
  *@param:tid del thread da far addormentare 
          why il motivo per cui si blocca
  *@except:EINVAL se il why non è tra quelle possibili
-        ESRCH se non esiste un thread con il tid uguale a quello passato per parametro
+          ESRCH se non esiste un thread con il tid uguale a quello passato per parametro
 */
 void pth_sleep(int tid,int why);
 
@@ -72,6 +72,16 @@ void pth_unsleep(int tid,int why);
 */
 tcb_t gettcb(int tid);
 
+/*addthr:consente di schedulare un nuovo thread
+@param:thread da rendere schedulabile
+@except:EINVAL se tcb è NULL
+		ENOMEM se la memoria è terminata
+*/
+void addthr(tcb_t tcb);
+
 /*jumanji:dealloca tutte le strutture necessarie allo scheduler e lo scheduler stesso
 	*/
 void jumanji();
+
+
+

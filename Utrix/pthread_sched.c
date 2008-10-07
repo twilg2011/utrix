@@ -42,7 +42,7 @@ clock_t pth_time;
 						   }
 						   
 
-#ifdef noDEBUG 
+#ifdef DEBUG 
 /*stampa la lista i-esima trà quelle delle priorità*/
 void stampalista(int i)
 { 	
@@ -105,7 +105,7 @@ void scheduler(void* arg)
   /*thread schedulato*/
  tbl_field_t  selectedthr;
  
- #ifdef DEBUG1
+ #ifdef DEBUG
  printf("scheduler\n");
  #endif
 
@@ -119,7 +119,7 @@ void scheduler(void* arg)
 	  empty(NULL);
   }else{
   
-  #ifdef DEBUG1
+  #ifdef DEBUG
   printf("selected:%i\n",selectedthr->tcb->tid);
   #endif
   /*imposto lo stato corretto*/
@@ -145,10 +145,6 @@ void scheduler(void* arg)
   selectedthr->tcb->time=+pth_time;
   /*se non è stato bloccato ricalcolo la sua priorità*/
   recalcprior(selectedthr);
-  
-  #ifdef DEBUG1
-  printf("altro giro\n");
-  #endif
   }
  }
 }
@@ -159,14 +155,14 @@ tbl_field_t selectthr()
 {  
    int i=-1;
    
-   #ifdef DEBUG1
+   #ifdef DEBUG
    printf("selector\n");
    #endif
    /*scorro i thread schedulabili*/
    while(i<NUM_PRIOR-1)
    {
 	 
-	 #ifdef noDEBUG
+	 #ifdef DEBUG
      printf("lista:%i\n",i);
 	 stampalista(PRIOR(i));
 	 #endif
@@ -183,7 +179,7 @@ void longtermsched()
   tbl_field_t null;
   tbl_field_t  new;
   
- #ifdef DEBUG1
+ #ifdef DEBUG
  printf("longterm\n");
  #endif
  
@@ -204,11 +200,6 @@ void longtermsched()
    ADDELEM(new,thread_priortail[PRIOR(DEFAULT_PRIOR)],thread_priorhead[PRIOR(DEFAULT_PRIOR)]);
    /*incremento il numero di thread schedulati*/
    scheduledthr_n++;
-   
-   #ifdef DEBUG1
-   printf("%i charged tid:%i\n",scheduledthr_n,new->tcb->tid);
-   stampalista(PRIOR(DEFAULT_PRIOR));
-   #endif
    new=thread_new;
  }
 }
@@ -232,22 +223,9 @@ void setprior(tbl_field_t thr,int prior)
  {
   /*se lo trovo lo sposto*
   */
-#ifdef noDEBUG 
-  printf("mmmmmmmmmmmmm,%i,%i,\n",thr->tcb->prior,tcb->tcb->prior);
-  int i;
-  for(i=-1;i<2;i++) stampalista(PRIOR(i));	
-  #endif
   ELIM(tcb, parent,thread_priorhead[PRIOR( thr->tcb->prior)]);
-  #ifdef DEBUG
-  stampalista(PRIOR(thr->tcb->prior));
-  #endif
   thr->tcb->prior=prior; 
   ADDELEM(thr,thread_priortail[PRIOR(prior)],thread_priorhead[PRIOR(prior)]);
-  #ifdef noDEBUG
-  printf("add\n");
-  for(i=0;i<3;i++)stampalista(i);
-  printf("andadd\n");
-  #endif
   } else thr->tcb->prior=prior;/*è bloccato calcolo la priorità ma lo lascio stare*/
 }
 /*ricalcola la priorità del thread*/
@@ -278,15 +256,12 @@ void schedthrkill(int tid)
 void pth_sleep(int tid,int why)
 {
 tbl_field_t select_tcb,parent;
-#ifdef DEBUG1
-stampalista(PRIOR(1));
-#endif
 /*controllo i dati*/
 if (why<NUM_WHY && why>=0) 
 {
   if (searchonall(tid,&select_tcb,&parent) )
   {
-   #ifdef DEBUG1
+   #ifdef DEBUG
    printf("sleep:%i\n",select_tcb->tcb->tid);
    #endif
    /*metto il thread nella lista dedicata*/
