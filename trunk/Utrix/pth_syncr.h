@@ -54,3 +54,6 @@ int init;
 /*Lista dei mutex attivi*/
 extern pth_mutex_t* list_mux;
 extern pth_cond_t* list_cond;
+
+
+ 
