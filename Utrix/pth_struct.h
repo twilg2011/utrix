@@ -26,6 +26,7 @@ typedef struct tcb{
 	int state;
 	clock_t time;
 	char save;
+	sigset_t sig;
 } tcb_s;
 
 typedef tcb_s* tcb_t;
