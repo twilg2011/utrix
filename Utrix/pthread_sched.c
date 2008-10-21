@@ -104,7 +104,7 @@ void scheduler(void* arg)
 {
   /*thread schedulato*/
  tbl_field_t  selectedthr;
- sigset_t oldsig;
+ //sigset_t oldsig;
  #ifdef DEBUG
  printf("scheduler\n");
  #endif
@@ -135,13 +135,13 @@ void scheduler(void* arg)
   thread_exec=selectedthr->tcb;
   
   /*imposto il nuovo handler dei segnali*/
-  sigprocmask(SIG_SETMASK,selectedthr->tcb->sig,&oldsig);
+  //sigprocmask(SIG_SETMASK,selectedthr->tcb->sig,&oldsig);
   
   /*passo al thread che ho selezionarto*/
   pth_switch(sched,selectedthr->tcb->ctx);
   
   /*salvo l'handler dei segnali*/
-  sigprocmask(SIG_SETMASK,oldsig,&(selectedthr->tcb->sig));
+ // sigprocmask(SIG_SETMASK,oldsig,&(selectedthr->tcb->sig));
    
   #ifdef DEBUG
   printf("ritorno %p\n",selectedthr);
@@ -150,7 +150,7 @@ void scheduler(void* arg)
   pth_time=clock()-pth_time;
   
   /*controllo dello stack*/
-  if (selectedthr->tcb->ctx->next & selectedthr->tcb->ctx->part->regs[5] >= selectedthr->tcb->ctx->part->next->bp) abort();
+  //if (selectedthr->tcb->ctx->next & selectedthr->tcb->ctx->part->regs[5] >= selectedthr->tcb->ctx->part->next->bp) abort();
   /*aggiorno il suo tempo di cpu globale*/
   selectedthr->tcb->time=+pth_time;
   /*se non è stato bloccato ricalcolo la sua priorità*/

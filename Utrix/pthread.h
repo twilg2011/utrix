@@ -18,7 +18,7 @@ struct pthread_cond_s;
 typedef unsigned int pthread_t;
 typedef struct pthread_mutex_s pthread_mutex_t;
 typedef struct pthread_cond_s pthread_cond_t ;
-
+typedef int pthread_mutexattr_t;
 
 
 extern int       pthread_create(pthread_t *,/* const pthread_attr_t*,*/ void* (*)(void *), void *);
@@ -28,7 +28,7 @@ extern void      pthread_exit(void *);
 extern int       pthread_join(pthread_t, void **);
 extern int       pthread_kill(pthread_t, int);
 extern pthread_t pthread_self(void);/*Ritorna il tid del thread che la chiama ho pensato di aggiungerla perchè utile che ne dite?*/
-extern int 	 pthread_mutex_init(pthread_mutex_t* mutex/*, const pthread_mutexattr_t * attr*/);
+extern int 	 pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t * attr);
 extern int 	 pthread_mutex_destroy(pthread_mutex_t* mutex);
 extern int	 pthread_mutex_lock(pthread_mutex_t *mutex);
 extern int 	 pthread_mutex_unlock(pthread_mutex_t *mutex);

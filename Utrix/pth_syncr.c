@@ -22,7 +22,6 @@ void unlock(int* val);
 pth_mutex_t* list_mux=NULL; /*In realtà inizializzata alla creazione della libreria*/
 pth_cond_t* list_cond=NULL;
 
-
 /*pthread_mutex_init:Inizializza un mutex in base agli attributi(per ipotesi solo NULL ora)
 @param: mutex: il mutex da inizializzare
 	attr: gli attributi del mutex
@@ -30,7 +29,7 @@ pth_cond_t* list_cond=NULL;
 @error:EINVAL se il valore del mutex è sbagliato
        EAGAIN se non ho più spazio in memoria 
        EBUSY se il mutex è gia inizializzato*/
-int pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t * attr){
+int pthread_mutex_init(pthread_mutex_t* mutex,const pthread_mutexattr_t * attr){
 pthread_initialize();
 	if(!mutex)
 		return SETERR(EINVAL);
@@ -94,7 +93,7 @@ pthread_initialize();
 		return SETERR(EINVAL);
 	if((mutex->mux->own==ESECUTION_TID)&&(mutex->mux->state==LOCK))
 		return SETERR(EDEADLK);
-	lock(mutex->mux->val);/*<---------------------cosa faccio rimango inattivo o passo il controllo allo scheduler?*/
+	lock((void*)mutex->mux->val);/*<---------------------cosa faccio rimango inattivo o passo il controllo allo scheduler?*/
 	mutex->mux->state=LOCK;
 
 	mutex->mux->own= ESECUTION_TID;
@@ -107,15 +106,15 @@ pthread_initialize();
 @error:EINVAL se il valore del mutex è sbagliato
        EPERM se si richiede una unlock su un mutex che non appartiene al thread che esegue l'operazione.*/
 int pthread_mutex_unlock(pthread_mutex_t *mutex){
-pthread_initialize();
-/*Se introduco gli attributi qui qualcosa cambia*/
-	if(!mutex)
-		return SETERR(EINVAL);
-	if(!mutex->mux)
-		return SETERR(EINVAL);
-	if(mutex->mux->own!=ESECUTION_TID)
-		return SETERR(EPERM);
-	unlock(mutex->mux->val);
+	pthread_initialize();
+	/*Se introduco gli attributi qui qualcosa cambia*/
+		if(!mutex)
+			return SETERR(EINVAL);
+		if(!mutex->mux)
+			return SETERR(EINVAL);
+		if(mutex->mux->own!=ESECUTION_TID)
+			return SETERR(EPERM);
+		unlock((void*)mutex->mux->val);
 	mutex->mux->state=INIT;
 	return SETERR(OK);
 
@@ -214,7 +213,7 @@ int pthread_cond_signal(pthread_cond_t * cond){
 	if(cond->condition->list_head)
 	{ el_cond_t* sleeping=cond->condition->list_head;
 	  cond->condition->list_head=cond->condition->list_head->next;
-	  pth_unsleep(sleeping,WAIT);
+	  pth_unsleep(sleeping->own,WAIT);
           free(sleeping);
 
 	}
@@ -230,7 +229,7 @@ int pthread_cond_broadcast(pthread_cond_t* cond){
 	while(cond->condition->list_head)
 	{ el_cond_t* sleeping=cond->condition->list_head;
 	  cond->condition->list_head=cond->condition->list_head->next;
-	  pth_unsleep(sleeping,WAIT);
+	  pth_unsleep(sleeping->own,WAIT);
           free(sleeping);
 
 	}
