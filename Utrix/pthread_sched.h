@@ -22,6 +22,7 @@
 #define ZOMBIE 2
 #define WAIT 3
 
+/* Thread State */
 #define NUOVO 0
 #define PRONTO 1
 #define BLOCCATO 2
