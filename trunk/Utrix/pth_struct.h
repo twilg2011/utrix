@@ -23,10 +23,10 @@ typedef struct tcb{
 	struct tcb* thread_join;/*Al massimo solo un thread può fare la join sullo stesso thread, mettendolo nel tcb semplifico di molto il codice*/
 	int prior;
 	context_t ctx;
-	int state;
+	int state;  /* Stato del thread */
 	clock_t time;
 	char save;
-	sigset_t sig;
+	sigset_t sig; /* Tabella dei segnali */
 } tcb_s;
 
 typedef tcb_s* tcb_t;
