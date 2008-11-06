@@ -15,5 +15,6 @@
 			}while(0)
 
 
+int init();
 
 extern int pthread_initialized;
