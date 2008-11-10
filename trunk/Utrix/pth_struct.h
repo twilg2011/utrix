@@ -39,14 +39,21 @@ typedef struct tbl_field{
 
 typedef tbl_field_s* tbl_field_t;
 
-
+/* Tid assegnato all'ultimo tcb creato */
 int tcb_n;
-/*numero dei thread creati*/
+/*numero dei thread creati e attivi*/
 int  thread_n;
 tcb_t thread_exec;/*Thread attualmente in esecuzione*/
+
 /*liste di thread*/
-/*thread appena creati e non schedulati*/
+
+/*Puntatore alla testa della lista dei thread appena creati e non schedulati*/
 tbl_field_t thread_new;
+
+/*Puntatore alla coda della lista dei thread appena creati e non schedulati*/
+tbl_field_t thread_new_c;
+
+
 
 
 
