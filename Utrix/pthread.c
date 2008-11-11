@@ -12,7 +12,7 @@
 
 #define TID_MAIN 0 /* Definisce il tid da assegnare al main */ 
 
-int pthread_inizialized= FALSE; /* Definisce che la libreria non e' stata ancora inizializzata */
+int pthread_initialized= FALSE; /* Definisce che la libreria non e' stata ancora inizializzata */
 
 /*
  * init: Crea il thread che gestira' il main e inizializza lo scheduler come un thread.
@@ -23,9 +23,9 @@ int pthread_inizialized= FALSE; /* Definisce che la libreria non e' stata ancora
 int init(){
 	
 	tbl_field_t tbl;
-	tcb_t tcb_main;
+	tcb_t tcb;
 	
-	pth_globalsp_init; /* Inizializzo lo stac alla posizione attuale */
+    pth_globalsp_init; /* Inizializzo lo stac alla posizione attuale */
 	
 	/* Definisco la tabella dei thread */
 	tbl=(tbl_field_t)calloc(1,sizeof(tbl_field_s));
@@ -33,8 +33,8 @@ int init(){
 		return FALSE;
 	
 	/* Inizializza il tcb del main */
-	tcb_main=(tcb_t)calloc(1,sizeof(tcb_s));
-	if(!tcb_main)
+	tcb=(tcb_t)calloc(1,sizeof(tcb_s));
+	if(!tcb)
 		return FALSE;
 	
 	tcb->tid_f=-1;
@@ -44,7 +44,7 @@ int init(){
 	tcb->ctx=(context_t)calloc(1,sizeof(context_s));
 	if(!tcb->ctx){
 		free(tbl);
-		free(tcb_main);
+		free(tcb);
 		return FALSE;
 	}
 	
@@ -53,14 +53,15 @@ int init(){
 	tbl->tcb=tcb;
 	tbl->next=NULL;
 	
-	thread_n=1; /* Inizializzo il numero di thread ad 1 avendo inserito il main */
+	thread_n=0;/* Inizializzo il numero di thread ad 1 avendo inserito il main */
 	
+//	tbl=NULL;        
 	thread_new=thread_new_c=tbl; /* Metto nella code dei thread nuovi il main in attesa di essere schedulato */
 	
 	sched=(context_t)calloc(1,sizeof(context_s));
 	/* Inizializzo lo scheduler come un thread */
 	pth_init(sched,scheduler,NULL)
-	pth_init(tcb->context,main,NULL)
+	//pth_init(tcb->ctx,main,NULL)
 	
 	thread_exec=tcb; /* Devinisco come il thread in esecuzione il main */
 	
@@ -84,11 +85,17 @@ int init(){
  * @return OK se' la creazione ha avuto successo
  */
 
-int pthread_create(pthread_t *pth, const pthread_attr_t * att, void *(*fun)(void *) , void * param){
+int pthread_create(pthread_t *pth,/* const pthread_attr_t * att,*/ void *(*fun)(void *) , void * param){
 	tcb_t tcb;
 	tbl_field_t tbl;
-	tbl_field_t ;
 	
+    if( pth == NULL ||/* att != NULL ||*/ fun == NULL || param == NULL )
+       return EAGAIN;
+            
+    /* Controlla se la libreria e' stata inizializata */
+	pthread_initialize();
+
+    
 	tcb=(tcb_t)calloc(1,sizeof(tcb_s));
 	if(!tcb)
 		return EAGAIN;
@@ -100,7 +107,7 @@ int pthread_create(pthread_t *pth, const pthread_attr_t * att, void *(*fun)(void
 	}
 	
 	tcb->tid_f=thread_exec->tid;
-	tcb->tid=++tcb_n;
+	tcb->tid=(*pth)=++tcb_n;
 	tcb->prior=DEFAULT_PRIOR;
 	tcb->ctx=(context_t)calloc(1,sizeof(context_s));
 	if(!tcb->ctx){
@@ -120,8 +127,9 @@ int pthread_create(pthread_t *pth, const pthread_attr_t * att, void *(*fun)(void
 	
 	thread_n++;
 	
+    pth_init(tcb->ctx,fun,param);
 	/* Chiamo lo scheduler */
-	pth_switch(thread_exec->ctx,sched);
+	  pth_switch(thread_exec->ctx,sched);
 	
 	return SETERR(OK);
 	
@@ -165,9 +173,11 @@ pthread_t pthread_self(void){
 
 int pthread_join(pthread_t thread, void ** value_ptr){
 	tcb_t thread_search;
-	
+	pth_switch(thread_exec->ctx,sched);
 	pthread_initialize();
-	if(thread==ESECUTION_TID)
+    printf("%d",ESECUTION_TID);
+            
+            	if(thread==ESECUTION_TID)
 		return EDEADLK;
 	/*Controllo tra quelli morti*/
 	thread_search=gettcb(thread);
@@ -184,19 +194,22 @@ int pthread_join(pthread_t thread, void ** value_ptr){
 		return OK;
 	}
 	else{/*Se non è zombie vedo se è joinable o no*/
-		
-		
-		if(thread_search->save==DETACH)/*E' detach*/
-			return EINVAL;
+printf("Arrivato\n");	
+	
+    if(thread_search->save==DETACH)/*E' detach*/
+          return EINVAL;
 		else
 		{	if(thread_search->thread_join)/*Qualcuna ha gia fatto la join*/
-			return EINVAL;
-			
+            {printf("OH\n");
+                return EINVAL;
+            }
 			thread_search->thread_join=thread_exec;/*Salvo il puntatore del thread che mi aspetta*/
 			thread_search->result=value_ptr;
+            printf("Ops\n");
 			pth_sleep(ESECUTION_TID,JOIN);
-			pth_switch(thread_exec->ctx,sched);		
-			return OK;
+		printf("Pregate\n");
+            pth_switch(thread_exec->ctx,sched);		
+		    return OK;
 		}
 		
 		
