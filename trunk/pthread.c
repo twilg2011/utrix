@@ -21,10 +21,7 @@
                  * @return TRUE se l'inizializzazione e' avvenuta con successo 
                  */
             
-            
-            void uccidi(pthread_t tid){
-                schedthrkill(tid);
-            }
+    
             
                 int init(){
                     
@@ -233,8 +230,8 @@
                 #ifdef DEBUG
                 printf("Thread %d: nessuno ha fatto la join \n",thread_exec->tid);
                 #endif
-        printf("CONTROLLA STE JOIN%d\n",*(thread_search->result));			
-        *value_ptr=(thread_search->result);
+        printf("CONTROLLA STE JOIN%d\n",*(thread_search->thread_res.ptr_res));			
+        *value_ptr=(thread_search->thread_res.res);
           
         printf("GUARDA QUI%d,%d\n",thread,thread_search->tid);
                 schedthrkill(thread_search->tid);
@@ -251,7 +248,7 @@
             #endif
         /*Devo mettere in attesa il thread dopo aver salvato tutte le informazioni necessarie*/
         thread_search->thread_join=thread_exec;
-        thread_search->result=value_ptr;
+        thread_search->thread_res.ptr_res=value_ptr;
         pth_sleep(ESECUTION_TID,JOIN);
         pth_switch(thread_exec->ctx,sched);		
         printf("SONO ARRIVATO QUI\n");
@@ -334,7 +331,7 @@
         if(thread_exec->save==JOINABLE){
             if(thread_exec->thread_join){
         /*Qualcuno mi aspetta*/
-                *(thread_exec->result)=value_ptr;
+                *(thread_exec->thread_res.ptr_res)=value_ptr;
                 #ifdef DEBUG
                 printf("Risveglio chi mi aspetta %d\n", thread_exec->thread_join->tid);
                     #endif
@@ -349,9 +346,9 @@
                 #ifdef DEBUG
                 printf("Salvo indirizzo %d\n",thread_exec->tid);
                     #endif
-                printf("OOOOOOO%p\n",thread_exec->result);
-            (thread_exec->result)=value_ptr;
-            printf("VERIFICHE %d %d",value_ptr,*(thread_exec->result));
+                printf("OOOOOOO%p\n",thread_exec->thread_res.res);
+            (thread_exec->thread_res.res)=value_ptr;
+            printf("VERIFICHE %d %d",value_ptr,*(thread_exec->thread_res.ptr_res));
             pth_sleep(ESECUTION_TID,ZOMBIE);
             }
         }

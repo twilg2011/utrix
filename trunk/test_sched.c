@@ -38,15 +38,20 @@
         printf("inizio:%d\n",x);
     //printf("Detach%d\n",pthread_detach(p1));
       printf("1 %d\n",pthread_join(p1,&x));
-       uccidi(p1);
         printf("Risultato:%d\n",x);
         x=-3;
         printf("2 %d\n", pthread_join(p2,&x));
     printf("Risultato:%d\n",x);
     printf("Detach%d\n",pthread_detach(p2));
-    pthread_join(p3,NULL);
+    x=-5;
+    pthread_join(p3,&x);
+    printf("Risultato %d\n",x);
 //    printf("Prova%d\n",x);
-    pthread_join(p4,NULL);
+
+x=-10;
+
+    pthread_join(p4,&x);
+    printf("Risultato %d\n",x);
     pthread_exit(0);
 }
 
