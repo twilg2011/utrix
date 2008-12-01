@@ -1,0 +1,115 @@
+Parte il main...
+scheduler
+longterm,2   , 0
+selector
+lista:-1
+elemento:*
+lista:0
+elemento:0-elemento:1-elemento:*
+selected:0
+parto0x79b0
+ritorno 0x79b0
+setprior:-1
+longterm,3   , 2
+selector
+lista:-1
+elemento:0-elemento:*
+selected:0
+parto0x79b0
+ritorno 0x79b0
+longterm,4   , 3
+selector
+lista:-1
+elemento:0-elemento:*
+selected:0
+parto0x79b0
+Finisco di creare ed ora attendo....
+elemento:0-elemento:*
+elemento:1-elemento:2-elemento:3-elemento:*
+thread1,0x7aa0, 0
+Thread Zombie
+sleep:0
+ritorno 0x79b0
+selector
+lista:-1
+elemento:*
+lista:0
+elemento:1-elemento:2-elemento:3-elemento:*
+selected:1
+parto0x7acc
+Prima esecuzione: 1Ora e' in funzione il thread 1...
+ritorno 0x7acc
+setprior:-1
+selector
+lista:-1
+elemento:1-elemento:*
+selected:1
+parto0x7acc
+Ora si chiude il thread 1...
+entro
+ritorno 0x7acc
+selector
+lista:-1
+elemento:0-elemento:*
+selected:0
+parto0x79b0
+1 3,0
+elemento:0-elemento:*
+elemento:2-elemento:3-elemento:*
+thread2,0x7b44, 0
+Thread Zombie
+sleep:0
+ritorno 0x79b0
+selector
+lista:-1
+elemento:*
+lista:0
+elemento:2-elemento:3-elemento:*
+selected:2
+parto0x7b70
+Prima esecuzione: 2Ora e' in funzione il thread 2...
+ritorno 0x7b70
+setprior:-1
+selector
+lista:-1
+elemento:2-elemento:*
+selected:2
+parto0x7b70
+Ora si chiude il thread 2...
+entro
+ritorno 0x7b70
+selector
+lista:-1
+elemento:0-elemento:*
+selected:0
+parto0x79b0
+2 22,0
+elemento:0-elemento:*
+elemento:3-elemento:*
+thread3,0x7bd8, 0
+Thread Zombie
+sleep:0
+ritorno 0x79b0
+selector
+lista:-1
+elemento:*
+lista:0
+elemento:3-elemento:*
+selected:3
+parto0x7c04
+Prima esecuzione: 3Ora e' in funzione il thread 3...
+ritorno 0x7c04
+setprior:-1
+selector
+lista:-1
+elemento:3-elemento:*
+selected:3
+parto0x7c04
+Ora si chiude il thread 3...
+entro
+ritorno 0x7c04
+selector
+lista:-1
+elemento:0-elemento:*
+selected:0
+parto0x79b0
