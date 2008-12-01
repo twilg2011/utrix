@@ -31,6 +31,17 @@
 /*contesto dello scheduler*/
 extern context_t sched;
 
+/* pth_init:inizializza il contesto dello scheduler. Il contesto inizializzato viene messo in sched
+@error:EINVAL se sched è NULL*/
+#define sched_init()\
+        if((!sched)) return EINVAL;\
+		      ictx->f=(void*(*)(void*))scheduler;\
+		      ictx->arg=NULL;\
+             if (_setjmp(sched->regs)==1){ \
+		          sched->eseguito=1;\
+		          __asm__("movl %0,%%esp"::"r"(bpcalc(sched)));\
+		          func(NULL);\
+			 }
 
 /*empty:funzione vuota
  *@param:NULL

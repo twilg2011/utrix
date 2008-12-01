@@ -42,18 +42,6 @@ typedef context_s* context_t;
 @param:context_t old,context_t next*/
 #define pth_switch(old,next) if(_setjmp(old->regs)==0) {_longjmp(next->regs,1);}
 
-/* pth_init:inizializza un contesto che ha come funzione func con argomento argo. Il contesto inizializzato viene messo in ictx
-@param: context_t ictx contesto da inizializzare, void (*f)(void*) funzione del contesto,void* argo argomenti
-@error:EINVAL se uno func o ictx sono NULL*/
-#define pth_init(ictx,func,argo)\
-        if((!ictx) || (func==NULL)) return EINVAL;\
-		      ictx->f=(void*(*)(void*))func;\
-		      ictx->arg=argo;\
-             if (_setjmp(ictx->regs)==1){ \
-		          ictx->eseguito=1;\
-		          __asm__("movl %0,%%esp"::"r"(bpcalc(ictx)));\
-		          func(argo);\
-			 }
 /*inizializza globalSP allo stack pointer attuale*/
 #define pth_globalsp_init __asm__("movl %%ebp,%0":"=r"(globalsp))      
 /*bpcalc:calcola uno stackpointer assegnando una partizione al thread utilizza globalSp che deve essere inizializzata	

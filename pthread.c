@@ -68,7 +68,7 @@
                         
                         sched=(context_t)calloc(1,sizeof(context_s));
                         /* Inizializzo lo scheduler come un thread */
-                        pth_init(sched,scheduler,NULL)
+                        sched_init();
                         /*Fare funzione nello scheduler*/
                         
                         thread_exec=tcb; /* Devinisco come il thread in esecuzione il main */
