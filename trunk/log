@@ -1,0 +1,159 @@
+Parte il main...
+scheduler
+longterm,2   , 0
+selector
+lista:-1
+lista:0
+selected:0
+parto0x7de8
+ritorno 0x7de8
+setprior:-1
+setprior:0
+longterm,3   , 2
+selector
+lista:-1
+lista:0
+selected:1
+parto0x7f04
+Prima esecuzione: 1Ora e' in funzione il thread 1...
+ritorno 0x7f04
+setprior:-1
+setprior:0
+selector
+lista:-1
+lista:0
+selected:0
+parto0x7de8
+ritorno 0x7de8
+setprior:-1
+setprior:0
+longterm,4   , 3
+selector
+lista:-1
+lista:0
+selected:2
+parto0x7fa8
+Prima esecuzione: 2Ora e' in funzione il thread 2...
+ritorno 0x7fa8
+setprior:-1
+setprior:0
+selector
+lista:-1
+lista:0
+selected:1
+parto0x7f04
+Ora si chiude il thread 1...
+Thread1 ha stato0
+OOOOOOO0x0
+VERIFICHE 10 -1157069748sleep:1
+ritorno 0x7f04
+selector
+lista:-1
+lista:0
+selected:0
+parto0x7de8
+ritorno 0x7de8
+setprior:-1
+setprior:0
+longterm,5   , 4
+selector
+lista:-1
+lista:0
+selected:3
+parto0x804c
+Prima esecuzione: 3Ora e' in funzione il thread 3...
+ritorno 0x804c
+setprior:-1
+setprior:0
+selector
+lista:-1
+lista:0
+selected:2
+parto0x7fa8
+Ora si chiude il thread 2...
+Thread2 ha stato0
+OOOOOOO0x0
+VERIFICHE 10 -1157069748sleep:2
+ritorno 0x7fa8
+selector
+lista:-1
+lista:0
+selected:0
+parto0x7de8
+Finisco di creare ed ora attendo....
+inizio:-3
+CONTROLLA STE JOIN-1157069748
+GUARDA QUI1,1
+ASSURDOi
+KILLIAMOLO1 con priorita0
+free
+friato
+DOVREBBE NN ESISTERE
+1 0
+ASSURDOi
+AAAAAAAAAAAAAAA
+Risultato:10
+CONTROLLA STE JOIN-1157069748
+GUARDA QUI2,2
+ASSURDOi
+KILLIAMOLO2 con priorita0
+free
+friato
+DOVREBBE NN ESISTERE
+2 0
+Risultato:10
+Detach3
+sleep:0
+ritorno 0x7de8
+selector
+lista:-1
+lista:0
+selected:4
+parto0x80f0
+Prima esecuzione: 4Ora e' in funzione il thread 4...
+ritorno 0x80f0
+setprior:-1
+setprior:0
+selector
+lista:-1
+lista:0
+selected:3
+parto0x804c
+Ora si chiude il thread 3...
+Thread3 ha stato0
+ASSURDOi
+KILLIAMOLO3 con priorita0
+DOVREBBE NN ESISTERE
+thread trovato:0,0x0
+
+stampa why 0,2:
+stampa why 1,2:
+stampa why 2,2:
+stampa why 3,2:
+stampa why 4,2:ritorno 0x804c
+setprior:-1
+setprior:0
+killo:3,3
+selector
+lista:-1
+lista:0
+selected:4
+parto0x80f0
+Ora si chiude il thread 4...
+Thread4 ha stato0
+OOOOOOO0x0
+VERIFICHE 10 -1157069748sleep:4
+ritorno 0x80f0
+selector
+lista:-1
+lista:0
+selected:0
+parto0x7de8
+SONO ARRIVATO QUI
+CONTROLLA STE JOIN-1157069748
+GUARDA QUI4,4
+ASSURDOi
+KILLIAMOLO4 con priorita0
+free
+friato
+DOVREBBE NN ESISTERE
