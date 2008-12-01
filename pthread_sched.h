@@ -35,13 +35,14 @@ extern context_t sched;
 @error:EINVAL se sched è NULL*/
 #define sched_init()\
         if((!sched)) return EINVAL;\
-		      ictx->f=(void*(*)(void*))scheduler;\
-		      ictx->arg=NULL;\
+		      sched->f=(void*(*)(void*))scheduler;\
+		      sched->arg=NULL;\
              if (_setjmp(sched->regs)==1){ \
 		          sched->eseguito=1;\
 		          __asm__("movl %0,%%esp"::"r"(bpcalc(sched)));\
-		          func(NULL);\
+		          scheduler(NULL);\
 			 }
+
 
 /*empty:funzione vuota
  *@param:NULL

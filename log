@@ -5,8 +5,8 @@ selector
 lista:-1
 lista:0
 selected:0
-parto0x7de8
-ritorno 0x7de8
+parto0x7e08
+ritorno 0x7e08
 setprior:-1
 setprior:0
 longterm,3   , 2
@@ -14,17 +14,17 @@ selector
 lista:-1
 lista:0
 selected:1
-parto0x7f04
+parto0x7f24
 Prima esecuzione: 1Ora e' in funzione il thread 1...
-ritorno 0x7f04
+ritorno 0x7f24
 setprior:-1
 setprior:0
 selector
 lista:-1
 lista:0
 selected:0
-parto0x7de8
-ritorno 0x7de8
+parto0x7e08
+ritorno 0x7e08
 setprior:-1
 setprior:0
 longterm,4   , 3
@@ -32,27 +32,27 @@ selector
 lista:-1
 lista:0
 selected:2
-parto0x7fa8
+parto0x7fc8
 Prima esecuzione: 2Ora e' in funzione il thread 2...
-ritorno 0x7fa8
+ritorno 0x7fc8
 setprior:-1
 setprior:0
 selector
 lista:-1
 lista:0
 selected:1
-parto0x7f04
+parto0x7f24
 Ora si chiude il thread 1...
 Thread1 ha stato0
 OOOOOOO0x0
 VERIFICHE 10 -1157069748sleep:1
-ritorno 0x7f04
+ritorno 0x7f24
 selector
 lista:-1
 lista:0
 selected:0
-parto0x7de8
-ritorno 0x7de8
+parto0x7e08
+ritorno 0x7e08
 setprior:-1
 setprior:0
 longterm,5   , 4
@@ -60,26 +60,26 @@ selector
 lista:-1
 lista:0
 selected:3
-parto0x804c
+parto0x806c
 Prima esecuzione: 3Ora e' in funzione il thread 3...
-ritorno 0x804c
+ritorno 0x806c
 setprior:-1
 setprior:0
 selector
 lista:-1
 lista:0
 selected:2
-parto0x7fa8
+parto0x7fc8
 Ora si chiude il thread 2...
 Thread2 ha stato0
 OOOOOOO0x0
 VERIFICHE 10 -1157069748sleep:2
-ritorno 0x7fa8
+ritorno 0x7fc8
 selector
 lista:-1
 lista:0
 selected:0
-parto0x7de8
+parto0x7e08
 Finisco di creare ed ora attendo....
 inizio:-3
 CONTROLLA STE JOIN-1157069748
@@ -90,8 +90,6 @@ free
 friato
 DOVREBBE NN ESISTERE
 1 0
-ASSURDOi
-AAAAAAAAAAAAAAA
 Risultato:10
 CONTROLLA STE JOIN-1157069748
 GUARDA QUI2,2
@@ -104,21 +102,21 @@ DOVREBBE NN ESISTERE
 Risultato:10
 Detach3
 sleep:0
-ritorno 0x7de8
+ritorno 0x7e08
 selector
 lista:-1
 lista:0
 selected:4
-parto0x80f0
+parto0x8110
 Prima esecuzione: 4Ora e' in funzione il thread 4...
-ritorno 0x80f0
+ritorno 0x8110
 setprior:-1
 setprior:0
 selector
 lista:-1
 lista:0
 selected:3
-parto0x804c
+parto0x806c
 Ora si chiude il thread 3...
 Thread3 ha stato0
 ASSURDOi
@@ -130,7 +128,7 @@ stampa why 0,2:
 stampa why 1,2:
 stampa why 2,2:
 stampa why 3,2:
-stampa why 4,2:ritorno 0x804c
+stampa why 4,2:ritorno 0x806c
 setprior:-1
 setprior:0
 killo:3,3
@@ -138,18 +136,19 @@ selector
 lista:-1
 lista:0
 selected:4
-parto0x80f0
+parto0x8110
 Ora si chiude il thread 4...
 Thread4 ha stato0
 OOOOOOO0x0
 VERIFICHE 10 -1157069748sleep:4
-ritorno 0x80f0
+ritorno 0x8110
 selector
 lista:-1
 lista:0
 selected:0
-parto0x7de8
+parto0x7e08
 SONO ARRIVATO QUI
+Risultato 10
 CONTROLLA STE JOIN-1157069748
 GUARDA QUI4,4
 ASSURDOi
@@ -157,3 +156,4 @@ KILLIAMOLO4 con priorita0
 free
 friato
 DOVREBBE NN ESISTERE
+Risultato 10

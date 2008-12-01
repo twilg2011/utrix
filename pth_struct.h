@@ -13,13 +13,17 @@
 #define DETACHABLE 1
 #define JOINABLE 0
 /*Qui ci saranno solo le dichiarazioni e strutture necessarie per lavorare con i thread*/
+typedef union result{
+void** ptr_res;
+void*  res;
 
+} result;
 /* Thread Control Block */
 typedef struct tcb{
 	pthread_t tid_f;
 	pthread_t tid;
     char save;
-	void** result;/*Salvo l'informazione l'utilizzo varia a seconda se faccio prima la exit o la join*/
+	result thread_res;/*Salvo l'informazione l'utilizzo varia a seconda se faccio prima la exit o la join*/
 	struct tcb* thread_join;/*Al massimo solo un thread può fare la join sullo stesso thread, mettendolo nel tcb semplifico di molto il codice*/
 	int prior;
 	context_t ctx;
