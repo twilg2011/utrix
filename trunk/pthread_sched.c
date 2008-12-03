@@ -14,15 +14,23 @@
 #include <time.h>
 #define DEBUG
 
+/*strutture necessarie per contenre le liste amministrate dallo scheduler*/
+
+/*liste di thread schedulati divisi per priorita*/ 
 tbl_field_t  thread_priortail[NUM_PRIOR];
 tbl_field_t  thread_priorhead[NUM_PRIOR];
+/*liste di thread bloccati che ora non sono schedulati*/
 tbl_field_t  thread_blocked[NUM_WHY];
+/*lista di thread da eliminare*/
 tbl_field_t  thread_garbage;
 
 context_t sched;
 
+/*numero di thread presenti nello scheduler*/
 int scheduledthr_n;
+/*orologio interno dello scheduler che permette di gestire le priorità*/
 clock_t pth_time;
+
 /*macro che elimina elem da list parent deve essere il predecessore di elem*/
 #define ELIM(elem,parent,list) if (!parent)list=list->next;\
 				       else parent->next=elem->next;\
@@ -62,8 +70,8 @@ tbl_field_t selectthr();
 void longtermsched();
 void recalcprior(tbl_field_t thr);
 
+/*funzione vuota*/
 void empty(void* arg){
-printf("ciullo\n");
 abort();
 return;
 }
@@ -85,7 +93,9 @@ int searchonlist(int tid, tbl_field_t list, tbl_field_t* serc , tbl_field_t* par
    /*non ho trovato il tid cercato*/
    return FALSE;
 }
-/*cerca il tid in tutte le liste dello scheduler*/
+
+/*cerca il tid in tutte le liste dello scheduler ritorna tra le alte cose un puntatore alla lista in cui è
+stato trovato l'elemento*/
 int searchonall(int tid,tbl_field_t* serc,tbl_field_t* parent, tbl_field_t** lista)
 {
   int i=0;
@@ -104,33 +114,38 @@ int searchonall(int tid,tbl_field_t* serc,tbl_field_t* parent, tbl_field_t** lis
   }
   return FALSE;
 }
-
+/*elimina i thread nella lista garbage*/
 void gc(){
-while(thread_garbage){
-  printf("killo:%i,%i\n",thread_exec->tid,thread_garbage->tcb->tid);
+  while(thread_garbage){
   tbl_field_t paus=thread_garbage;
   thread_garbage=thread_garbage->next;
   free(paus->tcb->ctx);
+  }
 }
-}
+
 
 void scheduler(void* arg)
 {
   /*thread schedulato*/
  tbl_field_t  selectedthr;
  //sigset_t oldsig;
+ 
  #ifdef DEBUG
  printf("scheduler\n");
  #endif
-
+ 
  /*inizializzo a 0 il nomero dei thread schedulabili*/
  scheduledthr_n=0;
+ 
  while(TRUE)
  {
  /*controllo che tutti i nuovi thread siano inseriti*/
  if(scheduledthr_n<thread_n)longtermsched();
- if(scheduledthr_n>thread_n)gc();
-   if (!(selectedthr=selectthr())){
+ /*controllo eventuali thread da eliminare*/
+ if(scheduledthr_n>thread_n) gc();
+ /*seleziono un thread dalle liste di priorità*/
+ if (!(selectedthr=selectthr())){
+       /*se nessuno è stato selezionato vado in attesa attiva*/
        empty(NULL);
   }else{
   
@@ -146,37 +161,45 @@ void scheduler(void* arg)
   #ifdef DEBUG
   printf("parto%p\n",selectedthr);
   #endif
-   
+  /*imposto il thread che andrà in esecuzione*/ 
   thread_exec=selectedthr->tcb;
   
   /*imposto il nuovo handler dei segnali*/
   //sigprocmask(SIG_SETMASK,selectedthr->tcb->sig,&oldsig);
+  
+  /* controllo se il trhead è mai stato eseguito*/
   if(!selectedthr->tcb->ctx->eseguito)
   {
-#ifdef DEBUG
+      #ifdef DEBUG
       printf("Prima esecuzione: %d",selectedthr->tcb->tid);
-#endif
+      #endif
+	  /*lo imposto come eseguito*/
 	  selectedthr->tcb->ctx->eseguito=1;
+	  /*forzo il valore del basepointer */
 	   __asm__("movl %0,%%esp"::"r"(bpcalc(selectedthr->tcb->ctx)));
 	  void*(*f)(void*) = selectedthr->tcb->ctx->f;
+	  /*lancio la funzione*/
 	  f(selectedthr->tcb->ctx->arg);
-  }else
-  {/*passo al thread che ho selezionarto*/
+  }else{
+  /*passo al thread che ho selezionarto*/
   pth_switch(sched,selectedthr->tcb->ctx);
   }
   /*salvo l'handler dei segnali*/
- // sigprocmask(SIG_SETMASK,oldsig,&(selectedthr->tcb->sig));
+  // sigprocmask(SIG_SETMASK,oldsig,&(selectedthr->tcb->sig));
    
   #ifdef DEBUG
   printf("ritorno %p\n",selectedthr);
   #endif
+  
   /*calcolo il tempo che ha utilizzato*/
   pth_time=clock()-pth_time;
   
   /*controllo dello stack*/
   //if (selectedthr->tcb->ctx->next & selectedthr->tcb->ctx->part->regs[5] >= selectedthr->tcb->ctx->part->next->bp) abort();
+  
   /*aggiorno il suo tempo di cpu globale*/
   selectedthr->tcb->time=+pth_time;
+  
   /*se non è stato bloccato ricalcolo la sua priorità*/
   recalcprior(selectedthr);
   }
@@ -184,7 +207,7 @@ void scheduler(void* arg)
 }
 
 
-
+/*seleziona il trhead con priorià pòiu alta*/
 tbl_field_t selectthr()
 {  
    int i=-1;
@@ -192,13 +215,14 @@ tbl_field_t selectthr()
    #ifdef DEBUG
    printf("selector\n");
    #endif
+   
    /*scorro i thread schedulabili*/
    while(i<NUM_PRIOR-1)
    {
 	 
 	 #ifdef DEBUG
-     printf("lista:%i\n",i);
-         //stampalista(PRIOR(i));
+		 printf("lista priorità:%i\n",i);
+         stampalista(PRIOR(i));
 	 #endif
      /*il primo della lista più bassa viene selezionato*/
 	 if(thread_priorhead[PRIOR(i)]) return thread_priorhead[PRIOR(i)];
@@ -243,62 +267,67 @@ void setprior(tbl_field_t thr,int prior)
 {
   tbl_field_t tcb;
   tbl_field_t  parent;
+  
   #ifdef DEBUG
-  printf("setprior:%i\n",prior);
+  printf("setprior %i:%i\n",thr->tcb->tid,prior);
   #endif
+
   /*funzione interna evitabile*/
   if(!thr) 
   { 
     SETERR(EINVAL);
     return;
   }
-  /*cerco l'elemento*/
+  
+ /*cerco l'elemento*/
  if ( searchonlist(thr->tcb->tid,thread_priorhead[PRIOR(thr->tcb->prior)],&tcb,&parent))
  {
-  /*se lo trovo lo sposto*
-  */
+  /*se lo trovo lo sposto*/
   ELIM(tcb, parent,thread_priorhead[PRIOR( thr->tcb->prior)]);
   thr->tcb->prior=prior; 
   ADDELEM(thr,thread_priortail[PRIOR(prior)],thread_priorhead[PRIOR(prior)]);
   } else thr->tcb->prior=prior;/*è bloccato calcolo la priorità ma lo lascio stare*/
 }
+
 /*ricalcola la priorità del thread*/
 void recalcprior(tbl_field_t thr)
 {
  if(!thr) SETERR(EINVAL);
- if (thr->tcb->state!=EXEC) return;
+ /*se il thread è stato bloccato non cambio il suo stato*/
+ if (thr->tcb->state==EXEC) thr->tcb->state=PRONTO;
  if (thr->tcb->time<=BONUSTIME && thr->tcb->prior>-1) setprior(thr,thr->tcb->prior-1);
  if (thr->tcb->time>=MALUSTIME && thr->tcb->prior<1) setprior(thr,thr->tcb->prior+1); 
-  thr->tcb->state=PRONTO;
+  
 }
 
 
 void schedthrkill(int tid)
 {
+ /*thread da eliminare e il suo vicino*/
  tbl_field_t kill,parent;
+ /*puntatore alla lista in cui si  trovano*/
  tbl_field_t* list;
- printf("ASSURDOi\n");
+
  /*cerco il thread da uccidere*/
  if (!searchonall(tid,&kill,&parent,&list)) {
- printf("AAAAAAAAAAAAAAA\n");
  SETERR(ESRCH);
  return;
  }
- printf("KILLIAMOLO%d con priorita%d\n",kill->tcb->tid,kill->tcb->prior);
- //stampalista(PRIOR(kill->tcb->prior));
- //stampalista(kill->tcb->prior); 
  /*lo elimino dallo scheduler*/ 
  ELIM(kill,parent,(*list));
+ /*se è quello in esecuzione lo metto nella lista di garbage*/
  if(kill->tcb->tid!=thread_exec->tid) {
- //ELIM(kill,parent,(*list));
- printf("free\n");
+
+  #ifdef DEBUG
+  printf("free\n");
+  #endif
+  
  free(kill->tcb->ctx);
- printf("friato\n");
+ /*aggiorno il numero di thread schedulati*/
  scheduledthr_n--;
  }else{
  ADDELEMHEAD(kill,thread_garbage);
  }
- printf("DOVREBBE NN ESISTERE\n");
 }
 
 
@@ -338,19 +367,10 @@ if (why<NUM_WHY && why>=0)
    ELIM(selected_tcb,parent,thread_blocked[why]);
    ADDELEM(selected_tcb,thread_priortail[PRIOR(selected_tcb->tcb->prior)],thread_priorhead[PRIOR(selected_tcb->tcb->prior)]);
    selected_tcb->tcb->state=PRONTO;
+  
+   #ifdef DEBUG
    printf("thread trovato:%i,%p\n",selected_tcb->tcb->tid,parent);
-   int i=0;
-   while(i<NUM_WHY)
-   {
-    printf("\nstampa why %i,%i:",i,ZOMBIE);
-    tbl_field_t paus=thread_blocked[i];
-    while(paus)
-    {
-     printf("%i\n",paus->tcb->tid);
-     paus=paus->next;
-    }
-    i++;
-   }
+   #endif
  }
  SETERR(ESRCH);
 }
