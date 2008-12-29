@@ -16,18 +16,19 @@
 #define LOW_PRIOR 1
 #define PRIOR(p) (p+1)
 
-#define NUM_WHY 5
+#define NUM_WHY 6
 #define MUTEX 0
 #define JOIN 1
-#define ZOMBIE 2
+#define ZOMBIESLEEP 2
 #define WAIT 3
 #define RIP 4
+#define LOCKSLEEP 5
 /* Thread State */
 #define NUOVO 0
 #define PRONTO 1
 #define BLOCCATO 2
 #define EXEC 3
-
+#define ZOMBIE 4
 /*contesto dello scheduler*/
 extern context_t sched;
 
