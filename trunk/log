@@ -1,3 +1,62 @@
+Thread in cond_init supera i vincoli d'integrità
+Stampo lista condition
+Condition Fine
+cond init creata senza problemi....
+Stampo lista condition
+Condition0x8068
+Condition Fine
+inizializzo COND1 16
+PrimaDESTROY
+Stampo lista condition
+Condition0x8068
+Condition Fine
+DopoDESTROY
+Stampo lista condition
+Condition Fine
+Destroy COND0
+Thread in cond_init supera i vincoli d'integrità
+Stampo lista condition
+Condition Fine
+cond init creata senza problemi....
+Stampo lista condition
+Condition0x8068
+Condition Fine
+Inizializzo COND1 0
+TERZO COND22
+Thread in cond_init supera i vincoli d'integrità
+Stampo lista condition
+Condition0x8068
+Condition Fine
+cond init creata senza problemi....
+Stampo lista condition
+Condition0x8080
+Condition0x8068
+Condition Fine
+TERZO COND 0
+Thread in cond_init supera i vincoli d'integrità
+Stampo lista condition
+Condition0x8080
+Condition0x8068
+Condition Fine
+cond init creata senza problemi....
+Stampo lista condition
+Condition0x8098
+Condition0x8080
+Condition0x8068
+Condition Fine
+SECONDO COND 0
+PrimaDESTROY
+Stampo lista condition
+Condition0x8098
+Condition0x8080
+Condition0x8068
+Condition Fine
+DopoDESTROY
+Stampo lista condition
+Condition0x8098
+Condition0x8068
+Condition Fine
+DESTROY COND 0
 Parte il main...
 scheduler
 longterm,2   , 0
@@ -5,8 +64,8 @@ selector
 lista:-1
 lista:0
 selected:0
-parto0x7e08
-ritorno 0x7e08
+parto0x6f74
+ritorno 0x6f74
 setprior:-1
 setprior:0
 longterm,3   , 2
@@ -14,17 +73,17 @@ selector
 lista:-1
 lista:0
 selected:1
-parto0x7f24
+parto0x8080
 Prima esecuzione: 1Ora e' in funzione il thread 1...
-ritorno 0x7f24
+ritorno 0x8080
 setprior:-1
 setprior:0
 selector
 lista:-1
 lista:0
 selected:0
-parto0x7e08
-ritorno 0x7e08
+parto0x6f74
+ritorno 0x6f74
 setprior:-1
 setprior:0
 longterm,4   , 3
@@ -32,27 +91,25 @@ selector
 lista:-1
 lista:0
 selected:2
-parto0x7fc8
+parto0x808c
 Prima esecuzione: 2Ora e' in funzione il thread 2...
-ritorno 0x7fc8
+ritorno 0x808c
 setprior:-1
 setprior:0
 selector
 lista:-1
 lista:0
 selected:1
-parto0x7f24
+parto0x8080
 Ora si chiude il thread 1...
-Thread1 ha stato0
-OOOOOOO0x0
-VERIFICHE 10 -1157069748sleep:1
-ritorno 0x7f24
+sleep:1
+ritorno 0x8080
 selector
 lista:-1
 lista:0
 selected:0
-parto0x7e08
-ritorno 0x7e08
+parto0x6f74
+ritorno 0x6f74
 setprior:-1
 setprior:0
 longterm,5   , 4
@@ -60,75 +117,55 @@ selector
 lista:-1
 lista:0
 selected:3
-parto0x806c
+parto0x820c
 Prima esecuzione: 3Ora e' in funzione il thread 3...
-ritorno 0x806c
+ritorno 0x820c
 setprior:-1
 setprior:0
 selector
 lista:-1
 lista:0
 selected:2
-parto0x7fc8
+parto0x808c
 Ora si chiude il thread 2...
-Thread2 ha stato0
-OOOOOOO0x0
-VERIFICHE 10 -1157069748sleep:2
-ritorno 0x7fc8
+sleep:2
+ritorno 0x808c
 selector
 lista:-1
 lista:0
 selected:0
-parto0x7e08
+parto0x6f74
 Finisco di creare ed ora attendo....
 inizio:-3
-CONTROLLA STE JOIN-1157069748
-GUARDA QUI1,1
-ASSURDOi
-KILLIAMOLO1 con priorita0
-free
-friato
-DOVREBBE NN ESISTERE
 1 0
 Risultato:10
-CONTROLLA STE JOIN-1157069748
-GUARDA QUI2,2
-ASSURDOi
-KILLIAMOLO2 con priorita0
-free
-friato
-DOVREBBE NN ESISTERE
 2 0
 Risultato:10
 Detach3
 sleep:0
-ritorno 0x7e08
+ritorno 0x6f74
 selector
 lista:-1
 lista:0
 selected:4
-parto0x8110
+parto0x82b0
 Prima esecuzione: 4Ora e' in funzione il thread 4...
-ritorno 0x8110
+ritorno 0x82b0
 setprior:-1
 setprior:0
 selector
 lista:-1
 lista:0
 selected:3
-parto0x806c
+parto0x820c
 Ora si chiude il thread 3...
-Thread3 ha stato0
-ASSURDOi
-KILLIAMOLO3 con priorita0
-DOVREBBE NN ESISTERE
-thread trovato:0,0x0
 
-stampa why 0,2:
-stampa why 1,2:
-stampa why 2,2:
-stampa why 3,2:
-stampa why 4,2:ritorno 0x806c
+stampa why 0,4:
+stampa why 1,4:
+stampa why 2,4:
+stampa why 3,4:
+stampa why 4,4:
+stampa why 5,4:ritorno 0x820c
 setprior:-1
 setprior:0
 killo:3,3
@@ -136,24 +173,14 @@ selector
 lista:-1
 lista:0
 selected:4
-parto0x8110
+parto0x82b0
 Ora si chiude il thread 4...
-Thread4 ha stato0
-OOOOOOO0x0
-VERIFICHE 10 -1157069748sleep:4
-ritorno 0x8110
+sleep:4
+ritorno 0x82b0
 selector
 lista:-1
 lista:0
 selected:0
-parto0x7e08
-SONO ARRIVATO QUI
+parto0x6f74
 Risultato 10
-CONTROLLA STE JOIN-1157069748
-GUARDA QUI4,4
-ASSURDOi
-KILLIAMOLO4 con priorita0
-free
-friato
-DOVREBBE NN ESISTERE
 Risultato 10
