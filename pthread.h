@@ -13,12 +13,12 @@
 #include<time.h>
 #include<unistd.h>
 #include<errno.h>
+#include"pth_syncr.h"
 struct pthread_mutex_s;
 struct pthread_cond_s;
-typedef unsigned int pthread_t;
-typedef struct pthread_mutex_s pthread_mutex_t;
-typedef struct pthread_cond_s pthread_cond_t ;
-typedef int pthread_mutexattr_t;
+//typedef unsigned int pthread_t;
+
+
 
 
 extern int       pthread_create(pthread_t *,/* const pthread_attr_t*,*/ void* (*)(void *), void *);

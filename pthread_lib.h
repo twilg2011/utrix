@@ -1,4 +1,4 @@
-#include "pthread.h"
+//#include "pthread.h"
 
 
 /* Default attribute */
@@ -18,3 +18,4 @@
 int init();
 
 extern int pthread_initialized;
+typedef unsigned int pthread_t;

@@ -11,7 +11,7 @@
 #include "pth_errno.h"
 
 #define TID_MAIN 0 /* Definisce il tid da assegnare al main */ 
-//#define DEBUG
+
                 int pthread_initialized= FALSE; /* Definisce che la libreria non e' stata ancora inizializzata */
 
                 /*
@@ -230,11 +230,12 @@
                 #ifdef DEBUG
                 printf("Thread %d: nessuno ha fatto la join \n",thread_exec->tid);
                 #endif
-        printf("CONTROLLA STE JOIN%d\n",*(thread_search->thread_res.ptr_res));			
+        //printf("CONTROLLA STE JOIN%d\n",*(thread_search->thread_res.ptr_res));			
         *value_ptr=(thread_search->thread_res.res);
           
-        printf("GUARDA QUI%d,%d\n",thread,thread_search->tid);
-                schedthrkill(thread_search->tid);
+        //printf("GUARDA QUI%d,%d\n",thread,thread_search->tid);
+        //printf("SI CANCELLA %d\n",thread_search->tid);        
+        schedthrkill(thread_search->tid);
                     thread_n--;
                     return SETERR(OK);
                 }
@@ -251,7 +252,7 @@
         thread_search->thread_res.ptr_res=value_ptr;
         pth_sleep(ESECUTION_TID,JOIN);
         pth_switch(thread_exec->ctx,sched);		
-        printf("SONO ARRIVATO QUI\n");
+       // printf("SONO ARRIVATO QUI\n");
         return SETERR(OK);
 
 
@@ -290,6 +291,7 @@
         #ifdef DEBUG
             printf("Thread %d Zombie x la detach\n",thread);
             #endif
+         //   printf("STO UCCIDENDO %d\n",thread_search->tid);
             schedthrkill(thread_search->tid);
             thread_n--;
             return SETERR(OK);
@@ -327,7 +329,7 @@
         /*Esco*/
             exit((int)((long)value_ptr));
         }
-    printf("Thread%d ha stato%d\n",ESECUTION_TID, thread_exec->save);
+   // printf("Thread%d ha stato%d\n",ESECUTION_TID, thread_exec->save);
         if(thread_exec->save==JOINABLE){
             if(thread_exec->thread_join){
         /*Qualcuno mi aspetta*/
@@ -335,25 +337,26 @@
                 #ifdef DEBUG
                 printf("Risveglio chi mi aspetta %d\n", thread_exec->thread_join->tid);
                     #endif
+     //           printf("NELLA EXIT %d\n",ESECUTION_TID);
            schedthrkill(ESECUTION_TID);
                 thread_n--;
                 #ifdef DEBUG
                 printf("Mi suicido %d e risveglio%d\n",thread_exec->tid,thread_exec->thread_join->tid);
-                    #endif
+                    #endif/
         pth_unsleep(thread_exec->thread_join->tid,JOIN);
                 }
             else{
                 #ifdef DEBUG
                 printf("Salvo indirizzo %d\n",thread_exec->tid);
                     #endif
-                printf("OOOOOOO%p\n",thread_exec->thread_res.res);
+       //         printf("OOOOOOO%p\n",thread_exec->thread_res.res);
             (thread_exec->thread_res.res)=value_ptr;
-            printf("VERIFICHE %d %d",value_ptr,*(thread_exec->thread_res.ptr_res));
-            pth_sleep(ESECUTION_TID,ZOMBIE);
+         //   printf("VERIFICHE %d %d",value_ptr,*(thread_exec->thread_res.ptr_res));
+            pth_sleep(ESECUTION_TID,ZOMBIESLEEP);
             }
         }
         else{
-
+//printf("UCCIDO NELLA KILL %d\n",ESECUTION_TID);
 	schedthrkill(ESECUTION_TID);/*Non è piu presente*/
 	thread_n--;
 	}
