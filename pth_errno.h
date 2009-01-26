@@ -17,6 +17,7 @@ int pth_errno;
 #define OK 0
 #define PTHREAD_CREATE 1
 #define ERRTOOTHR 2
+#define MAXTHREADERR 7
 
 
 
