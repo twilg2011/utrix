@@ -346,15 +346,15 @@ if (why<NUM_WHY && why>=0)
    ELIM(selected_tcb,parent,thread_blocked[why]);
    ADDELEM(selected_tcb,thread_priortail[PRIOR(selected_tcb->tcb->prior)],thread_priorhead[PRIOR(selected_tcb->tcb->prior)]);
    selected_tcb->tcb->state=PRONTO;
-   //printf("thread trovato:%i,%p\n",selected_tcb->tcb->tid,parent);
+  //printf("thread trovato:%i,%p\n",selected_tcb->tcb->tid,parent);
    int i=0;
    while(i<NUM_WHY)
    {
-    printf("\nstampa why %i,%i:",i,ZOMBIE);
+  // printf("\nstampa why %i,%i:",i,ZOMBIE);
     tbl_field_t paus=thread_blocked[i];
     while(paus)
     {
-     printf("%i\n",paus->tcb->tid);
+     //printf("%i\n",paus->tcb->tid);
      paus=paus->next;
     }
     i++;
@@ -406,8 +406,7 @@ for(i=0;i<NUM_PRIOR;i++)
 for(i=0;i<NUM_WHY;i++)
 {
   while(thread_blocked[i])
- {
-   elim=thread_blocked[i];
+ {   elim=thread_blocked[i];
    thread_blocked[i]=thread_blocked[i]->next;
    free(elim);
  }

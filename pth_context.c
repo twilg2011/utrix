@@ -10,11 +10,12 @@
 #include "pth_errno.h"
 #include "config.h"
 #include <stdlib.h>
-
+//#define DEBUG
 partition_t partitionhead;
 partition_t partitiontail;
 int thread_n;
 char* globalsp;
+//int val=0;
 
 
 partition_t findfree();
@@ -22,7 +23,7 @@ int addpar(partition_t new);
 
 char* bpcalc(context_t ctx)
 {
-   partition_t part=NULL;
+    partition_t part=NULL;
    /*cerco partizioni libere*/
    if (!(part=findfree())) 
    {
@@ -35,6 +36,7 @@ char* bpcalc(context_t ctx)
    }
 #ifdef DEBUG
    printf("sp partizione:%p\n",part->bp);
+   
 #endif
    part->present=1;
    ctx->part=part;
@@ -60,6 +62,11 @@ int addpar(partition_t new)
     }else{
         new->next=partitionhead;
         partitionhead=new;
+#ifdef DEBUG
+        printf("Num part %d\n",++val);
+#endif
+   
+   
     }
 	/*inizializza i dati delle partizioni*/
 	new->bp=globalsp-STACKWIDTH;

@@ -19,17 +19,23 @@ pthread_cond_t cond2;
         printf("Ora e' in funzione il thread %d...\n",num);
    	 printf("Mutex %d, %d\n",num, pthread_mutex_lock(&mux));
         pthread_yield();
-   if(num!=4){
+    char arr[1];
+    int i=0;
+    for(;i<1;i++){
+        arr[i]=num;
+    }
+    pthread_yield();
+    printf("\nN:%i\n",num);
+    for(i=0;i<1;i++){
+        printf("%i-",arr[i]);
+    }
+        
    printf("Faccio wait sn thread %d, res:%d\n",num,pthread_cond_wait(&cond,&mux));
-   printf("Faccio signal sn thread %d,res %d\n",num,pthread_cond_signal(&cond2));
-           }
-           else{
-       printf("Faccio signal sn thread %d res %d\n",num,pthread_cond_broadcast(&cond));
-   printf("Faccio wait sn thread %d res %d\n",num,pthread_cond_wait(&cond2,&mux));
-       } 
+    
   printf("Mutex %d sblocco%d\n",num,pthread_mutex_unlock(&mux));
     printf("Ora si chiude il thread %d...\n",num);
-        pthread_exit(10);
+     //   pthread_exit(10);
+     while(1){pthread_yield();}
     }
 
 
@@ -42,7 +48,7 @@ pthread_cond_t cond2;
    printf("inizializzo mutex%d %d\n",EBUSY,pthread_mutex_init(&mux,NULL));
    printf("DESTROY %d\n",pthread_mutex_destroy(&mux));    
     printf("Inizializzo mutex %d\n",pthread_mutex_init(&mux,NULL));
-    //    pthread_t p5;
+        pthread_t p5;
     printf("SECONDO %d\n",pthread_mutex_init(&mux2,NULL));
    printf("SECONDO TERMINA %d\n",pthread_mutex_destroy(&mux2));
   printf("inizializzo COND1 %d\n",pthread_cond_init(&cond,NULL));
@@ -59,11 +65,12 @@ pthread_cond_t cond2;
     printf("DESTORY ULTIMO %d\n",pthread_mutex_destroy(&mux3));
     */printf("Parte il main...\n");
         int x;//malloc(sizeof(int));
-        pthread_create(&p1,fp1,1);
-        pthread_create(&p2,fp1,2);
-        pthread_create(&p3,fp1,3);
-         pthread_create(&p4,fp1,4);	
-       //     pthread_create(&p5,fp1,5);
+        int i=0;
+        while(i<100){pthread_create(&p1,NULL,fp1,i);i++;};
+        pthread_create(&p2,NULL,fp1,2);
+        pthread_create(&p3,NULL,fp1,3);
+         pthread_create(&p4,NULL,fp1,4);	
+            pthread_create(&p5,NULL,fp1,5);
         printf("Finisco di creare ed ora attendo....\n");
         x=-3;
         printf("inizio:%d\n",x);
@@ -82,6 +89,7 @@ pthread_cond_t cond2;
 x=-10;
 
     pthread_join(p4,&x);
+    pthread_join(p5,&x);
     printf("Risultato %d\n",x);
     pthread_exit(0);
 }

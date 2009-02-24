@@ -1,13 +1,13 @@
 
 CC = gcc
 CFLAGS = -Wall -pedantic -c
-objects = pthread.o pth_context.o pth_struct.o pthread_sched.o pth_syncr.o test_sched.c
+objects = pthread.o pth_context.o pth_struct.o pthread_sched.o pth_syncr.o testsyncr.c wator.h 
 exe=lib_thread
 
 $(exe): $(objects)
 	$(CC) $(objects) -o $(exe)
           
-pthread.o: pthread.c test_sched.c 
+pthread.o: pthread.c wator.c 
 	$(CC) $(CFLAGS) pthread.c
 
 pth_context.o: pth_context.c pth_context.h config.h pth_errno.h
