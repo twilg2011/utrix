@@ -17,11 +17,11 @@
 struct pthread_mutex_s;
 struct pthread_cond_s;
 //typedef unsigned int pthread_t;
+typedef int pthread_attr_t;
 
 
 
-
-extern int       pthread_create(pthread_t *,/* const pthread_attr_t*,*/ void* (*)(void *), void *);
+extern int       pthread_create(pthread_t* ,  pthread_attr_t* , void* (*)(void *), void *);
 extern int       pthread_detach(pthread_t);
 extern void       pthread_yield(void);
 extern void      pthread_exit(void *);
