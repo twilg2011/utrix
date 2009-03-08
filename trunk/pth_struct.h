@@ -29,7 +29,7 @@ typedef struct tcb{
 	context_t ctx;
 	int state;  /* Stato del thread */
 	clock_t time;
-	
+	int timerInterval;
 	sigset_t sig; /* Tabella dei segnali */
 } tcb_s;
 
