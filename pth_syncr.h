@@ -5,16 +5,19 @@
 #define ACTIVE 1
 #define PTHREAD_MUTEX_INITIALIZER {NULL,ACTIVE}
 #define PTHREAD_COND_INITIALIZER {NULL,ACTIVE}
+
+
+/*Struttura necessaria per capire chi sta in attesa*/
 typedef struct mutexWait{
 pthread_t own;
 struct mutexWait* next;
 } mutexWait;
 
 
-/*Struttura del mutex*/
+/*Struttura del mutex vero e proprio*/
 typedef struct mutex{
 unsigned char state;
-unsigned int val;
+unsigned int val;/*Valore del mutex*/
 pthread_t own;/*Tid di chi possiede il mutex*/
 mutexWait* list_head;
 mutexWait* list_tail;
@@ -32,12 +35,15 @@ int active;
 
 typedef struct pthread_mutex_s pthread_mutex_t;
 
+/*Struttura necessaria per memorizzare una lista di condition*/
 typedef struct el_cond{
 pthread_mutex_t* mux;
 pthread_t own;
 struct el_cond* next;
 } el_cond_t;
 
+
+/*Struttura effettiva di una condition*/
 typedef struct cond{
 unsigned int state;
 el_cond_t* list_head;
@@ -46,6 +52,8 @@ struct cond* next;
 struct cond* prev;
 } pth_cond_t;
 
+
+/*Struttura più esterna della condition, è un semplice contenitore*/
 struct pthread_cond_s{
 pth_cond_t* condition;
 int active;
