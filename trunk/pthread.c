@@ -2,7 +2,7 @@
  *  pthread.c
  *  Utrix-1.0
  *
- *  Created by Matteo Casenove on 05/11/08.
+ *  Created by MinixGroupPisa on 05/11/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
@@ -15,7 +15,6 @@
 #define ESEGUITO 1	/* Indica che il thread e' stato gia' eseguito */
 #define FIRST_THR 1 /* Indica il numero iniziale di thread considerando come numero 1 il main */
 
-
 int pthread_initialized= FALSE; /* Definisce che la libreria non e' stata ancora inizializzata */
 
 /*
@@ -24,7 +23,6 @@ int pthread_initialized= FALSE; /* Definisce che la libreria non e' stata ancora
  * @return FALSE se e' accorso un errore duranete la creazione del thread
  * @return TRUE se l'inizializzazione e' avvenuta con successo 
  */
-
 static int init(){
 	
 	tbl_field_t tbl;
@@ -97,7 +95,7 @@ int pthread_create(pthread_t *pth, pthread_attr_t * att, void *(*fun)(void *) , 
 	tbl_field_t tbl;
 	
 	if( pth == NULL || att != NULL || fun == NULL )
-		return EAGAIN;
+		return SETERR(EAGAIN);
 	
 	/* Controlla se la libreria e' stata inizializata */
 	pthread_initialize();
@@ -105,12 +103,12 @@ int pthread_create(pthread_t *pth, pthread_attr_t * att, void *(*fun)(void *) , 
 	
 	tcb=(tcb_t)calloc(1,sizeof(tcb_s));
 	if(!tcb)
-		return EAGAIN;
+		return SETERR(EAGAIN);
 	
 	tbl=(tbl_field_t)calloc(1,sizeof(tbl_field_s));
 	if(!tbl){
 		free(tcb);
-		return EAGAIN;
+		return SETERR(EAGAIN);
 	}
 	
 	tcb->tid_f=thread_exec->tid;
@@ -121,7 +119,7 @@ int pthread_create(pthread_t *pth, pthread_attr_t * att, void *(*fun)(void *) , 
 	if(!tcb->ctx){
 		free(tcb);
 		free(tbl);
-		return EAGAIN;
+		return SETERR(EAGAIN);
 	}
 	tcb->state=NUOVO;
 	
@@ -153,7 +151,7 @@ int pthread_create(pthread_t *pth, pthread_attr_t * att, void *(*fun)(void *) , 
 
 
 /*pthread_self:Questa funzione restituisce il tid del thread in esecuzione(STANDARD)
- @return: un valore di tipo pthread_t uguale al tid*/
+ @return un valore di tipo pthread_t uguale al tid*/
 
 pthread_t pthread_self(void){
 	pthread_initialize();
@@ -171,30 +169,28 @@ void pthread_yield()
 
 
 /*pthread_join:Questa funzione aspetta la terminazione del thread e restituisce il valore di ritorno del thread in value_ptr(STANDARD)
- @param: thread è il tid del thread che devo attendere
+ @param thread è il tid del thread che devo attendere
  @param value_ptr è la zona di memoria che contiene il valore di ritorno del thread che aspetto.
- @return: OK in caso di successo altrimenti uno degli errori sottostanti
+ @return OK in caso di successo altrimenti uno degli errori sottostanti
  
- @error:	EINVAL se il thread non è di tipo joinable
- ESRCH se non esiste un thread con il tid uguale a quello passato per parametro
- EDEADLK se il tid passato come parametro è uguale al tid del thread chiamante
+ @error	EINVAL se il thread non è di tipo joinable
+ @error ESRCH se non esiste un thread con il tid uguale a quello passato per parametro
+ @error EDEADLK se il tid passato come parametro è uguale al tid del thread chiamante
  */
-
-
 int pthread_join(pthread_t thread, void ** value_ptr){
 	pthread_initialize();
 	if(thread==ESECUTION_TID)
 		return SETERR(EDEADLK);
 	tcb_t thread_search;
 	thread_search=gettcb(thread);
-	#ifdef DEBUG
+#ifdef DEBUG
 	printf("Thread trovato%d del tid %p\n",thread,thread_search);
-	#endif
+#endif
 	/*Il thread cercato non è attivo*/
 	if(!thread_search){
-		#ifdef DEBUG
+#ifdef DEBUG
 		printf("Thread  Non trovato col tid %d\n",thread);
-		#endif
+#endif
 		return SETERR(ESRCH);
 	}
 	/*Il thread cercato  è detachable*/
@@ -202,23 +198,23 @@ int pthread_join(pthread_t thread, void ** value_ptr){
 		return SETERR(EINVAL);
 	/*Il thread cercato è morto*/
 	if(thread_search->state==ZOMBIE){
-		#ifdef DEBUG
+#ifdef DEBUG
 		printf("Thread  Zombie col tid %d\n",thread);
-		#endif
+#endif
 		
 		/*Controllo se qualcuno ha gia fatto la join*/
 		if(thread_search->thread_join){
-			#ifdef DEBUG
+#ifdef DEBUG
 			printf("Thread ha qualcuno in join col tid %d\n",thread);
-			#endif
+#endif
 			return SETERR(EINVAL);
 		} 
 		
 		else{
 			/*Nessuno ha mai fatto la join, quindi prendo i valori del thread morto e lo elimino del tutto*/
-			#ifdef DEBUG
+#ifdef DEBUG
 			printf("Thread %d: nessuno ha fatto la join \n",thread_exec->tid);
-			#endif			
+#endif			
 			*value_ptr=(thread_search->thread_res.res);        
 			schedthrkill(thread_search->tid);
 			thread_n--;
@@ -229,36 +225,26 @@ int pthread_join(pthread_t thread, void ** value_ptr){
 	}
 	else{
 		/*Non è ancora morto*/
-		#ifdef DEBUG
+#ifdef DEBUG
 		printf("Thread %d non è morto\n",thread);
-		#endif
+#endif
         /*Devo mettere in attesa il thread dopo aver salvato tutte le informazioni necessarie*/
         thread_search->thread_join=thread_exec;
         thread_search->thread_res.ptr_res=value_ptr;
         pth_sleep(ESECUTION_TID,JOIN);
         pth_switch(thread_exec->ctx,sched);		
         return SETERR(OK);
-		
-		
-		
 	}
-	
-	
-	
-	
-	
-	
-	
 }
 
 
-/*pthread_detach:Questa funzione rende un thread detach cioè quando terminerà potrà essere deallocato senza salvare nessun valore di ritorno.(STANDARD)
- @param: thread è il tid del thread che devo rendere detach
+/*pthread_detach Questa funzione rende un thread detach cioè quando terminerà potrà essere deallocato senza salvare nessun valore di ritorno.(STANDARD)
+ @param thread è il tid del thread che devo rendere detach
  
- @return: OK in caso di successo altrimenti uno degli errori sottostanti
+ @return OK in caso di successo altrimenti uno degli errori sottostanti
  
- @error:	EINVAL se il thread non è di tipo joinable
- ESRCH se non esiste un thread con il tid uguale a quello passato per parametro
+ @error	EINVAL se il thread non è di tipo joinable
+ @error ESRCH se non esiste un thread con il tid uguale a quello passato per parametro
  
  */
 int  pthread_detach(pthread_t thread){
@@ -273,9 +259,9 @@ int  pthread_detach(pthread_t thread){
 	if(thread_search->state==ZOMBIE)/*Se è in stato di zombie allora lo cancello*/
 	{	if(thread_search->thread_join)/*Qualcuno ha gia fatto la join*/
 		return SETERR(EINVAL);
-		#ifdef DEBUG
+#ifdef DEBUG
 		printf("Thread %d Zombie x la detach\n",thread);
-		#endif
+#endif
 		/*Uccido senza salvarmi le informazioni*/
 		schedthrkill(thread_search->tid);
 		thread_n--;
@@ -289,17 +275,13 @@ int  pthread_detach(pthread_t thread){
 		/*Diventa detachable*/
 		thread_search->save=DETACHABLE;
 		return SETERR(OK);
-		
     }
     /*Se aggiungiamo le opzioni devo fare un controllo in più vedi EINVAL sul manuale*/
-	
-	
-	
 }
 
 
-/*pthread_exit:Questa funzione permette la terminazione del thread e value_ptr sarà il valore di ritorno(STANDARD)
- @param: value_ptr è il valore di ritorno del thread.
+/*pthread_exit: Questa funzione permette la terminazione del thread e value_ptr sarà il valore di ritorno(STANDARD)
+ @param value_ptr è il valore di ritorno del thread.
  Non dovrebbe mai ritornare
  */
 
@@ -318,21 +300,21 @@ void pthread_exit(void* value_ptr){
 		if(thread_exec->thread_join){
 			/*Qualcuno mi aspetta*/
 			*(thread_exec->thread_res.ptr_res)=value_ptr;
-			#ifdef DEBUG
+#ifdef DEBUG
 			printf("Risveglio chi mi aspetta %d\n", thread_exec->thread_join->tid);
-			#endif
+#endif
 			
 			schedthrkill(ESECUTION_TID);
 			thread_n--;
-			#ifdef DEBUG
+#ifdef DEBUG
 			printf("Mi killo %d e risveglio%d\n",thread_exec->tid,thread_exec->thread_join->tid);
-			#endif
+#endif
 			pth_unsleep(thread_exec->thread_join->tid,JOIN);
 		}
 		else{
-			#ifdef DEBUG
+#ifdef DEBUG
 			printf("Salvo indirizzo %d\n",thread_exec->tid);
-			#endif
+#endif
 			/*Salvo il valore del thread e mi addormento per sempre*/
 			(thread_exec->thread_res.res)=value_ptr;
 			pth_sleep(ESECUTION_TID,ZOMBIESLEEP);
@@ -344,9 +326,9 @@ void pthread_exit(void* value_ptr){
 		thread_n--;
 	}
 	releasepart(thread_exec->ctx->part);
-	#ifdef DEBUG
+#ifdef DEBUG
 	printf("Rilascio la parte %d\n",thread_exec->tid);
-	#endif
+#endif
 	pth_switch(thread_exec->ctx,sched);	
 }
 

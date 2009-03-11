@@ -1,6 +1,11 @@
-//#include "pthread.h"
-
-
+/*
+ *  pthread_lib.h
+ *  Utrix-1.0
+ *
+ *  Created by MinixGroupPisa on 05/11/08.
+ *  Copyright 2008 Utrix. All rights reserved.
+ *
+ */
 /* Default attribute */
 #define DEFAULT_ATTR NULL
 

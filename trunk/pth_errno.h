@@ -6,8 +6,11 @@
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
+
 #include<errno.h>
+
 int pth_errno;
+
 #define PTH_ERR(func,str,pth_errno) \
 		fprintf(stderr, \
                  "pth: %s :ERROR: %s\n", func,str); \
@@ -15,8 +18,7 @@ int pth_errno;
 
 #define SETERR(err) errno=err;
 #define OK 0
-#define PTHREAD_CREATE 1
-#define ERRTOOTHR 2
+
 
 
 
