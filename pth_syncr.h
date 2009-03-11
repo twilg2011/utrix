@@ -1,18 +1,39 @@
+/*
+ *  pth_syncr.h
+ *  Utrix
+ *
+ *  Created by MinixGroupPisa on 11/07/08.
+ *  Copyright 2008 Utrix. All rights reserved.
+ *
+ */
+
 #include "pthread_lib.h"
+
 #define INIT 10
 #define LOCK 11
 #define NO_ACTIVE 0
 #define ACTIVE 1
-#define PTHREAD_MUTEX_INITIALIZER {NULL,ACTIVE}
-#define PTHREAD_COND_INITIALIZER {NULL,ACTIVE}
 
+/*Permette di inizializzare un mutex
+ @param pth_mutex_t* mutex la struttura viene inizializzata a NULL 
+ @param int active il valore viene posto ad ACTIVE perchè comunque il mutex viene considerato inizializzato
+ 
+ */
+#define PTHREAD_MUTEX_INITIALIZER {NULL,ACTIVE}
+
+
+/*Permette di inizializzare una condition 
+ @param pth_cond_t* condition la struttura viene inizializzata a NULL 
+ @param int active il valore viene posto ad ACTIVE perchè comunque la condition viene considerata inizializzato
+ 
+ */
+#define PTHREAD_COND_INITIALIZER {NULL,ACTIVE}
 
 /*Struttura necessaria per capire chi sta in attesa*/
 typedef struct mutexWait{
 	pthread_t own;
 	struct mutexWait* next;
 } mutexWait;
-
 
 /*Struttura del mutex vero e proprio*/
 typedef struct mutex{
@@ -25,13 +46,11 @@ typedef struct mutex{
 	struct mutex* prev;
 } pth_mutex_t;
 
-
 /*Struttura più esterna del mutex, è un semplice contenitore*/
 struct pthread_mutex_s{
 	pth_mutex_t* mux;
 	int active;
 };
-
 
 typedef struct pthread_mutex_s pthread_mutex_t;
 
@@ -42,7 +61,6 @@ typedef struct el_cond{
 	struct el_cond* next;
 } el_cond_t;
 
-
 /*Struttura effettiva di una condition*/
 typedef struct cond{
 	unsigned int state;
@@ -52,18 +70,16 @@ typedef struct cond{
 	struct cond* prev;
 } pth_cond_t;
 
-
 /*Struttura più esterna della condition, è un semplice contenitore*/
 struct pthread_cond_s{
 	pth_cond_t* condition;
 	int active;
 };
 
-
-
 typedef struct pthread_cond_s pthread_cond_t ;
 typedef int pthread_mutexattr_t;
 typedef int pthread_condattr_t;
+
 /*Lista dei mutex attivi*/
 
 extern pth_mutex_t* list_mux;

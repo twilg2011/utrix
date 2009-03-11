@@ -2,7 +2,7 @@
  *  pthread.h
  *  Utrix
  *
- *  Created by Matteo Casenove on 10/07/08.
+ *  Created by MinixGroupPisa on 10/07/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
@@ -45,6 +45,7 @@ extern int 	 pthread_mutex_destroy(pthread_mutex_t* mutex);
 extern int	 pthread_mutex_lock(pthread_mutex_t *mutex);
 
 extern int 	 pthread_mutex_unlock(pthread_mutex_t *mutex);
+/*Aggiungere le chiamate di condition*/
 
 //int pthread_attr_init(pthread_attr_t *attr);
 //int pthread_attr_destroy(pthread_attr_t *attr);
