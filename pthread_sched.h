@@ -2,7 +2,7 @@
  *  pthread_sched.h
  *  
  *
- *  Created by lorenzo galeotti on 23/07/08.
+ *  Created by MinixGroupPisa on 23/07/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */

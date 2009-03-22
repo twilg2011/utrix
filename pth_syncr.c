@@ -377,7 +377,7 @@ int pthread_cond_init(pthread_cond_t *cond ,const pthread_condattr_t *attr){
  @param cond la condition da distruggere
  @return OK se è andato tutto bene, altrimenti un errore
  @error EINVAL se il valore della condition è sbagliato
- @error EBUSY se la condition è bloccato*/
+ @error EBUSY se la condition è bloccata*/
 int pthread_cond_destroy(pthread_cond_t * cond){
 	pthread_initialize();
 	if(cond==NULL)/*Non esiste l'elemento passato*/
@@ -446,9 +446,10 @@ int pthread_cond_destroy(pthread_cond_t * cond){
 
 /*pthread_cond_wait: Eseguo una wait su una condition 
  @param cond la condition su cui fare la wait
+ @param mutex il mutex da rilasciare per bloccarsi sulla condition cond
  @return OK se è andato tutto bene, altrimenti un errore
  @error EINVAL se il valore della condition è sbagliato
- @error EPERM se il proprietario del mutex e' diverso da chi sta eseguendo la lock
+ @error EPERM se il proprietario del mutex e' diverso da chi sta eseguendo la wait
  */
 int pthread_cond_wait(pthread_cond_t * cond , pthread_mutex_t * mutex){
 	/*Faccio controlli sull'integrità dei dati*/
