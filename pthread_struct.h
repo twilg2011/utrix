@@ -8,7 +8,7 @@
  */
 
 #include "pthread.h"
-#include "pth_context.h"
+#include "pthread_context.h"
 #define ESECUTION_TID thread_exec->tid
 #define DETACHABLE 1
 #define JOINABLE 0

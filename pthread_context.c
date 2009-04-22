@@ -6,8 +6,8 @@
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
-#include "pth_context.h"
-#include "pth_errno.h"
+#include "pthread_context.h"
+#include "pthread_errno.h"
 #include "config.h"
 #include <stdlib.h>
 //#define DEBUG
@@ -30,14 +30,16 @@ char* bpcalc(context_t ctx)
 	{
 		/*se non le trovo ne creo una*/
 #ifdef DEBUG
-		printf("nuova partizione\n");
+		CTRL_PRINT(bpcalc,nuova partizione);
 #endif
 		part=malloc(sizeof(partition_s));
 		if (addpar(part)) return NULL;
 	}
-#ifdef DEBUG
-	printf("sp partizione:%p\n",part->bp);
-#endif
+
+	#ifdef DEBUG 
+		CTRL_PRINT_PAR(bpcalc,sp partizione:%p,part->bp);
+	#endif
+
 	part->present=TRUE;
 	ctx->part=part;
 	/*ritorno la partizione da usare*/
@@ -62,18 +64,18 @@ int addpar(partition_t new)
     }else{
         new->next=partitionhead;
         partitionhead=new;
-#ifdef DEBUG
-        printf("Num part %d\n",++val);
-#endif
+	#ifdef DEBUG 
+       CTRL_PRINT_PAR(bpcalc, Numero part %d,++val);
+	#endif
 		
 		
     }
 	/*inizializza i dati delle partizioni*/
 	new->bp=globalsp-STACKWIDTH;
 	new->present=TRUE;
-#ifdef DEBUG
-    printf("sp:%p",new->bp);
-#endif
+	#ifdef DEBUG 
+		CTRL_PRINT_PAR(bpcalc,sp:%p,new->bp);
+	#endif
 	globalsp=new->bp;
 	return OK;
 }
@@ -85,9 +87,9 @@ partition_t findfree()
 	/*cicla fino a trovare una partizione libera*/
 	while (res)
 	{
-#ifdef DEBUG
-		printf("cerca ancora:%p\n",res->bp);
-#endif
+	#ifdef DEBUG 
+		CTRL_PRINT_PAR(findfree,cerca ancora:%p,res->bp);
+	#endif
 		if(!res->present)return res;
 		res=res->next;
 	}
@@ -97,9 +99,9 @@ partition_t findfree()
 /*libera la partizione passata come argomento*/
 int releasepart(partition_t part)
 {
-#ifdef DEBUG
-	printf("relasepart %p\n",part->bp);
-#endif
+	#ifdef DEBUG 
+		CTRL_PRINT_PAR(findfree,relasepart %p,part->bp);
+	#endif
 	if (part) part->present=FALSE;
 	else return SETERR(EINVAL);
 	return OK;

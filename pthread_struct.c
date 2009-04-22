@@ -7,7 +7,7 @@
  *
  */
 
-#include "pth_struct.h"
+#include "pthread_struct.h"
 
 int thread_n;
 int tcb_n = 0; /* Progressive tcb number. 

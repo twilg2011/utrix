@@ -12,10 +12,10 @@
 #include "config.h"
 #include "pthread_sched.h"
 #include "sys/jmp_buf.h"
-#include "pth_errno.h"
+#include "pthread_errno.h"
 #include <stdlib.h>
 #include <time.h>
-//#define DEBUG
+/*#define DEBUG*/
 
 tbl_field_t  thread_priortail[NUM_PRIOR];
 tbl_field_t  thread_priorhead[NUM_PRIOR];
@@ -114,9 +114,9 @@ int searchonall(int tid,tbl_field_t* serc,tbl_field_t* parent, tbl_field_t** lis
 
 void gc(){
 	while(thread_garbage){
-#ifdef DEBUG
-		printf("killo:%i,%i\n",thread_exec->tid,thread_garbage->tcb->tid);
-#debug
+	#ifdef DEBUG 
+		CTRL_PRINT_PAR(gc,Elimino:%i\n,thread_garbage->tcb->tid);
+	#endif
 		tbl_field_t paus=thread_garbage;
 		thread_garbage=thread_garbage->next;
 		free(paus->tcb->ctx);
@@ -129,9 +129,9 @@ void scheduler(void* arg)
 {
 	/*thread schedulato*/
 	tbl_field_t  selectedthr;
-#ifdef DEBUG
-	printf("scheduler\n");
-#endif
+	#ifdef DEBUG 
+		CTRL_PRINT(scheduler, );
+	#endif
 	/*inizializzo a 0 il nomero dei thread schedulati*/
 	scheduledthr_n=0;
 	
@@ -144,25 +144,24 @@ void scheduler(void* arg)
 			empty(NULL);
 		}else{
 			
-#ifdef DEBUG
-			printf("selected:%i\n",selectedthr->tcb->tid);
-#endif
+			#ifdef DEBUG 
+				CTRL_PRINT_PAR(scheduler,selected:%i,selectedthr->tcb->tid);
+			#endif
 			
 			/*imposto lo stato corretto*/
 			selectedthr->tcb->state=EXEC;
 			thread_exec=selectedthr->tcb;
 			
-			
-#ifdef DEBUG
-			printf("parto%p\n",selectedthr);
-#endif
+			#ifdef DEBUG 
+				CTRL_PRINT_PAR(scheduler,parto%p,selectedthr);
+			#endif
 			
 			
 			if(!selectedthr->tcb->ctx->eseguito)
 			{
-#ifdef DEBUG
-				printf("Prima esecuzione: %d",selectedthr->tcb->tid);
-#endif
+				#ifdef DEBUG 
+					CTRL_PRINT_PAR(scheduler,Prima esecuzione: %d,selectedthr->tcb->tid);
+				#endif
 				selectedthr->tcb->ctx->eseguito=TRUE;
 				void*(*f)(void*) = selectedthr->tcb->ctx->f;
 				selectedthr->tcb->timerInterval=1;
@@ -178,9 +177,9 @@ void scheduler(void* arg)
 				pth_switch(sched,selectedthr->tcb->ctx);
 			}
 			
-#ifdef DEBUG
-			printf("ritorno %p\n",selectedthr);
-#endif
+			#ifdef DEBUG 
+				CTRL_PRINT_PAR(scheduler,ritorno %p,selectedthr);
+			#endif
 			/*calcolo il tempo che ha utilizzato*/
 			pth_time=clock()-pth_time;
 			
@@ -198,9 +197,9 @@ tbl_field_t selectthr()
 {  
 	int i=-1;
 	
-#ifdef DEBUG
-	printf("selector\n");
-#endif
+	#ifdef DEBUG 
+		CTRL_PRINT(selector, );
+	#endif
 	/*scorro i thread schedulabili*/
 	while(i<NUM_PRIOR-1)
 	{
@@ -224,7 +223,7 @@ void longtermsched()
 	tbl_field_t  new;
 	
 #ifdef DEBUG
-	printf("longterm,%i   , %i\n",thread_n,scheduledthr_n);
+	CTRL_PRINT_PAR(longterm, thread schedulati %i,scheduledthr_n);
 #endif
 	
 	/*campo della tabella fittizio*/
@@ -253,8 +252,8 @@ void setprior(tbl_field_t thr,int prior)
 {
 	tbl_field_t tcb;
 	tbl_field_t  parent;
-#ifdef DEBUG
-	printf("setprior:%i\n",prior);
+	#ifdef DEBUG 
+	CTRL_PRINT_PAR(setprior,prior:%i,prior);
 #endif
 	if(!thr) 
 	{ 
@@ -317,8 +316,8 @@ void pth_sleep(int tid,int why)
 	{
 		if (searchonall(tid,&select_tcb,&parent,&list) )
 		{
-#ifdef DEBUG
-			printf("sleep:%i\n",select_tcb->tcb->tid);
+	#ifdef DEBUG 
+			CTRL_PRINT_PAR(pth_sleep,sleep:%i\n,select_tcb->tcb->tid);
 #endif
 			/*metto il thread nella lista dedicata*/
 			ELIM(select_tcb,parent,(*list));
@@ -386,8 +385,8 @@ void jumanji()
 		{
 			elim=thread_priortail[i];
 			thread_priortail[i]=thread_priortail[i]->next; 
-			free(elim->tcb->ctx->part)
-			free(elim->tcb->ctx)
+			free(elim->tcb->ctx->part);
+			free(elim->tcb->ctx);
 			free(elim->tcb);
 			free(elim);
 		}
@@ -398,8 +397,8 @@ void jumanji()
 		while(thread_blocked[i])
 		{   elim=thread_blocked[i];
 			thread_blocked[i]=thread_blocked[i]->next;
-			free(elim->tcb->ctx->part)
-			free(elim->tcb->ctx)
+			free(elim->tcb->ctx->part);
+			free(elim->tcb->ctx);
 			free(elim->tcb);
 			free(elim);
 		}

@@ -7,7 +7,7 @@
  *
  */
 
-#include "pth_struct.h"
+#include "pthread_struct.h"
 
 /* Thread Priority */
 #define NUM_PRIOR 3

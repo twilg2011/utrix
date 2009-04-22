@@ -14,7 +14,7 @@
 #include<time.h>
 #include<unistd.h>
 #include<errno.h>
-#include"pth_syncr.h"
+#include"pthread_syncr.h"
 
 struct pthread_mutex_s;
 struct pthread_cond_s;
@@ -47,12 +47,12 @@ extern int	 pthread_mutex_lock(pthread_mutex_t *mutex);
 extern int 	 pthread_mutex_unlock(pthread_mutex_t *mutex);
 /*Aggiungere le chiamate di condition*/
 
-//int pthread_attr_init(pthread_attr_t *attr);
-//int pthread_attr_destroy(pthread_attr_t *attr);
+/*int pthread_attr_init(pthread_attr_t *attr);
+int pthread_attr_destroy(pthread_attr_t *attr);
 
-//int pthread_attr_getdetachstate(const pthread_attr_t *attr, int *detachstate);
-//int pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate);
-
+int pthread_attr_getdetachstate(const pthread_attr_t *attr, int *detachstate);
+int pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate);
+*/
 
 
 
