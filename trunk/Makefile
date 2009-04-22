@@ -1,27 +1,24 @@
 
 CC = gcc
-CFLAGS = -Wall -pedantic -c
-objects = pthread.o pth_context.o pth_struct.o pthread_sched.o pth_syncr.o testsyncr.c wator.h 
-exe=lib_thread
+CFLAGS =  -Wall -pedantic 
+objects = pthread_context.o pthread_sched.o pthread.o pthread_struct.o pthread_syncr.o
+included = pthread.h pthread_syncr.h pthread_lib.h pthread_struct.h
+exe = libpthread.a
 
 $(exe): $(objects)
-	$(CC) $(objects) -o $(exe)
-          
-pthread.o: pthread.c wator.c 
-	$(CC) $(CFLAGS) pthread.c
+	/usr/gnu/bin/gar ruv $(exe) $(objects)
 
-pth_context.o: pth_context.c pth_context.h config.h pth_errno.h
-	$(CC) $(CFLAGS) pth_context.c
+pthread_context.o : pthread_context.h pthread_errno.h config.h	
 
-pth_struct.o: pthread_lib.h pthread.h  pth_struct.h pth_struct.c
-	$(CC) $(CFLAGS) pth_struct.c
+pthread_sched.o : pthread_errno.h config.h  pthread_sched.h  $(included) 
 
-pthread_sched.o: pthread_sched.h pthread_sched.c config.h
-	$(CC) $(CFLAGS) pthread_sched.c
+pthread.o : pthread_errno.h pthread_sched.c	
 
-pth_syncr.o: pth_syncr.c pth_syncr.h syncr.s
-	$(CC) $(CFLAGS) pth_syncr.c
+pthread_struct.o : $(included)
 
-clean: 
-	rm $(exe) $(objects) *~ core
+pthread_syncr.o: pthread_errno.h pthread_sched.h $(included)
+
+
+delete:
+	 -rm $(exe) $(objects)
 

@@ -8,7 +8,7 @@
  */
 
 #include "pthread_sched.h"
-#include "pth_errno.h"
+#include "pthread_errno.h"
 
 #define MUTEX_LIST 10
 #define COND_LIST 20
@@ -26,7 +26,7 @@
 		} \
 	}
 
-//#define DEBUGSY
+/*/#define DEBUGSY*/
 
 #ifdef DEBUGSY
 void stampaL(pth_mutex_t* list_mux){
@@ -80,7 +80,8 @@ static int controllo(void * elem, int lista){
  @error EBUSY se il mutex è gia inizializzato
  */
 int pthread_mutex_init(pthread_mutex_t* mutex,const pthread_mutexattr_t * attr){
-	pthread_initialize();
+int attivoMacro=0;
+    pthread_initialize();
 	
     if(!mutex)
 		return SETERR(EINVAL);
@@ -90,15 +91,15 @@ int pthread_mutex_init(pthread_mutex_t* mutex,const pthread_mutexattr_t * attr){
 	if(mutex->active!=ACTIVE && mutex->active!=NO_ACTIVE)
 		mutex->active=NO_ACTIVE;
 	
- 	int attivoMacro=0;
-	if(mutex->active==ACTIVE)/*Se è attivo e non esiste allora è attivo tramite macro*/
-		if ((!mutex->mux)||((mutex->mux)&&(!controllo(mutex->mux,MUTEX_LIST)))))
+ 	if(mutex->active==ACTIVE)/*Se è attivo e non esiste allora è attivo tramite macro*/
+    {	if ((!mutex->mux)||((mutex->mux)&&(!controllo(mutex->mux,MUTEX_LIST))))
 			attivoMacro=1;
 		else/*Altrimenti è gia stato creato*/
-        	return SETERR(EBUSY);
-	
-#ifdef DEBUGSY
-	printf("Tutti i controlli di integrità nella pthread_mutex_init sono stati superati\n");
+         
+            return SETERR(EBUSY);
+        }
+#ifdef DEBUGSY 
+CTRL_PRINT(pthread_mutex_init,Tutti i controlli di integrità nella pthread_mutex_init sono stati superati)
 #endif
  	
 	/*Devo creare il mutex se arrivoa  questo punto*/
@@ -118,9 +119,8 @@ int pthread_mutex_init(pthread_mutex_t* mutex,const pthread_mutexattr_t * attr){
 		list_mux->prev=mutex->mux;
 		list_mux=mutex->mux;
 	}
-	
-#ifdef DEBUGSY
-	printf("Creato e aggiunto alla lista il mutex\n");
+#ifdef DEBUGSY 	
+CTRL_PRINT(pthread_mutex_init,Creato e aggiunto alla lista il mutex)
 #endif
 	if(mutex->active!=ACTIVE)
    		mutex->active=ACTIVE;
@@ -145,9 +145,8 @@ int pthread_mutex_destroy(pthread_mutex_t* mutex){
 		mutex->active=NO_ACTIVE;
 	if(mutex->mux==NULL)/*Il mutex non è stato inizializzato o è gia stato distrutto*/
 	{
-		
-#ifdef DEBUGSY
-		printf("Mutex NULL nella mutex_destroy\n");
+	#ifdef DEBUGSY 	
+CTRL_PRINT(pthread_mutex_destroy,Mutex passato risulta essere NULL)
 #endif
 		
 		if(mutex->active!=ACTIVE)
@@ -175,14 +174,14 @@ int pthread_mutex_destroy(pthread_mutex_t* mutex){
 		free(mutex->mux);
 		mutex->mux=NULL;
 		mutex->active=NO_ACTIVE;
-#ifdef DEBUGSY
-		printf("Tutto ok nella mutex_destroy\n");
+		#ifdef DEBUGSY 
+CTRL_PRINT(pthread_mutex_destroy,Mutex passato cancellato perfettamente)
 #endif
 		return SETERR(OK);
 	}
 	else{
-#ifdef DEBUGSY
-		printf("Trovato un mutex non creato ma con valore errato nella mutex_destroy\n");
+		#ifdef DEBUGSY 
+CTRL_PRINT(pthread_mutex_destroy,Trovato un mutex non creato ma con valore errato)
 #endif
 		
 		mutex->mux=NULL;
@@ -202,7 +201,8 @@ int pthread_mutex_destroy(pthread_mutex_t* mutex){
  @error EDEADLK se il proprietario del mutex esegue una lock su un mutex già bloccato da lui.
  */
 int pthread_mutex_lock(pthread_mutex_t *mutex){
-	pthread_initialize();
+	int valore=-1;
+    pthread_initialize();
 	
 	if(!mutex)
 		return SETERR(EINVAL);
@@ -213,7 +213,7 @@ int pthread_mutex_lock(pthread_mutex_t *mutex){
 	if(mutex->active!=ACTIVE)
 		return SETERR(EINVAL);
 	
-	int valore=-1;
+	
 	if(mutex->active==ACTIVE)
 		if((!mutex->mux)||(mutex->mux && !controllo(mutex->mux,MUTEX_LIST)))
 		/*Se e' attivo ma non c'e' il mutex oppure per errore e' presente un valore io creo il nuovo mutex*/
@@ -222,18 +222,15 @@ int pthread_mutex_lock(pthread_mutex_t *mutex){
 				return SETERR(EINVAL);
 		}
 	/*In questo momento dovrebbe essere creato il mutex*/
-	
-#ifdef DEBUGSY
-	printf("Il mutex e' stato creato con valore %p e risultato della ricerca %d\n",mutex->mux,controllo(mutex->mux,MUTEX_LIST));
-#endif  
-	
+	#ifdef DEBUGSY 
+CTRL_PRINT_PAR(pthread_mutex_lock,Il mutex viene creato con valore %p,mutex->mux)
+CTRL_PRINT_PAR(pthread_mutex_lock,Il risultato della ricerca risulta essere %d,controllo(mutex->mux,MUTEX_LIST))
+#endif
 	if((mutex->mux->state==LOCK)&&(mutex->mux->own==ESECUTION_TID))
 		return SETERR(EDEADLK);
-	
-#ifdef DEBUGSY
-	printf("Tutti i controlli di integrità nella pthread_mutex_lock sono stati superati\n");
+	#ifdef DEBUGSY 
+CTRL_PRINT(pthread_mutex_lock,Tutti i controlli di integrità sono stati superati)
 #endif
-	
 	while(mutex->mux->state==LOCK){
 		
 		mutexWait* new=(mutexWait*)malloc(sizeof(mutexWait));
@@ -249,10 +246,9 @@ int pthread_mutex_lock(pthread_mutex_t *mutex){
 			mutex->mux->list_head=mutex->mux->list_tail=new;
 			
 		}
-		
-#ifdef DEBUGSY
-		printf("Thread %d si addormenta\n",ESECUTION_TID);
-#endif
+	#ifdef DEBUGSY 	
+CTRL_PRINT_PAR(pthread_mutex_lock,Thread %d si addormenta,ESECUTION_TID)
+	#endif
 		pth_sleep(ESECUTION_TID,LOCKSLEEP);
 		pth_switch(thread_exec->ctx,sched);
 		
@@ -260,8 +256,9 @@ int pthread_mutex_lock(pthread_mutex_t *mutex){
  	/*Quando arrivo qui allora il mutex puo' essere acquisito*/
 	mutex->mux->state=LOCK;
 	mutex->mux->own= ESECUTION_TID;
-#ifdef DEBUGSY
-	printf("Thread %d acquista lock\n",ESECUTION_TID);
+	mutex->mux->val++;
+#ifdef DEBUGSY 
+	CTRL_PRINT_PAR(pthread_mutex_lock,Thread %d acquista lock,ESECUTION_TID)
 #endif
 	return SETERR(OK);
 	
@@ -273,7 +270,8 @@ int pthread_mutex_lock(pthread_mutex_t *mutex){
  @error EINVAL se il valore del mutex è sbagliato
  @error EPERM se si richiede una unlock su un mutex che non appartiene al thread che esegue l'operazione.*/
 int pthread_mutex_unlock(pthread_mutex_t *mutex){
-	pthread_initialize();
+	int valore=-1;
+    pthread_initialize();
 	
 	if(!mutex)
 		return SETERR(EINVAL);
@@ -284,7 +282,7 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex){
 	if(mutex->active!=ACTIVE)
 		return SETERR(EINVAL);
 	
-	int valore=-1;
+	
 	if(mutex->active==ACTIVE)
 		if((!mutex->mux)||(mutex->mux && !controllo(mutex->mux,MUTEX_LIST)))
 		{/*Se e' attivo ma non e' ancora stato creato lo creo e ignoro l'errore di EBUSY*/
@@ -294,24 +292,24 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex){
 		}  
 	if(mutex->mux->own!=ESECUTION_TID)
 		return SETERR(EPERM);
-	
-#ifdef DEBUGSY
-	printf("Thread in unlock supera i vincoli d'integrità\n");
+	#ifdef DEBUGSY 
+CTRL_PRINT(pthread_mutex_unlock,mutex supera i controlli di integrità)
 #endif
 	if(mutex->mux->list_head){
 		mutexWait* elim=mutex->mux->list_head;
 		mutex->mux->list_head=mutex->mux->list_head->next;
 		pth_unsleep(elim->own,LOCKSLEEP);
-#ifdef DEBUGSY
-		printf("Thread %d risvegliato\n",elim->own);
+#ifdef DEBUGSY 
+		CTRL_PRINT_PAR(pthread_mutex_unlock,Thread %d risvegliato,elim->own)
 #endif
 		free(elim);
 		
 	}
+	mutex->mux->val--;
 	mutex->mux->state=INIT;
-#ifdef DEBUGSY
-	printf("Thread %d ritorna\n",ESECUTION_TID);
-#endif	
+#ifdef DEBUGSY 
+	CTRL_PRINT_PAR(pthread_mutex_unlock,Thread %d ritorna,ESECUTION_TID)
+#endif
 	return SETERR(OK);
 }
 
@@ -323,7 +321,8 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex){
  @error EAGAIN se non ho più spazio in memoria 
  @error EBUSY se la condition è gia inizializzato*/
 int pthread_cond_init(pthread_cond_t *cond ,const pthread_condattr_t *attr){
-	pthread_initialize();
+	int attivoMacro=0;
+    pthread_initialize();
 	if(!cond)
 		return SETERR(EINVAL);
 	if(attr)
@@ -331,14 +330,13 @@ int pthread_cond_init(pthread_cond_t *cond ,const pthread_condattr_t *attr){
 	
 	if(cond->active!=ACTIVE && cond->active!=NO_ACTIVE)
 		cond->active=NO_ACTIVE;
-	int attivoMacro=0;
+	
 	if(cond->active==ACTIVE && ((!cond->condition)||((cond->condition)&&(!controllo(cond->condition,COND_LIST)))))
 		attivoMacro=1;
 	else 
 		return SETERR(EBUSY);
-	
-#ifdef DEBUGSY
-	printf("Thread in cond_init supera i vincoli d'integrità\n");
+	#ifdef DEBUGSY 
+CTRL_PRINT(pthread_cond_init,Thread supera i vincoli di integrità)
 #endif
 	
 	/*Se supero i controlli allora devo creare la condition*/
@@ -360,13 +358,14 @@ int pthread_cond_init(pthread_cond_t *cond ,const pthread_condattr_t *attr){
 	}
 	
 #ifdef DEBUGSY
-	printf("cond init creata senza problemi....\n");
 	stampaC(list_cond);	
 #endif
 	
 	if(cond->active==NO_ACTIVE)
     	cond->active=ACTIVE;
-	
+	#ifdef DEBUGSY 
+	CTRL_PRINT(pthread_cond_init,Creato e aggiunto alla lista la condition)
+#endif
 	if(attivoMacro)/*Se la macro è attiva allora la condition era attiva ma non era creata, quindi sollevo l'errore*/
 		return SETERR(EBUSY);
 	return SETERR(OK);
@@ -388,9 +387,8 @@ int pthread_cond_destroy(pthread_cond_t * cond){
 	
 	if(cond->condition==NULL)/*Non è inizializzato oppure è già stato distrutto*/
 	{
-		
-#ifdef DEBUGSY
-		printf("Condition non esiste in pthread_cond_destroy\n");
+		#ifdef DEBUGSY 
+	CTRL_PRINT(pthread_cond_destroy,Condition risulta essere NULL)
 #endif
 		
 		if(cond->active!=ACTIVE)/*Non e' attivo sollevo errore se no non lo considero*/
@@ -402,24 +400,20 @@ int pthread_cond_destroy(pthread_cond_t * cond){
 	
 	/*E' sicuramente diverso da NULL cond->condition*/
 	if(controllo(cond->condition,COND_LIST)){
-		
-#ifdef DEBUGSY
-		printf("Condition esiste in pthread_cond_destroy\n");
-#endif
-		
+		#ifdef DEBUGSY 
+	CTRL_PRINT(pthread_cond_destroy,Condition esiste)
+		#endif
 		if(cond->condition->list_head!=NULL)/*Qualcuno è in attesa sulla wait*/
 			return SETERR(EBUSY);
-		
-#ifdef DEBUGSY
-		printf("PrimaDESTROY\n");
+		#ifdef DEBUGSY 
+	CTRL_PRINT(pthread_cond_destroy,Prima di DESTROY)	
 		stampaC(list_cond);
 #endif
 		
 		SEARCHELIM(list_cond,cond->condition)
 		free(cond->condition);
-		
-#ifdef DEBUGSY
-		printf("DopoDESTROY\n");
+		#ifdef DEBUGSY 
+		CTRL_PRINT(pthread_cond_destroy,Dopo di DESTROY)
 		stampaC(list_cond);
 #endif
 		
@@ -430,9 +424,8 @@ int pthread_cond_destroy(pthread_cond_t * cond){
 	else{/*Se non esiste la condition*/
 		
 		cond->condition=NULL;
-		
-#ifdef DEBUGSY
-		printf("Condition ha un valore inconsistente in pthread_cond_destroy\n");
+		#ifdef DEBUGSY 
+CTRL_PRINT(pthread_cond_destroy,Condition ha un valore inconsistente)
 #endif
 		if(cond->active!=ACTIVE) /*Non e' attivo sollevo errore se no non lo considero*/
 			return SETERR(EINVAL);
@@ -453,7 +446,10 @@ int pthread_cond_destroy(pthread_cond_t * cond){
  */
 int pthread_cond_wait(pthread_cond_t * cond , pthread_mutex_t * mutex){
 	/*Faccio controlli sull'integrità dei dati*/
-	if((!cond)||(!mutex))
+int valore=-1;
+el_cond_t* new;
+pthread_initialize();
+    if((!cond)||(!mutex))
 		return SETERR(EINVAL);
 	
 	if(cond->active!=ACTIVE && cond->active!=NO_ACTIVE)
@@ -466,7 +462,7 @@ int pthread_cond_wait(pthread_cond_t * cond , pthread_mutex_t * mutex){
         return SETERR(EINVAL);
 	/*Ho la certezza che mutex e condition sono attivi*/
 	
-	int valore=-1;
+	
 	if((!cond->condition) || ((cond->condition)&&(!controllo(cond->condition,COND_LIST))))
 	{
 		valore=pthread_cond_init(cond,NULL);/*Se non esiste creo la nuova condition*/
@@ -488,12 +484,12 @@ int pthread_cond_wait(pthread_cond_t * cond , pthread_mutex_t * mutex){
 		return SETERR(EPERM);
 	
 	/*Ora è possibile eseguire la wait*/
-#ifdef DEBUGSY
-	printf("Thread in cond_wait supera i vincoli d'integrità\n");
+	#ifdef DEBUGSY 
+CTRL_PRINT(pthread_cond_wait,Condition e mutex superano i vincoli di integrità)
 #endif
 	
 	
-	el_cond_t* new=(el_cond_t*)malloc(sizeof(el_cond_t));
+	new=(el_cond_t*)malloc(sizeof(el_cond_t));
 	if(!new)
 		return SETERR(ENOMEM);
 	new->own=ESECUTION_TID;
@@ -505,19 +501,40 @@ int pthread_cond_wait(pthread_cond_t * cond , pthread_mutex_t * mutex){
 		cond->condition->list_tail->next=new;
 		cond->condition->list_tail=new;
 	}
-	
-#ifdef DEBUGSY
-	printf("Thread in cond_wait sblocca mutex\n");
+	#ifdef DEBUGSY 
+CTRL_PRINT(pthread_cond_wait,Thread sblocca il mutex)
 #endif
 	pthread_mutex_unlock(mutex);
-#ifdef DEBUGSY
-	printf("Thread in cond_wait si blocca \n");
+#ifdef DEBUGSY 
+	CTRL_PRINT_PAR(pthread_cond_wait,Thread %d si blocca,ESECUTION_TID);
 #endif
 	
 	pth_sleep(ESECUTION_TID,WAIT);
 	pth_switch(thread_exec->ctx,sched);
 	/*Quando ritorno provo a riacquisire il lock e ho la certezza che la lock non fallisce*/
-	pthread_mutex_lock(mutex);
+	while(mutex->mux->state==LOCK)
+	{/*Se bloccato metto il thread in testa alla lista di attesa*/
+		mutexWait* new=(mutexWait*)malloc(sizeof(mutexWait));
+		if(!new)
+			return SETERR(ENOMEM);
+		new->own=ESECUTION_TID;
+		new->next=mutex->mux->list_head;
+		mutex->mux->list_head=new;
+		#ifdef DEBUGSY 
+		CTRL_PRINT_PAR(pthread_cond_wait,Thread %d compete per riacquisire il mutex che risulta essere LOCK,ESECUTION_TID)
+		#endif
+		pth_sleep(ESECUTION_TID,LOCKSLEEP);
+		pth_switch(thread_exec->ctx,sched);
+		
+	}
+	/*Altrimenti assegno il mutex al thread*/
+		mutex->mux->state=LOCK;
+		mutex->mux->own= ESECUTION_TID;
+		mutex->mux->val++;
+		#ifdef DEBUGSY 
+		CTRL_PRINT_PAR(pthread_cond_wait,Thread %d ha riacquisito il mutex,ESECUTION_TID)
+#endif
+	/*pthread_mutex_lock(mutex);*/
 	
 	return SETERR(OK);
 }
@@ -530,36 +547,33 @@ int pthread_cond_wait(pthread_cond_t * cond , pthread_mutex_t * mutex){
  @error EINVAL se il valore della condition è sbagliato
  */
 int pthread_cond_signal(pthread_cond_t * cond){
-	
-	if(!cond)
-		return SETERR(EINVAL);
 	int valore=-1;
+    pthread_initialize();
+    if(!cond)
+		return SETERR(EINVAL);
 	if(cond->active!=ACTIVE && cond->active!=NO_ACTIVE)
 		cond->active=NO_ACTIVE;
 	
 	if(cond->active!=ACTIVE)  
 		return SETERR(EINVAL);
-	else{
-		if((!cond->condition) || ((cond->condition)&&(!controllo(cond->condition,COND_LIST))))/*Se è attiva ma non è presente la condition*/
+			if((!cond->condition) || ((cond->condition)&&(!controllo(cond->condition,COND_LIST))))/*Se è attiva ma non è presente la condition*/
 		{
 			valore=pthread_cond_init(cond,NULL);/*la creo*/
 			if(valore!=OK && valore!=EBUSY)
 				return SETERR(EINVAL);
 		}					 
 		
-   	}
-	
-#ifdef DEBUGSY
-	printf("Thread in cond_signal supera i vincoli d'integrità\n");
+   	
+	#ifdef DEBUGSY 
+CTRL_PRINT(pthread_cond_signal,Thread supera i vincoli di integrità)
 #endif
 	
 	if(cond->condition->list_head)
 	{ el_cond_t* sleeping=cond->condition->list_head;
 		cond->condition->list_head=cond->condition->list_head->next;
 		pth_unsleep(sleeping->own,WAIT);/*Risveglio un thread*/
-		
-#ifdef DEBUGSY
-		printf("Thread%d in cond_signal si risveglia\n",sleeping->own);
+	#ifdef DEBUGSY 	
+CTRL_PRINT_PAR(pthread_cond_signal,Thread %d si risveglia,sleeping->own)
 #endif
 		free(sleeping);
 		
@@ -573,25 +587,27 @@ int pthread_cond_signal(pthread_cond_t * cond){
  @error EINVAL se il valore della condition è sbagliato
  */
 int pthread_cond_broadcast(pthread_cond_t* cond){
-	
+	int valore=-1;
+    pthread_initialize();
 	if(!cond)
 		return SETERR(EINVAL);
-	int valore=-1;
+	
 	if(cond->active!=ACTIVE && cond->active!=NO_ACTIVE)
 		cond->active=NO_ACTIVE;
 	
 	if(cond->active!=ACTIVE) 
 		return SETERR(EINVAL);
 	
-	else{
+	
 		if((!cond->condition) || ((cond->condition)&&(!controllo(cond->condition,COND_LIST))))/*Se è attiva ma non è presente la condition*/
 		{	
 			valore=pthread_cond_init(cond,NULL);/*la creo*/
 			if(valore!=OK && valore!=EBUSY)
 				return SETERR(EINVAL);
 		}
-	}
-	
+	#ifdef DEBUGSY 
+	CTRL_PRINT(pthread_cond_broadcast,Thread supera i vincoli di integrità)
+#endif
 	while(cond->condition->list_head)/*Cosi risveglio tutti*/
 	{ el_cond_t* sleeping=cond->condition->list_head;
 		cond->condition->list_head=cond->condition->list_head->next;
@@ -599,6 +615,9 @@ int pthread_cond_broadcast(pthread_cond_t* cond){
 		free(sleeping);
 		
 	}
+	#ifdef DEBUGSY 
+	CTRL_PRINT(pthread_cond_broadcast,Tutti i thread in attesa sulla cond sono stati risvegliati)
+#endif
 	return SETERR(OK);
 	
 }

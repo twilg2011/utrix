@@ -166,7 +166,7 @@ printf("%s\n",tvalue);
 		n_thread= STD_NTREAD ;
 
     }
-n_thread=100;
+n_thread=200;
     fprintf(stderr, "= rows:%d cols:%d Sb:%d Sd:%d Fb:%d NF:%d NS:%d N:%d=\n",row, cols,Sb,Sd,Fb,NF,NS,n_thread);
 	fflush(stderr);
 

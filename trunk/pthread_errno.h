@@ -8,13 +8,14 @@
  */
 
 #include<errno.h>
-
+#include<stdio.h>
 int pth_errno;
 
-#define PTH_ERR(func,str,pth_errno) \
-		fprintf(stderr, \
-                 "pth: %s :ERROR: %s\n", func,str); \
-		return(pth_errno);
+#define CTRL_PRINT(func,str) \
+		fprintf(stderr,#func": "#str"\n");
+
+#define CTRL_PRINT_PAR(func,str,par) \
+		fprintf(stderr,#func": "#str"\n",par);
 
 #define SETERR(err) errno=err;
 #define OK 0

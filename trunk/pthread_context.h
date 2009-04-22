@@ -9,7 +9,8 @@
 
 /*Qui ci saranno solo le strutture e le dichiarazioni riguardanti il contesto*/
 #include <setjmp.h>
-
+#define FALSE 0
+#define TRUE !FALSE
 /*Stack struct*/
 /*una partizione consente di identificare un blocco di memoria virtuale 
  che rappesenta lo stack del thread di dimensione STACKWIDTH*/
