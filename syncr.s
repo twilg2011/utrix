@@ -1,4 +1,11 @@
-
+/*
+ *  syncr.s
+ *  Utrix
+ *
+ *  Created by MinixGroup on 10/07/08.
+ *  Copyright 2008 Utrix. All rights reserved.
+ *
+ */
 
 .text
 .globl _lock

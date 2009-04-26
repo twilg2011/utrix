@@ -2,12 +2,10 @@
  *  pthread_sched.c
  *  
  *
- *  Created by lorenzo galeotti on 23/07/08.
+ *  Created by MinixGroup on 23/07/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
-
-
 
 #include "config.h"
 #include "pthread_sched.h"
@@ -32,24 +30,25 @@ void longtermsched();
 
 /*macro che elimina elem da list parent deve essere il predecessore di elem*/
 #define ELIM(elem,parent,list) if (!parent)list=list->next;\
-else parent->next=elem->next;\
-elem->next=NULL;\
+			else parent->next=elem->next;\
+			elem->next=NULL;\
 
 /*aggiunge un elemento in coda*/
 #define ADDELEM(elem,tail,head) if (!head){ head=elem;\
-tail=head;\
-}	\
-else{tail->next=elem;\
-tail=tail->next;\
-}\
-elem->next=NULL;
+			tail=head;\
+		}	\
+		else{tail->next=elem;\
+			tail=tail->next;\
+		}\
+		elem->next=NULL;
 /*aggiunge un elemento in testa*/
 #define ADDELEMHEAD(elem,head,tail) if (!head){ head=elem;\
-tail=head;\
-}else{\
-elem->next=head;\
-head=elem;\
-}
+				tail=head;\
+			}else{\
+				elem->next=head;\
+				head=elem;\
+			}
+
 
 
 #ifdef DEBUG 
@@ -114,9 +113,9 @@ int searchonall(int tid,tbl_field_t* serc,tbl_field_t* parent, tbl_field_t** lis
 
 void gc(){
 	while(thread_garbage){
-	#ifdef DEBUG 
+#ifdef DEBUG 
 		CTRL_PRINT_PAR(gc,Elimino:%i\n,thread_garbage->tcb->tid);
-	#endif
+#endif
 		tbl_field_t paus=thread_garbage;
 		thread_garbage=thread_garbage->next;
 		free(paus->tcb->ctx);
@@ -129,9 +128,9 @@ void scheduler(void* arg)
 {
 	/*thread schedulato*/
 	tbl_field_t  selectedthr;
-	#ifdef DEBUG 
-		CTRL_PRINT(scheduler, );
-	#endif
+#ifdef DEBUG 
+	CTRL_PRINT(scheduler, );
+#endif
 	/*inizializzo a 0 il nomero dei thread schedulati*/
 	scheduledthr_n=0;
 	
@@ -144,24 +143,24 @@ void scheduler(void* arg)
 			empty(NULL);
 		}else{
 			
-			#ifdef DEBUG 
-				CTRL_PRINT_PAR(scheduler,selected:%i,selectedthr->tcb->tid);
-			#endif
+#ifdef DEBUG 
+			CTRL_PRINT_PAR(scheduler,selected:%i,selectedthr->tcb->tid);
+#endif
 			
 			/*imposto lo stato corretto*/
 			selectedthr->tcb->state=EXEC;
 			thread_exec=selectedthr->tcb;
 			
-			#ifdef DEBUG 
-				CTRL_PRINT_PAR(scheduler,parto%p,selectedthr);
-			#endif
+#ifdef DEBUG 
+			CTRL_PRINT_PAR(scheduler,parto%p,selectedthr);
+#endif
 			
 			
 			if(!selectedthr->tcb->ctx->eseguito)
 			{
-				#ifdef DEBUG 
-					CTRL_PRINT_PAR(scheduler,Prima esecuzione: %d,selectedthr->tcb->tid);
-				#endif
+#ifdef DEBUG 
+				CTRL_PRINT_PAR(scheduler,Prima esecuzione: %d,selectedthr->tcb->tid);
+#endif
 				selectedthr->tcb->ctx->eseguito=TRUE;
 				void*(*f)(void*) = selectedthr->tcb->ctx->f;
 				selectedthr->tcb->timerInterval=1;
@@ -177,9 +176,9 @@ void scheduler(void* arg)
 				pth_switch(sched,selectedthr->tcb->ctx);
 			}
 			
-			#ifdef DEBUG 
-				CTRL_PRINT_PAR(scheduler,ritorno %p,selectedthr);
-			#endif
+#ifdef DEBUG 
+			CTRL_PRINT_PAR(scheduler,ritorno %p,selectedthr);
+#endif
 			/*calcolo il tempo che ha utilizzato*/
 			pth_time=clock()-pth_time;
 			
@@ -197,9 +196,9 @@ tbl_field_t selectthr()
 {  
 	int i=-1;
 	
-	#ifdef DEBUG 
-		CTRL_PRINT(selector, );
-	#endif
+#ifdef DEBUG 
+	CTRL_PRINT(selector, );
+#endif
 	/*scorro i thread schedulabili*/
 	while(i<NUM_PRIOR-1)
 	{
@@ -252,7 +251,7 @@ void setprior(tbl_field_t thr,int prior)
 {
 	tbl_field_t tcb;
 	tbl_field_t  parent;
-	#ifdef DEBUG 
+#ifdef DEBUG 
 	CTRL_PRINT_PAR(setprior,prior:%i,prior);
 #endif
 	if(!thr) 
@@ -316,7 +315,7 @@ void pth_sleep(int tid,int why)
 	{
 		if (searchonall(tid,&select_tcb,&parent,&list) )
 		{
-	#ifdef DEBUG 
+#ifdef DEBUG 
 			CTRL_PRINT_PAR(pth_sleep,sleep:%i\n,select_tcb->tcb->tid);
 #endif
 			/*metto il thread nella lista dedicata*/

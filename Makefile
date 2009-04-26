@@ -1,3 +1,8 @@
+# *  Makefile
+# *  
+# *  Created by MinixGroup on 24/07/08.
+# *  Copyright 2008 Utrix. All rights reserved.
+# *
 
 CC = gcc
 CFLAGS =  -Wall -pedantic 

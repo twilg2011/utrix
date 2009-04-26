@@ -2,7 +2,7 @@
  *  pthread_struct.c
  *  Utrix
  *
- *  Created by MinixGroupPisa on 14/07/08.
+ *  Created by MinixGroup on 14/07/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */

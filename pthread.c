@@ -2,7 +2,7 @@
  *  pthread.c
  *  Utrix-1.0
  *
- *  Created by MinixGroupPisa on 05/11/08.
+ *  Created by MinixGroup on 05/11/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
@@ -182,7 +182,7 @@ int pthread_join(pthread_t thread, void ** value_ptr){
     pthread_initialize();
 	if(thread==ESECUTION_TID)
 		return SETERR(EDEADLK);
-
+	
 	thread_search=gettcb(thread);
 #ifdef DEBUG
 	CTRL_PRINT_PAR(pthread_join,Thread trovato %d,thread);
@@ -227,7 +227,7 @@ int pthread_join(pthread_t thread, void ** value_ptr){
 	else{
 		/*Non è ancora morto*/
 #ifdef DEBUG
-	CTRL_PRINT_PAR(pthread_join,Thread %d non è morto,thread);
+		CTRL_PRINT_PAR(pthread_join,Thread %d non è morto,thread);
 #endif
         /*Devo mettere in attesa il thread dopo aver salvato tutte le informazioni necessarie*/
         thread_search->thread_join=thread_exec;
@@ -251,7 +251,7 @@ int pthread_join(pthread_t thread, void ** value_ptr){
 int  pthread_detach(pthread_t thread){
 	tcb_t thread_search;
     pthread_initialize();
-		
+	
 	thread_search=gettcb(thread);
 	/*Cerco sulla lista morti*/
 	if(!thread_search)
@@ -302,7 +302,7 @@ void pthread_exit(void* value_ptr){
 			/*Qualcuno mi aspetta*/
 			*(thread_exec->thread_res.ptr_res)=value_ptr;
 #ifdef DEBUG
-		CTRL_PRINT_PAR(pthread_exit,Risveglio chi mi aspetta %d, thread_exec->thread_join->tid);
+			CTRL_PRINT_PAR(pthread_exit,Risveglio chi mi aspetta %d, thread_exec->thread_join->tid);
 #endif
 			
 			schedthrkill(ESECUTION_TID);

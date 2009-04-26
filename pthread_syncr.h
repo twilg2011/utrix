@@ -2,7 +2,7 @@
  *  pthread_syncr.h
  *  Utrix
  *
- *  Created by MinixGroupPisa on 11/07/08.
+ *  Created by MinixGroup on 11/07/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
