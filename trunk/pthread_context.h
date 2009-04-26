@@ -2,7 +2,7 @@
  *  pthread_context.h
  *  
  *
- *  Created by MinixGroupPisa on 23/07/08.
+ *  Created by MinixGroup on 23/07/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */

@@ -2,7 +2,7 @@
  *  pthread_context.c
  *  
  *
- *  Created by lorenzo galeotti on 23/07/08.
+ *  Created by MinixGroup on 23/07/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
@@ -15,8 +15,6 @@ partition_t partitionhead;
 partition_t partitiontail;
 int thread_n;
 char* globalsp;
-
-
 
 
 partition_t findfree();
@@ -35,11 +33,11 @@ char* bpcalc(context_t ctx)
 		part=malloc(sizeof(partition_s));
 		if (addpar(part)) return NULL;
 	}
-
-	#ifdef DEBUG 
-		CTRL_PRINT_PAR(bpcalc,sp partizione:%p,part->bp);
-	#endif
-
+	
+#ifdef DEBUG 
+	CTRL_PRINT_PAR(bpcalc,sp partizione:%p,part->bp);
+#endif
+	
 	part->present=TRUE;
 	ctx->part=part;
 	/*ritorno la partizione da usare*/
@@ -64,18 +62,18 @@ int addpar(partition_t new)
     }else{
         new->next=partitionhead;
         partitionhead=new;
-	#ifdef DEBUG 
-       CTRL_PRINT_PAR(bpcalc, Numero part %d,++val);
-	#endif
+#ifdef DEBUG 
+		CTRL_PRINT_PAR(bpcalc, Numero part %d,++val);
+#endif
 		
 		
     }
 	/*inizializza i dati delle partizioni*/
 	new->bp=globalsp-STACKWIDTH;
 	new->present=TRUE;
-	#ifdef DEBUG 
-		CTRL_PRINT_PAR(bpcalc,sp:%p,new->bp);
-	#endif
+#ifdef DEBUG 
+	CTRL_PRINT_PAR(bpcalc,sp:%p,new->bp);
+#endif
 	globalsp=new->bp;
 	return OK;
 }
@@ -87,9 +85,9 @@ partition_t findfree()
 	/*cicla fino a trovare una partizione libera*/
 	while (res)
 	{
-	#ifdef DEBUG 
+#ifdef DEBUG 
 		CTRL_PRINT_PAR(findfree,cerca ancora:%p,res->bp);
-	#endif
+#endif
 		if(!res->present)return res;
 		res=res->next;
 	}
@@ -99,9 +97,9 @@ partition_t findfree()
 /*libera la partizione passata come argomento*/
 int releasepart(partition_t part)
 {
-	#ifdef DEBUG 
-		CTRL_PRINT_PAR(findfree,relasepart %p,part->bp);
-	#endif
+#ifdef DEBUG 
+	CTRL_PRINT_PAR(findfree,relasepart %p,part->bp);
+#endif
 	if (part) part->present=FALSE;
 	else return SETERR(EINVAL);
 	return OK;

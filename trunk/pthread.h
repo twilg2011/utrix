@@ -2,7 +2,7 @@
  *  pthread.h
  *  Utrix
  *
- *  Created by MinixGroupPisa on 10/07/08.
+ *  Created by MinixGroup on 10/07/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
@@ -19,10 +19,7 @@
 struct pthread_mutex_s;
 struct pthread_cond_s;
 
-
 typedef int pthread_attr_t;  /* Struttura dichiarata ma non inizializzata. Necessaria nella pthread_create per poter rispettare lo standard POSIX */
-
-
 
 extern int       pthread_create(pthread_t* ,  pthread_attr_t* , void* (*)(void *), void *);
 
@@ -45,6 +42,7 @@ extern int 	 pthread_mutex_destroy(pthread_mutex_t* mutex);
 extern int	 pthread_mutex_lock(pthread_mutex_t *mutex);
 
 extern int 	 pthread_mutex_unlock(pthread_mutex_t *mutex);
+
 /*Aggiungere le chiamate di condition*/
 
 /*int pthread_attr_init(pthread_attr_t *attr);

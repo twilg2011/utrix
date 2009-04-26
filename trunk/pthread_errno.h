@@ -2,7 +2,7 @@
  *  pthread_errno.h
  *  Utrix
  *
- *  Created by Matteo Casenove on 11/07/08.
+ *  Created by MinixGroup on 11/07/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
@@ -12,10 +12,10 @@
 int pth_errno;
 
 #define CTRL_PRINT(func,str) \
-		fprintf(stderr,#func": "#str"\n");
+	fprintf(stderr,#func": "#str"\n");
 
 #define CTRL_PRINT_PAR(func,str,par) \
-		fprintf(stderr,#func": "#str"\n",par);
+	fprintf(stderr,#func": "#str"\n",par);
 
 #define SETERR(err) errno=err;
 #define OK 0

@@ -2,7 +2,7 @@
  *  pthread_struct.h
  *  Utrix
  *
- *  Created by Matteo Casenove on 11/07/08.
+ *  Created by MinixGroup on 11/07/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
@@ -14,9 +14,8 @@
 #define JOINABLE 0
 /*Qui ci saranno solo le dichiarazioni e strutture necessarie per lavorare con i thread*/
 typedef union result{
-void** ptr_res;
-void*  res;
-
+	void** ptr_res;
+	void*  res;
 } result;
 /* Thread Control Block */
 typedef struct tcb{
@@ -56,8 +55,3 @@ tbl_field_t thread_new;
 
 /*Puntatore alla coda della lista dei thread appena creati e non schedulati*/
 tbl_field_t thread_new_c;
-
-
-
-
-
