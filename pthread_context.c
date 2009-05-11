@@ -2,7 +2,7 @@
  *  pthread_context.c
  *  
  *
- *  Created by MinixGroup on 23/07/08.
+ *  Created by lorenzo galeotti on 23/07/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
@@ -10,11 +10,13 @@
 #include "pthread_errno.h"
 #include "config.h"
 #include <stdlib.h>
-//#define DEBUG
+/*#define DEBUG*/
 partition_t partitionhead;
 partition_t partitiontail;
 int thread_n;
 char* globalsp;
+
+
 
 
 partition_t findfree();

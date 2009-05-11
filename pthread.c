@@ -216,7 +216,12 @@ int pthread_join(pthread_t thread, void ** value_ptr){
 #ifdef DEBUG
 			CTRL_PRINT_PAR(pthread_join,Thread %d: nessuno ha fatto la join,thread_exec->tid);
 #endif
-			*value_ptr=(thread_search->thread_res.res);        
+			if(value_ptr){
+#ifdef DEBUG
+				CTRL_PRINT_PAR(pthread_join,Thread %d: esiste un valore di ritorno salvato e ho spazio in memoria per memorizzarlo,thread_exec->tid);
+#endif
+				*value_ptr=(thread_search->thread_res.res);  
+			}      
 			schedthrkill(thread_search->tid);
 			thread_n--;
 			return SETERR(OK);
@@ -290,7 +295,7 @@ int  pthread_detach(pthread_t thread){
 /*Riguardare*/
 void pthread_exit(void* value_ptr){
 	pthread_initialize();
-	if(ESECUTION_TID==TID_MAIN)
+    if(ESECUTION_TID==TID_MAIN)
 	{
         /*Ripulisco la libreria*/
         /*Esco*/
@@ -300,7 +305,12 @@ void pthread_exit(void* value_ptr){
 	if(thread_exec->save==JOINABLE){/*Era di tipo joinable*/
 		if(thread_exec->thread_join){
 			/*Qualcuno mi aspetta*/
-			*(thread_exec->thread_res.ptr_res)=value_ptr;
+			if(thread_exec->thread_res.ptr_res){
+#ifdef DEBUG
+				CTRL_PRINT_PAR(pthread_exit,Thread %d:il thread in attesa sulla join ha fornito una zona di memoria per memorizzare il risultato,thread_exec->tid);
+#endif
+				*(thread_exec->thread_res.ptr_res)=value_ptr;
+            }
 #ifdef DEBUG
 			CTRL_PRINT_PAR(pthread_exit,Risveglio chi mi aspetta %d, thread_exec->thread_join->tid);
 #endif
