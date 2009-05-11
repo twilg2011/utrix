@@ -2,10 +2,12 @@
  *  pthread_sched.c
  *  
  *
- *  Created by MinixGroup on 23/07/08.
+ *  Created by lorenzo galeotti on 23/07/08.
  *  Copyright 2008 Utrix. All rights reserved.
  *
  */
+
+
 
 #include "config.h"
 #include "pthread_sched.h"
@@ -30,25 +32,24 @@ void longtermsched();
 
 /*macro che elimina elem da list parent deve essere il predecessore di elem*/
 #define ELIM(elem,parent,list) if (!parent)list=list->next;\
-			else parent->next=elem->next;\
-			elem->next=NULL;\
+else parent->next=elem->next;\
+elem->next=NULL;\
 
 /*aggiunge un elemento in coda*/
 #define ADDELEM(elem,tail,head) if (!head){ head=elem;\
-			tail=head;\
-		}	\
-		else{tail->next=elem;\
-			tail=tail->next;\
-		}\
-		elem->next=NULL;
+tail=head;\
+}	\
+else{tail->next=elem;\
+tail=tail->next;\
+}\
+elem->next=NULL;
 /*aggiunge un elemento in testa*/
 #define ADDELEMHEAD(elem,head,tail) if (!head){ head=elem;\
-				tail=head;\
-			}else{\
-				elem->next=head;\
-				head=elem;\
-			}
-
+tail=head;\
+}else{\
+elem->next=head;\
+head=elem;\
+}
 
 
 #ifdef DEBUG 
@@ -128,6 +129,8 @@ void scheduler(void* arg)
 {
 	/*thread schedulato*/
 	tbl_field_t  selectedthr;
+	void * (*f)(void*);
+	
 #ifdef DEBUG 
 	CTRL_PRINT(scheduler, );
 #endif
@@ -162,7 +165,7 @@ void scheduler(void* arg)
 				CTRL_PRINT_PAR(scheduler,Prima esecuzione: %d,selectedthr->tcb->tid);
 #endif
 				selectedthr->tcb->ctx->eseguito=TRUE;
-				void*(*f)(void*) = selectedthr->tcb->ctx->f;
+				f =selectedthr->tcb->ctx->f;
 				selectedthr->tcb->timerInterval=1;
 				/*inizializzo la variabile per il calcolo del tempo di cpu utilizzato*/
 				pth_time=clock();
