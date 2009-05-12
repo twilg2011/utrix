@@ -43,6 +43,16 @@ extern int	 pthread_mutex_lock(pthread_mutex_t *mutex);
 
 extern int 	 pthread_mutex_unlock(pthread_mutex_t *mutex);
 
+extern int 	 pthread_cond_init(pthread_cond_t* cond, const pthread_condattr_t * attr);
+
+extern int 	 pthread_cond_destroy(pthread_cond_t* cond);
+
+extern int	 pthread_cond_wait(pthread_cond_t * cond , pthread_mutex_t * mutex);
+
+extern int 	 pthread_cond_signal(pthread_cond_t * cond);
+
+extern int   pthread_cond_broadcast(pthread_cond_t * cond);
+
 /*Aggiungere le chiamate di condition*/
 
 /*int pthread_attr_init(pthread_attr_t *attr);
