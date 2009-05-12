@@ -159,7 +159,8 @@ pthread_t pthread_self(void){
 }
 
 void pthread_yield() 
-{
+{   
+	pthread_initialize();
 	pth_switch(thread_exec->ctx,sched);
 }
 
