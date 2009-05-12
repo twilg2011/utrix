@@ -158,6 +158,8 @@ pthread_t pthread_self(void){
 	return ESECUTION_TID;	
 }
 
+/*pthread_yield: Questa funzione permette di rilasciare il processore*/
+
 void pthread_yield() 
 {   
 	pthread_initialize();
@@ -293,7 +295,6 @@ int  pthread_detach(pthread_t thread){
  */
 
 
-/*Riguardare*/
 void pthread_exit(void* value_ptr){
 	pthread_initialize();
     if(ESECUTION_TID==TID_MAIN)
