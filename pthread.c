@@ -15,6 +15,7 @@
 #define ESEGUITO 1	/* Indica che il thread e' stato gia' eseguito */
 #define FIRST_THR 1 /* Indica il numero iniziale di thread considerando come numero 1 il main */
 
+
 int pthread_initialized= FALSE; /* Definisce che la libreria non e' stata ancora inizializzata */
 
 /*
