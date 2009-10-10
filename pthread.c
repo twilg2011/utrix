@@ -33,6 +33,7 @@ int init(){
 	
 	/* Definisco la tabella dei thread */
 	tbl=(tbl_field_t)calloc(1,sizeof(tbl_field_s));
+	
 	if(!tbl)
 		return FALSE;
 	
